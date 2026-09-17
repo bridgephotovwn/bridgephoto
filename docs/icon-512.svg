@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="BRIDGE PHOTO icon">
+  <title>BRIDGE PHOTO icon (rounded, for README and GitHub; upload icon-512-play to Google Play)</title>
+  <defs>
+    <linearGradient id="arch" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0"/>
+      <stop offset="0.1" stop-color="#F59E0B"/>
+      <stop offset="0.9" stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- deep teal background with soft rounded corners -->
+  <rect width="512" height="512" rx="96" fill="#0F766E"/>
+
+  <!-- document sheet: 236 x 300, folded corner, centred -->
+  <g transform="translate(138 106)">
+    <rect x="10" y="12" width="236" height="300" rx="20" fill="#000000" fill-opacity="0.22"/>
+    <path d="M20 0 H172 L236 64 V280 a20 20 0 0 1 -20 20 H20 a20 20 0 0 1 -20 -20 V20 a20 20 0 0 1 20 -20 Z" fill="#ffffff"/>
+    <path d="M172 0 V44 a20 20 0 0 0 20 20 H236 Z" fill="#CCFBF1"/>
+    <g fill="#CBD5E1">
+      <rect x="40" y="92" width="120" height="14" rx="7"/>
+      <rect x="40" y="126" width="156" height="10" rx="5"/>
+      <rect x="40" y="152" width="156" height="10" rx="5"/>
+      <rect x="40" y="178" width="120" height="10" rx="5"/>
+      <rect x="40" y="216" width="156" height="10" rx="5"/>
+      <rect x="40" y="242" width="100" height="10" rx="5"/>
+    </g>
+    <!-- the scan line as a single bridge arch: soft glow, then the arch -->
+    <path d="M-22 212 Q118 88 258 212" fill="none" stroke="#F59E0B" stroke-opacity="0.22" stroke-width="34" stroke-linecap="round"/>
+    <path d="M-22 212 Q118 88 258 212" fill="none" stroke="url(#arch)" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>
