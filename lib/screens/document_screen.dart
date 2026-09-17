@@ -44,8 +44,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
     if (mounted) setState(() => _busy = msg);
   }
 
-  Progress _progress(String what) =>
-      (int done, int total) => _setBusy('$what $done / $total');
+  Progress _pdfProgress() =>
+      (int done, int total) => _setBusy(context.l10n.buildingPdfPage(done, total));
 
   static String _msg(Object e) {
     if (e is PlatformException) return e.message ?? e.code;
@@ -57,13 +57,14 @@ class _DocumentScreenState extends State<DocumentScreen> {
   void _onScanState(String s) {
     if (!mounted) return;
     if (s == 'preparing') {
-      _setBusy('Preparing the scanner…\nFirst use: Google Play services downloads it once.');
+      _setBusy(context.l10n.preparingScanner);
     } else {
       _setBusy(null);
     }
   }
 
   Future<void> _addPages() async {
+    final l = context.l10n;
     final d = _doc!;
     Engine.onScanState = _onScanState;
     try {
@@ -75,16 +76,16 @@ class _DocumentScreenState extends State<DocumentScreen> {
       if (Engine.onScanState == _onScanState) Engine.onScanState = null;
       _setBusy(null);
       if (paths.isEmpty) return;
-      _setBusy('Saving pages…');
+      _setBusy(l.savingPages);
       for (final p in paths) {
         await DocStore.addPageFile(d, p, move: true);
       }
       await DocStore.save(d);
       if (mounted) setState(() {});
     } on PlatformException catch (e) {
-      if (mounted) context.snack(e.message ?? 'The scanner is not available.');
+      if (mounted) context.snack(e.message ?? l.scannerUnavailable);
     } catch (e) {
-      if (mounted) context.snack('Could not save the pages: ${_msg(e)}');
+      if (mounted) context.snack(l.couldNotSavePages(_msg(e)));
     } finally {
       if (Engine.onScanState == _onScanState) Engine.onScanState = null;
       _setBusy(null);
@@ -92,31 +93,34 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _sharePdf() async {
+    final l = context.l10n;
     try {
       await Exporter.cleanShareDir();
-      final f = await Exporter.pdfFile(_doc!, progress: _progress('Building PDF, page'));
+      final f = await Exporter.pdfFile(_doc!, progress: _pdfProgress());
       _setBusy(null);
       if (!mounted) return;
       await Exporter.shareFile(context, f, 'application/pdf', subject: _doc!.name);
     } catch (e) {
-      if (mounted) context.snack('Could not build the PDF: ${_msg(e)}');
+      if (mounted) context.snack(l.couldNotBuildPdf(_msg(e)));
     } finally {
       _setBusy(null);
     }
   }
 
   Future<void> _savePdf() async {
+    final l = context.l10n;
     try {
-      final p = await Exporter.savePdf(_doc!, progress: _progress('Building PDF, page'));
-      if (p != null && mounted) context.snack('PDF saved.');
+      final p = await Exporter.savePdf(_doc!, progress: _pdfProgress(), title: l.savePdfDialogTitle);
+      if (p != null && mounted) context.snack(l.pdfSaved);
     } catch (e) {
-      if (mounted) context.snack('Could not save the PDF: ${_msg(e)}');
+      if (mounted) context.snack(l.couldNotSavePdf(_msg(e)));
     } finally {
       _setBusy(null);
     }
   }
 
   Future<void> _exportImages() async {
+    final l = context.l10n;
     var format = 'jpg';
     final action = await showModalBottomSheet<String>(
       context: context,
@@ -124,7 +128,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => SafeArea(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const ListTile(title: Text('Export pages as images')),
+            ListTile(title: Text(l.exportPagesAsImages)),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SegmentedButton<String>(
@@ -137,8 +141,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            ListTile(leading: const Icon(Icons.share), title: const Text('Share'), onTap: () => Navigator.pop(ctx, 'share')),
-            ListTile(leading: const Icon(Icons.photo_library_outlined), title: const Text('Save to Photos'), onTap: () => Navigator.pop(ctx, 'gallery')),
+            ListTile(leading: const Icon(Icons.share), title: Text(l.share), onTap: () => Navigator.pop(ctx, 'share')),
+            ListTile(leading: const Icon(Icons.photo_library_outlined), title: Text(l.saveToPhotos), onTap: () => Navigator.pop(ctx, 'gallery')),
           ]),
         ),
       ),
@@ -146,41 +150,41 @@ class _DocumentScreenState extends State<DocumentScreen> {
     if (action == null) return;
     try {
       await Exporter.cleanShareDir();
-      final files = await Exporter.imageFiles(_doc!, format, progress: _progress('Preparing image'));
+      final files = await Exporter.imageFiles(_doc!, format,
+          progress: (done, total) => _setBusy(l.buildingPdfPage(done, total)));
       _setBusy(null);
       if (!mounted) return;
       if (action == 'share') {
         await Exporter.shareImages(context, files, format);
       } else {
-        _setBusy('Saving to Photos…');
+        _setBusy(l.savingToPhotos);
         final n = await Exporter.saveImagesToGallery(files, format);
         if (!mounted) return;
         if (n < 0) {
-          context.snack(Engine.isAndroid
-              ? 'Saving to Photos needs Android 10 or newer. Use Share instead.'
-              : 'BRIDGE PHOTO is not allowed to add to Photos. Allow it in Settings, or use Share.');
+          context.snack(Engine.isAndroid ? l.photosNeedsAndroid10 : l.photosNotAllowed);
         } else {
-          context.snack('$n image${n == 1 ? '' : 's'} saved to Photos.');
+          context.snack(l.imagesSavedToPhotos(n));
         }
       }
     } catch (e) {
-      if (mounted) context.snack('Could not export: ${_msg(e)}');
+      if (mounted) context.snack(l.couldNotExport(_msg(e)));
     } finally {
       _setBusy(null);
     }
   }
 
   Future<void> _rename() async {
+    final l = context.l10n;
     final d = _doc!;
     final c = TextEditingController(text: d.name);
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Rename'),
-        content: TextField(controller: c, autofocus: true, decoration: const InputDecoration(labelText: 'Name')),
+        title: Text(l.rename),
+        content: TextField(controller: c, autofocus: true, decoration: InputDecoration(labelText: l.name)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: const Text('OK')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: Text(l.ok)),
         ],
       ),
     );
@@ -191,14 +195,15 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _delete() async {
+    final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete this document?'),
-        content: Text('${_doc!.pages.length} page(s) will be deleted. This cannot be undone.'),
+        title: Text(l.deleteDocumentQuestion),
+        content: Text(l.deleteDocumentBody(_doc!.pages.length)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.delete)),
         ],
       ),
     );
@@ -232,6 +237,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final d = _doc;
     if (d == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -243,19 +249,21 @@ class _DocumentScreenState extends State<DocumentScreen> {
           onTap: _rename,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
             Text(d.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text('${d.pages.length} page${d.pages.length == 1 ? '' : 's'} · hold a page to reorder',
+            Text('${l.nPages(d.pages.length)} · ${l.holdToReorder}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
           ]),
         ),
         actions: [
           IconButton(
-            tooltip: 'Text (OCR)',
+            tooltip: l.textOcr,
             icon: const Icon(Icons.text_fields),
             onPressed: d.pages.isEmpty
                 ? null
                 : () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => TextScreen(doc: d))),
           ),
-          IconButton(tooltip: 'Share PDF', icon: const Icon(Icons.share), onPressed: d.pages.isEmpty ? null : _sharePdf),
+          IconButton(tooltip: l.sharePdf, icon: const Icon(Icons.share), onPressed: d.pages.isEmpty ? null : _sharePdf),
           PopupMenuButton<String>(
             onSelected: (v) {
               switch (v) {
@@ -269,19 +277,19 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   _delete();
               }
             },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'save', child: ListTile(leading: Icon(Icons.save_alt), title: Text('Save PDF to a folder'))),
-              PopupMenuItem(value: 'images', child: ListTile(leading: Icon(Icons.image_outlined), title: Text('Export as JPEG / PNG'))),
-              PopupMenuItem(value: 'rename', child: ListTile(leading: Icon(Icons.edit_outlined), title: Text('Rename'))),
-              PopupMenuDivider(),
-              PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete_outline), title: Text('Delete document'))),
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.savePdfToFolder))),
+              PopupMenuItem(value: 'images', child: ListTile(leading: const Icon(Icons.image_outlined), title: Text(l.exportAsImages))),
+              PopupMenuItem(value: 'rename', child: ListTile(leading: const Icon(Icons.edit_outlined), title: Text(l.rename))),
+              const PopupMenuDivider(),
+              PopupMenuItem(value: 'delete', child: ListTile(leading: const Icon(Icons.delete_outline), title: Text(l.deleteDocument))),
             ],
           ),
         ],
       ),
       body: Stack(children: [
         if (d.pages.isEmpty)
-          const Center(child: Text('No pages. Tap Add pages.'))
+          Center(child: Text(l.noPages))
         else
           ReorderGrid(
             count: d.pages.length,
@@ -306,7 +314,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
                       const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5)),
                       const SizedBox(width: 16),
-                      Text(_busy!),
+                      Flexible(child: Text(_busy!)),
                     ]),
                   ),
                 ),
@@ -319,7 +327,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
           : FloatingActionButton.extended(
               onPressed: _addPages,
               icon: const Icon(Icons.add_a_photo_outlined),
-              label: const Text('Add pages'),
+              label: Text(l.addPages),
             ),
     );
   }
@@ -347,8 +355,8 @@ class _PageCell extends StatelessWidget {
               fit: BoxFit.cover,
               cacheWidth: 300,
               errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
-          Positioned(
-            left: 6,
+          PositionedDirectional(
+            start: 6,
             bottom: 6,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),

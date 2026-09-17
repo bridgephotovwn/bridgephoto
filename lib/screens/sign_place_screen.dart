@@ -59,7 +59,7 @@ class _SignPlaceScreenState extends State<SignPlaceScreen> {
       });
     } catch (e) {
       if (mounted) {
-        context.snack('Could not read the page: $e');
+        context.snack(context.l10n.couldNotReadPage('$e'));
         Navigator.of(context).pop(false);
       }
     }
@@ -86,7 +86,7 @@ class _SignPlaceScreenState extends State<SignPlaceScreen> {
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
-        context.snack('Could not sign: $e');
+        context.snack(context.l10n.couldNotSign('$e'));
         setState(() => _busy = false);
       }
     }
@@ -94,17 +94,18 @@ class _SignPlaceScreenState extends State<SignPlaceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text('Place signature'),
+        title: Text(l.placeSignature),
         actions: [
           TextButton(
             onPressed: _busy || _iw == null ? null : _apply,
-            child: const Text('APPLY', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+            child: Text(l.apply.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -162,11 +163,11 @@ class _SignPlaceScreenState extends State<SignPlaceScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                   child: Row(children: [
-                    const Expanded(
-                      child: Text('Drag to move. Pinch to resize.', style: TextStyle(color: Colors.white70)),
+                    Expanded(
+                      child: Text(l.dragPinchHint, style: const TextStyle(color: Colors.white70)),
                     ),
                     IconButton(
-                      tooltip: 'Smaller',
+                      tooltip: l.smaller,
                       color: Colors.white,
                       icon: const Icon(Icons.remove_circle_outline),
                       onPressed: () => setState(() {
@@ -175,7 +176,7 @@ class _SignPlaceScreenState extends State<SignPlaceScreen> {
                       }),
                     ),
                     IconButton(
-                      tooltip: 'Larger',
+                      tooltip: l.larger,
                       color: Colors.white,
                       icon: const Icon(Icons.add_circle_outline),
                       onPressed: () => setState(() {

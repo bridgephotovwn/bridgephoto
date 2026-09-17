@@ -140,11 +140,14 @@ class DocStore {
     return out;
   }
 
-  static String defaultName([DateTime? at]) {
+  /// Date-time stamp used in default names: "2026-09-18 08.05".
+  static String stamp([DateTime? at]) {
     final t = at ?? DateTime.now();
     String two(int v) => v.toString().padLeft(2, '0');
-    return 'Scan ${t.year}-${two(t.month)}-${two(t.day)} ${two(t.hour)}.${two(t.minute)}';
+    return '${t.year}-${two(t.month)}-${two(t.day)} ${two(t.hour)}.${two(t.minute)}';
   }
+
+  static String defaultName([DateTime? at]) => 'Scan ${stamp(at)}';
 
   /// A file name that is safe on every platform.
   static String safeName(String n) {

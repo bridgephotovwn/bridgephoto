@@ -54,23 +54,24 @@ class _SignatureScreenState extends State<SignatureScreen> {
   void _move(Offset p) => setState(() => _strokes.last.add(p));
 
   Future<void> _save() async {
+    final l = context.l10n;
     final points = _strokes.expand((s) => s).toList();
     if (points.isEmpty) {
-      context.snack('Draw your signature first.');
+      context.snack(l.drawFirst);
       return;
     }
     setState(() => _saving = true);
     try {
       // Tight bounds around the ink, with a margin for the round caps.
-      var l = points.first.dx, t = points.first.dy, r = l, b = t;
+      var left = points.first.dx, top = points.first.dy, right = left, bottom = top;
       for (final p in points) {
-        if (p.dx < l) l = p.dx;
-        if (p.dx > r) r = p.dx;
-        if (p.dy < t) t = p.dy;
-        if (p.dy > b) b = p.dy;
+        if (p.dx < left) left = p.dx;
+        if (p.dx > right) right = p.dx;
+        if (p.dy < top) top = p.dy;
+        if (p.dy > bottom) bottom = p.dy;
       }
       final pad = _width * 2;
-      final bounds = Rect.fromLTRB(l - pad, t - pad, r + pad, b + pad);
+      final bounds = Rect.fromLTRB(left - pad, top - pad, right + pad, bottom + pad);
       const k = 3.0; // render at 3x for crisp placement on large pages
       final rec = ui.PictureRecorder();
       final canvas = Canvas(rec);
@@ -82,11 +83,11 @@ class _SignatureScreenState extends State<SignatureScreen> {
           (bounds.width * k).ceil().clamp(1, 4000), (bounds.height * k).ceil().clamp(1, 4000));
       final data = await img.toByteData(format: ui.ImageByteFormat.png);
       img.dispose();
-      if (data == null) throw Exception('Could not render the signature.');
+      if (data == null) throw Exception('render failed');
       final f = await SignatureStore.save(data.buffer.asUint8List());
       if (mounted) Navigator.of(context).pop(f);
     } catch (e) {
-      if (mounted) context.snack('Could not save: $e');
+      if (mounted) context.snack(l.couldNotSave('$e'));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -94,27 +95,27 @@ class _SignatureScreenState extends State<SignatureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New signature'),
+        title: Text(l.newSignature),
         actions: [
           IconButton(
-              tooltip: 'Clear',
+              tooltip: l.clear,
               icon: const Icon(Icons.delete_sweep_outlined),
               onPressed: _strokes.isEmpty ? null : () => setState(_strokes.clear)),
           IconButton(
-              tooltip: 'Undo',
+              tooltip: l.undo,
               icon: const Icon(Icons.undo),
               onPressed: _strokes.isEmpty ? null : () => setState(_strokes.removeLast)),
-          TextButton(onPressed: _saving ? null : _save, child: const Text('SAVE')),
+          TextButton(onPressed: _saving ? null : _save, child: Text(l.save.toUpperCase())),
         ],
       ),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: Text('Sign in the box with your finger. Turn the phone sideways for more room.',
-              style: TextStyle(color: cs.onSurfaceVariant)),
+          child: Text(l.signHint, style: TextStyle(color: cs.onSurfaceVariant)),
         ),
         Expanded(
           child: Container(
@@ -142,7 +143,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
             child: Row(children: [
               for (final c in [Colors.black, const Color(0xFF1D4ED8)])
                 Padding(
-                  padding: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsetsDirectional.only(end: 10),
                   child: InkWell(
                     onTap: () => setState(() => _color = c),
                     borderRadius: BorderRadius.circular(20),
@@ -159,10 +160,10 @@ class _SignatureScreenState extends State<SignatureScreen> {
                 ),
               const Spacer(),
               SegmentedButton<double>(
-                segments: const [
-                  ButtonSegment(value: 2.5, label: Text('Thin')),
-                  ButtonSegment(value: 4, label: Text('Medium')),
-                  ButtonSegment(value: 6.5, label: Text('Thick')),
+                segments: [
+                  ButtonSegment(value: 2.5, label: Text(l.thin)),
+                  ButtonSegment(value: 4, label: Text(l.medium)),
+                  ButtonSegment(value: 6.5, label: Text(l.thick)),
                 ],
                 selected: {_width},
                 onSelectionChanged: (s) => setState(() => _width = s.first),

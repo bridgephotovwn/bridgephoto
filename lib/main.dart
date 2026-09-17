@@ -1,8 +1,10 @@
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'engine.dart';
+import 'l10n/app_localizations.dart';
 import 'prefs.dart';
 import 'screens/home_screen.dart';
 import 'store.dart';
@@ -35,8 +37,11 @@ class BridgePhotoApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: Prefs.themeMode,
       builder: (context, mode, _) => MaterialApp(
-        title: 'BRIDGE PHOTO',
+        onGenerateTitle: (ctx) => AppLocalizations.of(ctx).appName,
         debugShowCheckedModeBanner: false,
+        // Follows the phone's language; falls back to English.
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         themeMode: mode,
         theme: ThemeData(
           colorSchemeSeed: kSeed,
@@ -61,12 +66,14 @@ extension SnackX on BuildContext {
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(msg)));
   }
+
+  AppLocalizations get l10n => AppLocalizations.of(this);
 }
 
-String fmtDate(int millis) {
+/// Short date in the phone's language: "18 Sept" this year, "18 Sept 2025" otherwise.
+String fmtDate(BuildContext context, int millis) {
   final t = DateTime.fromMillisecondsSinceEpoch(millis);
-  const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  final now = DateTime.now();
-  final y = t.year == now.year ? '' : ' ${t.year}';
-  return '${t.day} ${m[t.month - 1]}$y';
+  final locale = Localizations.localeOf(context).toString();
+  final sameYear = t.year == DateTime.now().year;
+  return (sameYear ? DateFormat.MMMd(locale) : DateFormat.yMMMd(locale)).format(t);
 }

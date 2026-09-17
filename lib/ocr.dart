@@ -30,11 +30,15 @@ class Ocr {
 
   /// The whole document as text, pages separated by a marker.
   static Future<String> document(Doc d,
-      {bool force = false, void Function(int done, int total)? onProgress}) async {
+      {bool force = false,
+      void Function(int done, int total)? onProgress,
+      String Function(int pageNumber)? separator}) async {
     final buf = StringBuffer();
     for (var i = 0; i < d.pages.length; i++) {
       final r = await page(d, d.pages[i], force: force);
-      if (d.pages.length > 1) buf.writeln('--- Page ${i + 1} ---');
+      if (d.pages.length > 1) {
+        buf.writeln(separator?.call(i + 1) ?? '--- Page ${i + 1} ---');
+      }
       buf.writeln(r.text.trim());
       buf.writeln();
       onProgress?.call(i + 1, d.pages.length);
