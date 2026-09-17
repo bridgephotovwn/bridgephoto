@@ -85,6 +85,6 @@ Copyright 2026 `BRIDGE PHOTO`. Licensed under the Apache License, Version 2.0; s
 
 - `https://github.com/OWNER/bridgephoto` – the real repository address (here, in `docs/`, in `CONTRIBUTING.md` and in the privacy policy).
 - `<PRIVACY POLICY URL>` – the GitHub Pages address of the privacy policy.
-- `BRIDGE PHOTO` and `bridgephoto.app@gmail.com` – in `LICENSE`, `docs/privacy-policy.html`, `docs/play-listing.md`, `docs/app-store-checklist.md` and `CONTRIBUTING.md`.
+- `BRIDGE PHOTO` and `bridgephoto.vwn@gmail.com` – in `LICENSE`, `docs/privacy-policy.html`, `docs/play-listing.md`, `docs/app-store-checklist.md` and `CONTRIBUTING.md`.
 
 Google Play, Google Play services and ML Kit are trademarks of Google LLC. Apple, iPhone, App Store and TestFlight are trademarks of Apple Inc. BRIDGE PHOTO is not affiliated with or endorsed by Google, Apple or Microsoft.
