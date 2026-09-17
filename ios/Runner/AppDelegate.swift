@@ -6,24 +6,28 @@ import PDFKit
 import Photos
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var engine: Engine?
 
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GeneratedPluginRegistrant.register(with: self)
-    if let controller = window?.rootViewController as? FlutterViewController {
-      let channel = FlutterMethodChannel(name: "bridgephoto/engine",
-                                         binaryMessenger: controller.binaryMessenger)
-      let e = Engine(controller: controller)
-      engine = e
-      channel.setMethodCallHandler { [weak e] call, result in
-        e?.handle(call, result: result)
-      }
-    }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // UIScene lifecycle (Flutter 3.47 template): the engine and the window are
+  // created after didFinishLaunching, so channels are registered here.
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    let channel = FlutterMethodChannel(
+      name: "bridgephoto/engine",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger())
+    let e = Engine()
+    engine = e
+    channel.setMethodCallHandler { [weak e] call, result in
+      e?.handle(call, result: result)
+    }
   }
 }
 
@@ -41,11 +45,15 @@ struct EngineError: LocalizedError {
 ///  - transform:     rotate / re-encode an image
 ///  - saveToGallery: Photos (add-only permission)
 class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
-  private weak var controller: FlutterViewController?
   private var pendingScan: FlutterResult?
 
-  init(controller: FlutterViewController) {
-    self.controller = controller
+  /// The view controller that can present the scanner right now.
+  private var presenter: UIViewController? {
+    let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+    let scene = scenes.first { $0.activationState == .foregroundActive } ?? scenes.first
+    var vc = scene?.keyWindow?.rootViewController
+    while let p = vc?.presentedViewController { vc = p }
+    return vc
   }
 
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -53,6 +61,8 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
     switch call.method {
     case "scan":
       scan(result: result)
+    case "takePendingScan":
+      result([String]()) // Android-only recovery path
     case "ocr":
       bg(result) { try self.ocr(path: args["path"] as? String ?? "") }
     case "mergePdf":
@@ -103,8 +113,12 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
       result(FlutterError(code: "scanner", message: "The document camera is not supported on this device.", details: nil))
       return
     }
-    guard pendingScan == nil, let c = controller else {
+    guard pendingScan == nil else {
       result(FlutterError(code: "busy", message: "The scanner is already open.", details: nil))
+      return
+    }
+    guard let c = presenter else {
+      result(FlutterError(code: "scanner", message: "No window to show the scanner in.", details: nil))
       return
     }
     pendingScan = result
@@ -213,9 +227,13 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
     for i in 0..<d.pageCount {
       guard let pg = d.page(at: i) else { continue }
       let box = pg.bounds(for: .mediaBox)
-      let longest = max(box.width, box.height)
+      // thumbnail(of:for:) applies the page's /Rotate, so swap for 90/270.
+      let turned = (((pg.rotation % 360) + 360) % 360) % 180 != 0
+      let bw = turned ? box.height : box.width
+      let bh = turned ? box.width : box.height
+      let longest = max(bw, bh)
       let scale = min(max(CGFloat(maxDim) / max(longest, 1), 0.5), 4)
-      let size = CGSize(width: max(1, box.width * scale), height: max(1, box.height * scale))
+      let size = CGSize(width: max(1, bw * scale), height: max(1, bh * scale))
       let thumb = pg.thumbnail(of: size, for: .mediaBox)
       let img = UIGraphicsImageRenderer(size: size, format: fmt).image { ctx in
         UIColor.white.setFill()
@@ -282,13 +300,11 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
         }
       }
     }
-    if #available(iOS 14, *) {
-      PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-        if status == .authorized || status == .limited { save() } else { DispatchQueue.main.async { result(false) } }
-      }
-    } else {
-      PHPhotoLibrary.requestAuthorization { status in
-        if status == .authorized { save() } else { DispatchQueue.main.async { result(false) } }
+    PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+      if status == .authorized || status == .limited {
+        save()
+      } else {
+        DispatchQueue.main.async { result(false) }
       }
     }
   }

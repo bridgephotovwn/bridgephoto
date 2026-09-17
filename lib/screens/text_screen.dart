@@ -45,11 +45,13 @@ class _TextScreenState extends State<TextScreen> {
         _c.text = text;
         _status = null;
       });
-    } on PlatformException catch (e) {
+    } catch (e) {
       if (!mounted) return;
       setState(() {
         _status = null;
-        _error = e.message ?? 'Text recognition failed.';
+        _error = e is PlatformException
+            ? (e.message ?? 'Text recognition failed.')
+            : 'Text recognition failed: $e';
       });
     }
   }

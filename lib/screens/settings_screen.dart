@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../engine.dart';
+import '../main.dart';
 import '../prefs.dart';
 
 const kSourceUrl = 'https://github.com/OWNER/bridgephoto'; // TODO: real repository
@@ -37,6 +38,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String _label<T>(T v, List<(T, String)> options) =>
       options.firstWhere((o) => o.$1 == v, orElse: () => options.first).$2;
+
+  Future<void> _open(String url) async {
+    var ok = false;
+    try {
+      ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {
+      ok = false;
+    }
+    if (!ok && mounted) context.snack('Could not open $url');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,12 +138,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           leading: const Icon(Icons.code),
           title: const Text('Open source (Apache-2.0)'),
           subtitle: const Text(kSourceUrl),
-          onTap: () => launchUrl(Uri.parse(kSourceUrl), mode: LaunchMode.externalApplication),
+          onTap: () => _open(kSourceUrl),
         ),
         ListTile(
           leading: const Icon(Icons.policy_outlined),
           title: const Text('Privacy policy'),
-          onTap: () => launchUrl(Uri.parse(kPrivacyUrl), mode: LaunchMode.externalApplication),
+          subtitle: const Text('Opens in your browser'),
+          onTap: () => _open(kPrivacyUrl),
         ),
         ListTile(
           leading: const Icon(Icons.info_outline),

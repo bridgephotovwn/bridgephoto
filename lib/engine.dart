@@ -51,6 +51,31 @@ class Engine {
 
   static bool get isAndroid => Platform.isAndroid;
 
+  /// Android only: pages of a scan that finished after the activity was
+  /// recreated behind the scanner (nobody was awaiting them). Set by the
+  /// home screen so nothing is lost.
+  static void Function(List<String> paths)? onPendingScan;
+
+  static void init() {
+    _ch.setMethodCallHandler((call) async {
+      if (call.method == 'pendingScan') {
+        final paths = ((call.arguments as List?) ?? const []).cast<String>();
+        if (paths.isNotEmpty) onPendingScan?.call(paths);
+      }
+      return null;
+    });
+  }
+
+  /// Fetches (and clears) parked pages saved while the app was not listening.
+  static Future<List<String>> takePendingScan() async {
+    try {
+      final r = await _ch.invokeMethod<List<dynamic>>('takePendingScan');
+      return (r ?? const []).cast<String>();
+    } catch (_) {
+      return const [];
+    }
+  }
+
   /// Opens the platform document scanner. Returns the JPEG files it produced
   /// (already cropped, straightened and upright). Empty when cancelled.
   static Future<List<String>> scan({
@@ -103,17 +128,13 @@ class Engine {
       });
 
   /// Saves an image into the system photo gallery. Returns false when the
-  /// platform cannot do it without extra permissions (Android 9 and older).
-  static Future<bool> saveToGallery(String path, String mime, String name) async {
-    try {
-      return await _ch.invokeMethod<bool>('saveToGallery', {
-            'path': path,
-            'mime': mime,
-            'name': name,
-          }) ??
-          false;
-    } on PlatformException {
-      return false;
-    }
-  }
+  /// platform cannot do it (Android 9 and older, or Photos access denied on
+  /// iOS). Real failures throw a [PlatformException].
+  static Future<bool> saveToGallery(String path, String mime, String name) async =>
+      await _ch.invokeMethod<bool>('saveToGallery', {
+        'path': path,
+        'mime': mime,
+        'name': name,
+      }) ??
+      false;
 }

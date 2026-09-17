@@ -21,10 +21,28 @@ class _PageScreenState extends State<PageScreen> {
   late final PageController _pc = PageController(initialPage: widget.index);
   late int _index = widget.index;
   bool _busy = false;
-  int _version = 0; // bumps the image key after a rotation
+  bool _zoomed = false; // while zoomed the PageView stops swiping so the page can be panned
+  final _tcs = <int, TransformationController>{};
 
   Doc get d => widget.doc;
   String get page => d.pages[_index];
+
+  TransformationController _tc(int i) =>
+      _tcs.putIfAbsent(i, TransformationController.new);
+
+  @override
+  void dispose() {
+    for (final c in _tcs.values) {
+      c.dispose();
+    }
+    _pc.dispose();
+    super.dispose();
+  }
+
+  static String _msg(Object e) {
+    if (e is PlatformException) return e.message ?? e.code;
+    return e.toString().replaceFirst('Exception: ', '');
+  }
 
   Future<void> _rotate(int degrees) async {
     setState(() => _busy = true);
@@ -32,59 +50,71 @@ class _PageScreenState extends State<PageScreen> {
       final f = d.pageFile(page);
       await Engine.transform(f.path, f.path, rotate: degrees);
       await Ocr.invalidate(d, page);
-      await DocStore.save(d);
+      await DocStore.save(d); // bumps `modified`, which keys every thumbnail
       PaintingBinding.instance.imageCache.clear();
       PaintingBinding.instance.imageCache.clearLiveImages();
-      setState(() => _version++);
-    } on PlatformException catch (e) {
-      if (mounted) context.snack(e.message ?? 'Could not rotate.');
+      _tc(_index).value = Matrix4.identity();
+      _zoomed = false;
+    } catch (e) {
+      if (mounted) context.snack('Could not rotate: ${_msg(e)}');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _share() async {
-    final files = await Exporter.imageFiles(d, 'jpg', only: [page]);
-    if (mounted) await Exporter.shareImages(context, files, 'jpg');
+    setState(() => _busy = true);
+    try {
+      await Exporter.cleanShareDir();
+      final files = await Exporter.imageFiles(d, 'jpg', only: [page]);
+      if (!mounted) return;
+      setState(() => _busy = false);
+      await Exporter.shareImages(context, files, 'jpg');
+    } catch (e) {
+      if (mounted) context.snack('Could not share: ${_msg(e)}');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _copyText() async {
     setState(() => _busy = true);
+    String text;
     try {
-      final r = await Ocr.page(d, page);
-      if (!mounted) return;
-      final text = r.text.trim();
-      if (text.isEmpty) {
-        context.snack('No text found on this page.');
-        return;
-      }
-      await showDialog<void>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('Page ${_index + 1} text'),
-          content: SizedBox(
-            width: 600,
-            child: SingleChildScrollView(child: SelectableText(text)),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-            FilledButton.icon(
-              icon: const Icon(Icons.copy),
-              label: const Text('Copy'),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: text));
-                Navigator.pop(ctx);
-                context.snack('Copied.');
-              },
-            ),
-          ],
-        ),
-      );
-    } on PlatformException catch (e) {
-      if (mounted) context.snack(e.message ?? 'Text recognition failed.');
+      text = (await Ocr.page(d, page)).text.trim();
+    } catch (e) {
+      if (mounted) context.snack(_msg(e));
+      return;
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+    if (!mounted) return;
+    if (text.isEmpty) {
+      context.snack('No text found on this page.');
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Page ${_index + 1} text'),
+        content: SizedBox(
+          width: 600,
+          child: SingleChildScrollView(child: SelectableText(text)),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+          FilledButton.icon(
+            icon: const Icon(Icons.copy),
+            label: const Text('Copy'),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: text));
+              Navigator.pop(ctx);
+              context.snack('Copied.');
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _delete() async {
@@ -128,15 +158,24 @@ class _PageScreenState extends State<PageScreen> {
       body: Stack(children: [
         PageView.builder(
           controller: _pc,
+          physics: _zoomed ? const NeverScrollableScrollPhysics() : const PageScrollPhysics(),
           itemCount: d.pages.length,
-          onPageChanged: (i) => setState(() => _index = i),
+          onPageChanged: (i) => setState(() {
+            _index = i;
+            _zoomed = false;
+          }),
           itemBuilder: (context, i) => InteractiveViewer(
+            transformationController: _tc(i),
             minScale: 1,
             maxScale: 6,
+            onInteractionEnd: (_) {
+              final z = _tc(i).value.getMaxScaleOnAxis() > 1.01;
+              if (z != _zoomed) setState(() => _zoomed = z);
+            },
             child: Center(
               child: Image.file(
                 d.pageFile(d.pages[i]),
-                key: ValueKey('${d.pages[i]}-$_version'),
+                key: ValueKey('${d.pages[i]}#${d.modified}'),
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white),
               ),

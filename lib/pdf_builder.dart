@@ -31,9 +31,11 @@ class PdfBuilder {
     for (var i = 0; i < d.pages.length; i++) {
       final p = d.pages[i];
       final bytes = await d.pageFile(p).readAsBytes();
-      final dims = _jpegSize(bytes) ?? const (1000, 1414);
-      final iw = dims.$1.toDouble();
-      final ih = dims.$2.toDouble();
+      // MemoryImage reads the JPEG header and EXIF orientation, the same
+      // numbers drawImage will use, so the text layer lines up.
+      final image = pw.MemoryImage(bytes);
+      final iw = (image.width ?? 1000).toDouble();
+      final ih = (image.height ?? 1414).toDouble();
 
       OcrResult? ocr;
       if (withText) {
@@ -48,7 +50,6 @@ class PdfBuilder {
       }
 
       final lay = _layout(sizeMode, iw, ih);
-      final image = pw.MemoryImage(bytes);
       final text = ocr;
       final notoFont = noto;
 
@@ -175,32 +176,6 @@ class PdfBuilder {
     final k = (pw_ / iw) < (ph / ih) ? (pw_ / iw) : (ph / ih);
     final w = iw * k, h = ih * k;
     return _Layout(pw_, ph, (pw_ - w) / 2, (ph - h) / 2, w, h);
-  }
-
-  /// Reads width/height from a JPEG's SOF marker. Null if not a JPEG.
-  static (int, int)? _jpegSize(Uint8List b) {
-    if (b.length < 4 || b[0] != 0xFF || b[1] != 0xD8) return null;
-    var i = 2;
-    while (i + 9 < b.length) {
-      if (b[i] != 0xFF) {
-        i++;
-        continue;
-      }
-      final m = b[i + 1];
-      if (m == 0xD8 || (m >= 0xD0 && m <= 0xD7) || m == 0x01 || m == 0xFF) {
-        i += 2;
-        continue;
-      }
-      final len = (b[i + 2] << 8) | b[i + 3];
-      final isSof = (m >= 0xC0 && m <= 0xCF) && m != 0xC4 && m != 0xC8 && m != 0xCC;
-      if (isSof) {
-        final h = (b[i + 5] << 8) | b[i + 6];
-        final w = (b[i + 7] << 8) | b[i + 8];
-        return (w, h);
-      }
-      i += 2 + len;
-    }
-    return null;
   }
 }
 

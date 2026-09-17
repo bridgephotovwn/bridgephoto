@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Doc>? _docs;
-  final List<String> _selected = []; // ids, in tap order (merge order)
+  final List<String> _selected = []; // ids, in tap order (= merge order)
   bool _searching = false;
   String _query = '';
   String? _busy;
@@ -29,7 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _reload();
+    Engine.onPendingScan = _recoverScan;
+    _reload().then((_) => _checkPendingScan());
+  }
+
+  @override
+  void dispose() {
+    if (Engine.onPendingScan == _recoverScan) Engine.onPendingScan = null;
+    super.dispose();
   }
 
   Future<void> _reload() async {
@@ -51,17 +58,47 @@ class _HomeScreenState extends State<HomeScreen> {
     _reload();
   }
 
-  // ---- actions
+  static String _msg(Object e) {
+    if (e is PlatformException) return e.message ?? e.code;
+    return e.toString().replaceFirst('Exception: ', '');
+  }
+
+  // ---- scanning
 
   Future<void> _scan() async {
+    List<String> paths;
     try {
-      final paths = await Engine.scan(
+      paths = await Engine.scan(
         mode: Prefs.scannerMode,
         gallery: Prefs.galleryImport,
         pageLimit: Prefs.pageLimit,
       );
-      if (paths.isEmpty) return;
-      _setBusy('Saving pages…');
+    } on PlatformException catch (e) {
+      if (mounted) context.snack(e.message ?? 'The scanner is not available.');
+      return;
+    } catch (e) {
+      if (mounted) context.snack('The scanner is not available: ${_msg(e)}');
+      return;
+    }
+    if (paths.isEmpty) return;
+    await _saveNewDocument(paths);
+  }
+
+  /// Android only: pages that arrived while the app was not waiting for them.
+  Future<void> _checkPendingScan() async {
+    if (!Engine.isAndroid) return;
+    final paths = await Engine.takePendingScan();
+    if (paths.isNotEmpty) _recoverScan(paths);
+  }
+
+  void _recoverScan(List<String> paths) {
+    if (!mounted) return;
+    _saveNewDocument(paths);
+  }
+
+  Future<void> _saveNewDocument(List<String> paths) async {
+    _setBusy('Saving pages…');
+    try {
       final d = await DocStore.create(DocStore.defaultName());
       for (final p in paths) {
         await DocStore.addPageFile(d, p, move: true);
@@ -69,39 +106,57 @@ class _HomeScreenState extends State<HomeScreen> {
       await DocStore.save(d);
       await _reload();
       if (mounted) _open(d);
-    } on PlatformException catch (e) {
-      if (mounted) context.snack(e.message ?? 'The scanner is not available.');
+    } catch (e) {
+      if (mounted) context.snack('Could not save the pages: ${_msg(e)}');
     } finally {
       _setBusy(null);
     }
   }
 
+  // ---- PDF tools
+
   Future<void> _importPdf() async {
-    final r = await FilePicker.platform.pickFiles(
-        type: FileType.custom, allowedExtensions: const ['pdf']);
-    final path = r?.files.single.path;
-    if (path == null) return;
+    FilePickerResult? r;
+    try {
+      r = await FilePicker.platform.pickFiles(
+          type: FileType.custom, allowedExtensions: const ['pdf']);
+    } catch (e) {
+      if (mounted) context.snack('Could not open the file picker: ${_msg(e)}');
+      return;
+    }
+    final file = r?.files.firstOrNull;
+    final path = file?.path;
+    if (file == null || path == null) return;
     _setBusy('Importing PDF…');
     try {
-      var name = r!.files.single.name;
+      var name = file.name;
       if (name.toLowerCase().endsWith('.pdf')) {
         name = name.substring(0, name.length - 4);
       }
-      final d = await Exporter.importPdf(path, name.isEmpty ? 'Imported PDF' : name);
+      final d = await Exporter.importPdf(path, name.trim().isEmpty ? 'Imported PDF' : name.trim());
       await _reload();
       if (mounted) _open(d);
     } catch (e) {
       if (mounted) context.snack('Could not import: ${_msg(e)}');
     } finally {
       _setBusy(null);
+      try {
+        await FilePicker.platform.clearTemporaryFiles();
+      } catch (_) {}
     }
   }
 
   Future<void> _mergePdfFiles() async {
-    final r = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['pdf'],
-        allowMultiple: true);
+    FilePickerResult? r;
+    try {
+      r = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: const ['pdf'],
+          allowMultiple: true);
+    } catch (e) {
+      if (mounted) context.snack('Could not open the file picker: ${_msg(e)}');
+      return;
+    }
     final paths = r?.files.map((f) => f.path).whereType<String>().toList() ?? [];
     if (paths.isEmpty || !mounted) return;
     if (paths.length < 2) {
@@ -110,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     _setBusy('Merging ${paths.length} PDF files…');
     try {
+      await Exporter.cleanShareDir();
       final f = await Exporter.mergePdfFiles(paths, 'Merged ${DocStore.defaultName().substring(5)}');
       _setBusy(null);
       if (!mounted) return;
@@ -118,6 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) context.snack('Could not merge: ${_msg(e)}');
     } finally {
       _setBusy(null);
+      try {
+        await FilePicker.platform.clearTemporaryFiles();
+      } catch (_) {}
     }
   }
 
@@ -143,8 +202,12 @@ class _HomeScreenState extends State<HomeScreen> {
             title: const Text('Save to a folder'),
             onTap: () async {
               Navigator.pop(ctx);
-              final p = await Exporter.saveBytes(name, await f.readAsBytes(), ext: ext);
-              if (p != null && mounted) context.snack('Saved.');
+              try {
+                final p = await Exporter.saveBytes(name, await f.readAsBytes(), ext: ext);
+                if (p != null && mounted) context.snack('Saved.');
+              } catch (e) {
+                if (mounted) context.snack('Could not save: ${_msg(e)}');
+              }
             },
           ),
         ]),
@@ -152,10 +215,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ---- selection actions
+
+  List<Doc> get _selectedDocs =>
+      _selected.map((id) => _docs!.firstWhere((d) => d.id == id)).toList();
+
   Future<void> _mergeSelected() async {
-    final docs = _selected
-        .map((id) => _docs!.firstWhere((d) => d.id == id))
-        .toList();
+    final docs = _selectedDocs;
     final name = await _askName(context, 'Merged document',
         '${docs.first.name} + ${docs.length - 1} more');
     if (name == null) return;
@@ -165,6 +231,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _selected.clear();
       await _reload();
       if (mounted) _open(d);
+    } catch (e) {
+      if (mounted) context.snack('Could not merge: ${_msg(e)}');
     } finally {
       _setBusy(null);
     }
@@ -184,8 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
     if (ok != true) return;
-    for (final id in List.of(_selected)) {
-      final d = _docs!.firstWhere((d) => d.id == id);
+    for (final d in _selectedDocs) {
       await DocStore.delete(d);
     }
     _selected.clear();
@@ -193,12 +260,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _shareSelected() async {
-    final docs = _selected.map((id) => _docs!.firstWhere((d) => d.id == id)).toList();
+    final docs = _selectedDocs;
     _setBusy('Building PDF…');
     try {
+      await Exporter.cleanShareDir();
       final files = <File>[];
-      for (final d in docs) {
-        files.add(await Exporter.pdfFile(d));
+      final used = <String>{};
+      for (var i = 0; i < docs.length; i++) {
+        final d = docs[i];
+        final base = DocStore.safeName(d.name);
+        var name = '$base.pdf';
+        for (var k = 2; !used.add(name); k++) {
+          name = '$base ($k).pdf';
+        }
+        _setBusy('Building PDF ${i + 1} / ${docs.length}…');
+        files.add(await Exporter.pdfFile(d, fileName: name));
       }
       _setBusy(null);
       if (!mounted) return;
@@ -212,11 +288,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } finally {
       _setBusy(null);
     }
-  }
-
-  static String _msg(Object e) {
-    if (e is PlatformException) return e.message ?? e.code;
-    return e.toString().replaceFirst('Exception: ', '');
   }
 
   // ---- UI
@@ -327,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: const Icon(Icons.close),
           tooltip: 'Clear selection',
           onPressed: () => setState(_selected.clear)),
-      title: Text('$n selected'),
+      title: Text(n >= 2 ? '$n selected · merge in this order' : '$n selected'),
       actions: [
         if (n >= 2)
           IconButton(tooltip: 'Merge into one document', icon: const Icon(Icons.merge), onPressed: _mergeSelected),
@@ -383,13 +454,17 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSpacing: 10,
         ),
         itemCount: docs.length,
-        itemBuilder: (context, i) => _DocCard(
-          doc: docs[i],
-          selected: _selected.contains(docs[i].id),
-          selecting: _selected.isNotEmpty,
-          onTap: () => _selected.isNotEmpty ? _toggle(docs[i]) : _open(docs[i]),
-          onLongPress: () => _toggle(docs[i]),
-        ),
+        itemBuilder: (context, i) {
+          final d = docs[i];
+          final order = _selected.indexOf(d.id);
+          return _DocCard(
+            doc: d,
+            order: order < 0 ? null : order + 1,
+            selecting: _selected.isNotEmpty,
+            onTap: () => _selected.isNotEmpty ? _toggle(d) : _open(d),
+            onLongPress: () => _toggle(d),
+          );
+        },
       ),
     );
   }
@@ -436,14 +511,16 @@ Future<String?> _askName(BuildContext context, String title, String initial) {
 
 class _DocCard extends StatelessWidget {
   final Doc doc;
-  final bool selected, selecting;
+  final int? order; // 1-based position in the selection, null when not selected
+  final bool selecting;
   final VoidCallback onTap, onLongPress;
-  const _DocCard({required this.doc, required this.selected, required this.selecting, required this.onTap, required this.onLongPress});
+  const _DocCard({required this.doc, required this.order, required this.selecting, required this.onTap, required this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final cover = doc.cover;
+    final selected = order != null;
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
@@ -458,13 +535,23 @@ class _DocCard extends StatelessWidget {
             child: Stack(fit: StackFit.expand, children: [
               Container(color: cs.surfaceContainerHighest),
               if (cover != null)
-                Image.file(cover, fit: BoxFit.cover, cacheWidth: 400, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
+                Image.file(cover,
+                    key: ValueKey('${cover.path}#${doc.modified}'),
+                    fit: BoxFit.cover,
+                    cacheWidth: 400,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
               if (selecting)
                 Positioned(
                   top: 6,
                   right: 6,
-                  child: Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked,
-                      color: selected ? cs.primary : Colors.white, shadows: const [Shadow(blurRadius: 4)]),
+                  child: selected
+                      ? CircleAvatar(
+                          radius: 13,
+                          backgroundColor: cs.primary,
+                          child: Text('$order',
+                              style: TextStyle(color: cs.onPrimary, fontSize: 13, fontWeight: FontWeight.w700)),
+                        )
+                      : const Icon(Icons.radio_button_unchecked, color: Colors.white, shadows: [Shadow(blurRadius: 4)]),
                 ),
             ]),
           ),

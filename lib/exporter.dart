@@ -27,9 +27,20 @@ class Exporter {
         center: Offset(size.width / 2, size.height / 2), width: 1, height: 1);
   }
 
-  static Future<File> pdfFile(Doc d, {Progress? progress}) async {
+  /// Deletes staged share files. Call at the start of each export action so
+  /// copies of every page do not pile up in the cache.
+  static Future<void> cleanShareDir() async {
+    try {
+      final d = Directory('${(await getTemporaryDirectory()).path}/share');
+      if (await d.exists()) await d.delete(recursive: true);
+    } catch (_) {
+      // best effort
+    }
+  }
+
+  static Future<File> pdfFile(Doc d, {Progress? progress, String? fileName}) async {
     final bytes = await PdfBuilder.build(d, onProgress: progress);
-    final f = File('${(await _shareDir()).path}/${DocStore.safeName(d.name)}.pdf');
+    final f = File('${(await _shareDir()).path}/${fileName ?? '${DocStore.safeName(d.name)}.pdf'}');
     await f.writeAsBytes(bytes, flush: true);
     return f;
   }

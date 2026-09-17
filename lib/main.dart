@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'engine.dart';
 import 'prefs.dart';
 import 'screens/home_screen.dart';
 import 'store.dart';
@@ -8,6 +9,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Prefs.init();
   await DocStore.init();
+  Engine.init();
   runApp(const BridgePhotoApp());
 }
 

@@ -68,9 +68,11 @@ class _DocumentScreenState extends State<DocumentScreen> {
         await DocStore.addPageFile(d, p, move: true);
       }
       await DocStore.save(d);
-      setState(() {});
+      if (mounted) setState(() {});
     } on PlatformException catch (e) {
       if (mounted) context.snack(e.message ?? 'The scanner is not available.');
+    } catch (e) {
+      if (mounted) context.snack('Could not save the pages: ${_msg(e)}');
     } finally {
       _setBusy(null);
     }
@@ -78,7 +80,11 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   Future<void> _sharePdf() async {
     try {
-      await Exporter.sharePdf(context, _doc!, progress: _progress('Building PDF, page'));
+      await Exporter.cleanShareDir();
+      final f = await Exporter.pdfFile(_doc!, progress: _progress('Building PDF, page'));
+      _setBusy(null);
+      if (!mounted) return;
+      await Exporter.shareFile(context, f, 'application/pdf', subject: _doc!.name);
     } catch (e) {
       if (mounted) context.snack('Could not build the PDF: ${_msg(e)}');
     } finally {
@@ -126,16 +132,20 @@ class _DocumentScreenState extends State<DocumentScreen> {
     );
     if (action == null) return;
     try {
+      await Exporter.cleanShareDir();
       final files = await Exporter.imageFiles(_doc!, format, progress: _progress('Preparing image'));
       _setBusy(null);
       if (!mounted) return;
       if (action == 'share') {
         await Exporter.shareImages(context, files, format);
       } else {
+        _setBusy('Saving to Photos…');
         final n = await Exporter.saveImagesToGallery(files, format);
         if (!mounted) return;
         if (n < 0) {
-          context.snack('Saving to Photos needs Android 10 or newer. Use Share instead.');
+          context.snack(Engine.isAndroid
+              ? 'Saving to Photos needs Android 10 or newer. Use Share instead.'
+              : 'BRIDGE PHOTO is not allowed to add to Photos. Allow it in Settings, or use Share.');
         } else {
           context.snack('$n image${n == 1 ? '' : 's'} saved to Photos.');
         }
@@ -164,7 +174,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
     if (name == null || name.isEmpty || name == d.name) return;
     d.name = name;
     await DocStore.save(d);
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Future<void> _delete() async {
@@ -197,7 +207,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
         builder: (_) => PageScreen(doc: _doc!, index: index)));
     if (!mounted) return;
     if (_doc!.pages.isEmpty) {
-      Navigator.of(context).pop();
+      // The last page was deleted: an empty document is useless, remove it.
+      await DocStore.delete(_doc!);
+      if (mounted) Navigator.of(context).pop();
       return;
     }
     setState(() {});
@@ -264,6 +276,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
             onReorder: _reorder,
             itemBuilder: (context, i) => _PageCell(
               file: d.pageFile(d.pages[i]),
+              version: d.modified,
               number: i + 1,
               onTap: () => _openPage(i),
             ),
@@ -301,9 +314,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
 class _PageCell extends StatelessWidget {
   final File file;
+  final int version; // changes whenever the document is saved (rotation, etc.)
   final int number;
   final VoidCallback onTap;
-  const _PageCell({required this.file, required this.number, required this.onTap});
+  const _PageCell({required this.file, required this.version, required this.number, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -315,7 +329,11 @@ class _PageCell extends StatelessWidget {
         onTap: onTap,
         child: Stack(fit: StackFit.expand, children: [
           Container(color: cs.surfaceContainerHighest),
-          Image.file(file, fit: BoxFit.cover, cacheWidth: 300, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
+          Image.file(file,
+              key: ValueKey('${file.path}#$version'),
+              fit: BoxFit.cover,
+              cacheWidth: 300,
+              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
           Positioned(
             left: 6,
             bottom: 6,

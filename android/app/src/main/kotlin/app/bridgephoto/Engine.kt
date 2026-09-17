@@ -46,6 +46,9 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     private val main = Handler(Looper.getMainLooper())
     private var pendingScan: MethodChannel.Result? = null
 
+    /** Set by MainActivity so the engine can push events (recovered scans) to Dart. */
+    var channel: MethodChannel? = null
+
     companion object {
         const val REQ_SCAN = 7101
     }
@@ -54,9 +57,12 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         PDFBoxResourceLoader.init(activity.applicationContext)
     }
 
+    private val pendingDir: File get() = File(activity.cacheDir, "scan_pending")
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "scan" -> scan(call, result)
+            "takePendingScan" -> bg(result) { takePendingScan() }
             "ocr" -> bg(result) {
                 ocr(call.argument<String>("path")!!, call.argument<String>("script") ?: "latin")
             }
@@ -98,9 +104,25 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 val v = work()
                 main.post { result.success(v) }
             } catch (e: Throwable) {
-                main.post { result.error("engine", e.message ?: e.toString(), null) }
+                // Tasks.await wraps the real failure in an ExecutionException.
+                val c = (e as? java.util.concurrent.ExecutionException)?.cause ?: e
+                main.post { result.error("engine", c.message ?: c.toString(), null) }
             }
         }.start()
+    }
+
+    /** Pages of a scan that finished while no Dart call was waiting (the activity
+     *  was recreated behind the scanner). Moved out of the pending folder. */
+    private fun takePendingScan(): List<String> {
+        val dir = pendingDir
+        val files = dir.listFiles()?.filter { it.isFile && it.name.endsWith(".jpg") }?.sortedBy { it.name }
+            ?: return emptyList()
+        val outDir = File(activity.cacheDir, "scan").apply { mkdirs() }
+        return files.map { f ->
+            val dst = File(outDir, f.name)
+            if (!f.renameTo(dst)) { f.copyTo(dst, overwrite = true); f.delete() }
+            dst.absolutePath
+        }
     }
 
     // ---------------------------------------------------------------- scan
@@ -144,26 +166,37 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     /** Called by MainActivity. Returns true when the result was ours. */
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode != REQ_SCAN) return false
-        val res = pendingScan ?: return true
+        val res = pendingScan
         pendingScan = null
         if (resultCode != Activity.RESULT_OK || data == null) {
-            res.success(emptyList<String>())
+            res?.success(emptyList<String>())
             return true
         }
         val scan = GmsDocumentScanningResult.fromActivityResultIntent(data)
         val uris = scan?.pages?.map { it.imageUri } ?: emptyList()
-        bg(res) {
-            val outDir = File(activity.cacheDir, "scan").apply { mkdirs() }
-            val stamp = System.currentTimeMillis()
-            uris.mapIndexed { i, uri ->
-                val f = File(outDir, "scan_${stamp}_$i.jpg")
-                activity.contentResolver.openInputStream(uri)!!.use { input ->
-                    FileOutputStream(f).use { input.copyTo(it) }
-                }
-                f.absolutePath
-            }
+        if (res != null) {
+            bg(res) { copyPages(uris, File(activity.cacheDir, "scan")) }
+        } else {
+            // The activity was recreated while the scanner was open: nobody is
+            // waiting. Park the pages and tell Dart when it is listening.
+            Thread {
+                val paths = try { copyPages(uris, pendingDir) } catch (e: Throwable) { emptyList() }
+                if (paths.isNotEmpty()) main.post { channel?.invokeMethod("pendingScan", paths) }
+            }.start()
         }
         return true
+    }
+
+    private fun copyPages(uris: List<android.net.Uri>, outDir: File): List<String> {
+        outDir.mkdirs()
+        val stamp = System.currentTimeMillis()
+        return uris.mapIndexed { i, uri ->
+            val f = File(outDir, "scan_${stamp}_${i.toString().padStart(3, '0')}.jpg")
+            activity.contentResolver.openInputStream(uri)!!.use { input ->
+                FileOutputStream(f).use { input.copyTo(it) }
+            }
+            f.absolutePath
+        }
     }
 
     // ----------------------------------------------------------------- ocr

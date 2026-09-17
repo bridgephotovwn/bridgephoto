@@ -12,8 +12,9 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         val e = Engine(this)
         engine = e
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "bridgephoto/engine")
-            .setMethodCallHandler(e)
+        val ch = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "bridgephoto/engine")
+        ch.setMethodCallHandler(e)
+        e.channel = ch
     }
 
     @Deprecated("Deprecated in Java")
