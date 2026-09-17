@@ -14,7 +14,7 @@ Realistic timeline: account verification a few days, tester recruitment about a 
 - [ ] A credit or debit card in your own legal name for the registration fee. Google does not accept prepaid cards.
 - [ ] A government ID in the same legal name (passport, Emirates ID or similar) for identity verification.
 - [ ] A phone number and an email address you can verify with a code.
-- [ ] The public contact email for the listing (`bridgephoto.app@gmail.com`). It will be visible to everyone on Google Play, so use an address you are happy to show and will keep reading.
+- [ ] The public contact email for the listing (`bridgephoto.vwn@gmail.com`). It will be visible to everyone on Google Play, so use an address you are happy to show and will keep reading.
 - [ ] The privacy policy online: publish `docs/privacy-policy.html` on GitHub Pages (repository → Settings → Pages → deploy from the main branch, folder `/docs`). The address will look like `https://OWNER.github.io/bridgephoto/privacy-policy.html`. Open it on a phone to check it loads without a login. The same page serves the App Store listing.
 - [ ] The graphic assets: `docs/icon-512-play.png`, `docs/feature-graphic.png`, and at least two phone screenshots (see the shot list in `docs/play-listing.md`).
 - [ ] The listing text from `docs/play-listing.md`.

@@ -41,4 +41,4 @@ Translations of the app's text and of the store listings are welcome. Open an is
 
 ## Security issues
 
-If you find something that could expose a user's documents, do not open a public issue. Email `bridgephoto.app@gmail.com` (placeholder) and give us reasonable time to fix it before you publish anything.
+If you find something that could expose a user's documents, do not open a public issue. Email `bridgephoto.vwn@gmail.com` (placeholder) and give us reasonable time to fix it before you publish anything.
