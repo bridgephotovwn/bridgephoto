@@ -4,8 +4,8 @@ Everything to paste into the Play Console for version 1.0 (versionCode 1), packa
 
 Placeholders to fill in before pasting:
 
-- `<CONTACT EMAIL>` – the developer contact email (shown publicly on Google Play).
-- `<DEVELOPER NAME>` – the public developer name.
+- `bridgephoto.app@gmail.com` – the developer contact email (shown publicly on Google Play).
+- `BRIDGE PHOTO` – the public developer name.
 - `<PRIVACY POLICY URL>` – the public address of `docs/privacy-policy.html` once it is on GitHub Pages (for example `https://OWNER.github.io/bridgephoto/privacy-policy.html`).
 - `https://github.com/OWNER/bridgephoto` – the repository address (placeholder until the repository exists).
 
@@ -111,7 +111,7 @@ First release of BRIDGE PHOTO.
 | App or game | App |
 | Category | Productivity (Tools is the fallback if you prefer it) |
 | Tags (up to 5, chosen from Google's fixed list) | Pick the closest that exist in the Console's list, for example: Productivity, Utilities, Document scanner, PDF, OCR. If a suggested tag is not in the list, skip it; do not invent tags. |
-| Store listing contact email (required, public) | `<CONTACT EMAIL>` |
+| Store listing contact email (required, public) | `bridgephoto.app@gmail.com` |
 | Store listing website (optional) | `https://github.com/OWNER/bridgephoto` |
 | Store listing phone (optional) | Leave blank |
 | External marketing ("Google can advertise your app outside Google Play") | Your choice; it does not change what the app does or collects. |
@@ -141,7 +141,7 @@ Every item below must be completed before a closed-testing or production release
 
 ### 3.4 Content rating (IARC questionnaire)
 
-- Email address for the rating certificate: `<CONTACT EMAIL>`.
+- Email address for the rating certificate: `bridgephoto.app@gmail.com`.
 - App category: **Utility, Productivity, Communication, or Other.**
 - Answer **No** to every content question. The app shows only the user's own documents. In particular:
 
