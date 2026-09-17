@@ -119,7 +119,7 @@ The workflow uploads builds with an App Store Connect API key, so nobody ever ty
 | Support URL (required) | `https://github.com/OWNER/bridgephoto` (placeholder) |
 | Marketing URL (optional) | Leave blank or the GitHub Pages site |
 | Version | `1.0` |
-| Copyright | `2026 <DEVELOPER NAME>` |
+| Copyright | `2026 BRIDGE PHOTO` |
 | Build | Select the TestFlight build you tested |
 | Sign-in required? | **No** |
 | App Review contact | Your first name, last name, phone and email (Apple only; not shown publicly) |
