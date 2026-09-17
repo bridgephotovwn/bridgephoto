@@ -1,0 +1,629 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Panjabi Punjabi (`pa`).
+class AppLocalizationsPa extends AppLocalizations {
+  AppLocalizationsPa([String locale = 'pa']) : super(locale);
+
+  @override
+  String get appName => 'BRIDGE PHOTO';
+
+  @override
+  String get scan => 'ਸਕੈਨ';
+
+  @override
+  String get cancel => 'ਰੱਦ ਕਰੋ';
+
+  @override
+  String get ok => 'ਠੀਕ ਹੈ';
+
+  @override
+  String get close => 'ਬੰਦ ਕਰੋ';
+
+  @override
+  String get delete => 'ਮਿਟਾਓ';
+
+  @override
+  String get share => 'ਸਾਂਝਾ ਕਰੋ';
+
+  @override
+  String get copy => 'ਕਾਪੀ ਕਰੋ';
+
+  @override
+  String get copied => 'ਕਾਪੀ ਹੋ ਗਿਆ।';
+
+  @override
+  String get saved => 'ਸੇਵ ਹੋ ਗਿਆ।';
+
+  @override
+  String get name => 'ਨਾਮ';
+
+  @override
+  String get rename => 'ਨਾਮ ਬਦਲੋ';
+
+  @override
+  String get settings => 'ਸੈਟਿੰਗਾਂ';
+
+  @override
+  String get dismiss => 'ਖਾਰਜ ਕਰੋ';
+
+  @override
+  String get tryAgain => 'ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ';
+
+  @override
+  String get cannotBeUndone => 'ਇਹ ਵਾਪਸ ਨਹੀਂ ਹੋ ਸਕਦਾ।';
+
+  @override
+  String get savingPages => 'ਪੰਨੇ ਸੇਵ ਹੋ ਰਹੇ ਹਨ…';
+
+  @override
+  String get preparingScanner =>
+      'ਸਕੈਨਰ ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ…\nਪਹਿਲੀ ਵਾਰ: Google Play ਸੇਵਾਵਾਂ ਇਸਨੂੰ ਇੱਕ ਵਾਰ ਡਾਊਨਲੋਡ ਕਰਦੀਆਂ ਹਨ।';
+
+  @override
+  String get scannerUnavailable => 'ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।';
+
+  @override
+  String scannerUnavailableWith(String error) {
+    return 'ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ: $error';
+  }
+
+  @override
+  String couldNotSavePages(String error) {
+    return 'ਪੰਨੇ ਸੇਵ ਨਹੀਂ ਹੋ ਸਕੇ: $error';
+  }
+
+  @override
+  String couldNotOpenPicker(String error) {
+    return 'ਫ਼ਾਈਲ ਚੋਣਕਾਰ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String get importingPdf => 'PDF ਇੰਪੋਰਟ ਹੋ ਰਹੀ ਹੈ…';
+
+  @override
+  String get importedPdf => 'ਇੰਪੋਰਟ ਕੀਤੀ PDF';
+
+  @override
+  String couldNotImport(String error) {
+    return 'ਇੰਪੋਰਟ ਨਹੀਂ ਹੋ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String get pickTwoPdfs => 'ਘੱਟੋ-ਘੱਟ ਦੋ PDF ਫ਼ਾਈਲਾਂ ਚੁਣੋ।';
+
+  @override
+  String mergingPdfs(int count) {
+    return '$count PDF ਫ਼ਾਈਲਾਂ ਮਰਜ ਹੋ ਰਹੀਆਂ ਹਨ…';
+  }
+
+  @override
+  String mergedFileName(String stamp) {
+    return 'ਮਰਜ $stamp';
+  }
+
+  @override
+  String couldNotMerge(String error) {
+    return 'ਮਰਜ ਨਹੀਂ ਹੋ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String get saveToFolder => 'ਫੋਲਡਰ ਵਿੱਚ ਸੇਵ ਕਰੋ';
+
+  @override
+  String couldNotSave(String error) {
+    return 'ਸੇਵ ਨਹੀਂ ਹੋ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String get mergedDocument => 'ਮਰਜ ਕੀਤਾ ਦਸਤਾਵੇਜ਼';
+
+  @override
+  String mergedDefaultName(String first, int count) {
+    return '$first + $count ਹੋਰ';
+  }
+
+  @override
+  String get merging => 'ਮਰਜ ਹੋ ਰਿਹਾ ਹੈ…';
+
+  @override
+  String deleteDocumentsQuestion(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ਦਸਤਾਵੇਜ਼ ਮਿਟਾਉਣੇ ਹਨ?',
+      one: '1 ਦਸਤਾਵੇਜ਼ ਮਿਟਾਉਣਾ ਹੈ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get buildingPdf => 'PDF ਬਣ ਰਹੀ ਹੈ…';
+
+  @override
+  String buildingPdfN(int n, int total) {
+    return 'PDF ਬਣ ਰਹੀ ਹੈ $n / $total…';
+  }
+
+  @override
+  String buildingPdfPage(int n, int total) {
+    return 'PDF ਬਣ ਰਹੀ ਹੈ, ਪੰਨਾ $n / $total';
+  }
+
+  @override
+  String couldNotBuildPdf(String error) {
+    return 'PDF ਨਹੀਂ ਬਣ ਸਕੀ: $error';
+  }
+
+  @override
+  String get searchDocuments => 'ਦਸਤਾਵੇਜ਼ ਖੋਜੋ';
+
+  @override
+  String get closeSearch => 'ਖੋਜ ਬੰਦ ਕਰੋ';
+
+  @override
+  String get search => 'ਖੋਜੋ';
+
+  @override
+  String get importPdfAsPages => 'PDF ਨੂੰ ਪੰਨਿਆਂ ਵਜੋਂ ਇੰਪੋਰਟ ਕਰੋ';
+
+  @override
+  String get mergePdfFiles => 'PDF ਫ਼ਾਈਲਾਂ ਮਰਜ ਕਰੋ';
+
+  @override
+  String get clearSelection => 'ਚੋਣ ਹਟਾਓ';
+
+  @override
+  String nSelected(int count) {
+    return '$count ਚੁਣੇ ਗਏ';
+  }
+
+  @override
+  String nSelectedMergeOrder(int count) {
+    return '$count ਚੁਣੇ ਗਏ · ਇਸੇ ਕ੍ਰਮ ਵਿੱਚ ਮਰਜ ਹੋਣਗੇ';
+  }
+
+  @override
+  String get mergeIntoOne => 'ਇੱਕ ਦਸਤਾਵੇਜ਼ ਵਿੱਚ ਮਰਜ ਕਰੋ';
+
+  @override
+  String get shareAsPdf => 'PDF ਵਜੋਂ ਸਾਂਝਾ ਕਰੋ';
+
+  @override
+  String get selectAll => 'ਸਭ ਚੁਣੋ';
+
+  @override
+  String get noScansYet => 'ਹਾਲੇ ਕੋਈ ਸਕੈਨ ਨਹੀਂ';
+
+  @override
+  String get nothingMatches => 'ਕੁਝ ਨਹੀਂ ਮਿਲਿਆ';
+
+  @override
+  String get emptyHint =>
+      'ਦਸਤਾਵੇਜ਼ ਦੀ ਫੋਟੋ ਲੈਣ ਲਈ ਸਕੈਨ \'ਤੇ ਟੈਪ ਕਰੋ। ਸਭ ਕੁਝ ਇਸੇ ਫ਼ੋਨ \'ਤੇ ਰਹਿੰਦਾ ਹੈ।';
+
+  @override
+  String get tryAnotherWord => 'ਕੋਈ ਹੋਰ ਸ਼ਬਦ ਅਜ਼ਮਾਓ।';
+
+  @override
+  String nPages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ਪੰਨੇ',
+      one: '1 ਪੰਨਾ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pagesAndDate(String pages, String date) {
+    return '$pages · $date';
+  }
+
+  @override
+  String scanDefaultName(String stamp) {
+    return 'ਸਕੈਨ $stamp';
+  }
+
+  @override
+  String get crashTitle => 'BRIDGE PHOTO ਅਚਾਨਕ ਬੰਦ ਹੋ ਗਿਆ';
+
+  @override
+  String get crashBody =>
+      'ਕੀ ਗ਼ਲਤ ਹੋਇਆ, ਇਸਦੀ ਰਿਪੋਰਟ ਸਿਰਫ਼ ਇਸੇ ਫ਼ੋਨ \'ਤੇ ਸੇਵ ਕੀਤੀ ਗਈ ਹੈ। ਇਸਨੂੰ ਡਿਵੈਲਪਰ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਨਾਲ ਸਮੱਸਿਆ ਹੱਲ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਇਸ ਵਿੱਚ ਤਕਨੀਕੀ ਵੇਰਵੇ ਹਨ, ਤੁਹਾਡੇ ਦਸਤਾਵੇਜ਼ ਨਹੀਂ।';
+
+  @override
+  String get reportCopied => 'ਰਿਪੋਰਟ ਕਾਪੀ ਹੋ ਗਈ।';
+
+  @override
+  String get crashReportSubject => 'BRIDGE PHOTO ਕਰੈਸ਼ ਰਿਪੋਰਟ';
+
+  @override
+  String get pdfSaved => 'PDF ਸੇਵ ਹੋ ਗਈ।';
+
+  @override
+  String couldNotSavePdf(String error) {
+    return 'PDF ਸੇਵ ਨਹੀਂ ਹੋ ਸਕੀ: $error';
+  }
+
+  @override
+  String get exportPagesAsImages => 'ਪੰਨਿਆਂ ਨੂੰ ਤਸਵੀਰਾਂ ਵਜੋਂ ਐਕਸਪੋਰਟ ਕਰੋ';
+
+  @override
+  String get saveToPhotos => 'ਫੋਟੋਆਂ ਵਿੱਚ ਸੇਵ ਕਰੋ';
+
+  @override
+  String get savingToPhotos => 'ਫੋਟੋਆਂ ਵਿੱਚ ਸੇਵ ਹੋ ਰਿਹਾ ਹੈ…';
+
+  @override
+  String get photosNeedsAndroid10 =>
+      'ਫੋਟੋਆਂ ਵਿੱਚ ਸੇਵ ਕਰਨ ਲਈ Android 10 ਜਾਂ ਨਵਾਂ ਚਾਹੀਦਾ ਹੈ। ਇਸਦੀ ਬਜਾਏ ਸਾਂਝਾ ਕਰੋ ਵਰਤੋ।';
+
+  @override
+  String get photosNotAllowed =>
+      'BRIDGE PHOTO ਨੂੰ ਫੋਟੋਆਂ ਵਿੱਚ ਜੋੜਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤ ਦਿਓ, ਜਾਂ ਸਾਂਝਾ ਕਰੋ ਵਰਤੋ।';
+
+  @override
+  String imagesSavedToPhotos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ਤਸਵੀਰਾਂ ਫੋਟੋਆਂ ਵਿੱਚ ਸੇਵ ਹੋਈਆਂ।',
+      one: '1 ਤਸਵੀਰ ਫੋਟੋਆਂ ਵਿੱਚ ਸੇਵ ਹੋਈ।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String couldNotExport(String error) {
+    return 'ਐਕਸਪੋਰਟ ਨਹੀਂ ਹੋ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String get deleteDocumentQuestion => 'ਇਹ ਦਸਤਾਵੇਜ਼ ਮਿਟਾਉਣਾ ਹੈ?';
+
+  @override
+  String deleteDocumentBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ਪੰਨੇ ਮਿਟਾ ਦਿੱਤੇ ਜਾਣਗੇ। ਇਹ ਵਾਪਸ ਨਹੀਂ ਹੋ ਸਕਦਾ।',
+      one: '1 ਪੰਨਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਹ ਵਾਪਸ ਨਹੀਂ ਹੋ ਸਕਦਾ।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get textOcr => 'ਟੈਕਸਟ (OCR)';
+
+  @override
+  String get sharePdf => 'PDF ਸਾਂਝੀ ਕਰੋ';
+
+  @override
+  String get savePdfToFolder => 'PDF ਫੋਲਡਰ ਵਿੱਚ ਸੇਵ ਕਰੋ';
+
+  @override
+  String get exportAsImages => 'JPEG / PNG ਵਜੋਂ ਐਕਸਪੋਰਟ ਕਰੋ';
+
+  @override
+  String get deleteDocument => 'ਦਸਤਾਵੇਜ਼ ਮਿਟਾਓ';
+
+  @override
+  String get noPages => 'ਕੋਈ ਪੰਨਾ ਨਹੀਂ। ਪੰਨੇ ਜੋੜੋ \'ਤੇ ਟੈਪ ਕਰੋ।';
+
+  @override
+  String get addPages => 'ਪੰਨੇ ਜੋੜੋ';
+
+  @override
+  String get holdToReorder => 'ਕ੍ਰਮ ਬਦਲਣ ਲਈ ਪੰਨੇ ਨੂੰ ਦਬਾ ਕੇ ਰੱਖੋ';
+
+  @override
+  String get savePdfDialogTitle => 'PDF ਸੇਵ ਕਰੋ';
+
+  @override
+  String get saveDialogTitle => 'ਸੇਵ ਕਰੋ';
+
+  @override
+  String couldNotRotate(String error) {
+    return 'ਘੁਮਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String couldNotShare(String error) {
+    return 'ਸਾਂਝਾ ਨਹੀਂ ਹੋ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String get noTextOnPage => 'ਇਸ ਪੰਨੇ \'ਤੇ ਕੋਈ ਟੈਕਸਟ ਨਹੀਂ ਮਿਲਿਆ।';
+
+  @override
+  String pageNText(int n) {
+    return 'ਪੰਨਾ $n ਦਾ ਟੈਕਸਟ';
+  }
+
+  @override
+  String deletePageQuestion(int n) {
+    return 'ਪੰਨਾ $n ਮਿਟਾਉਣਾ ਹੈ?';
+  }
+
+  @override
+  String pageNOfTotal(int n, int total) {
+    return '$total ਵਿੱਚੋਂ ਪੰਨਾ $n';
+  }
+
+  @override
+  String get rotateLeft => 'ਖੱਬੇ ਘੁਮਾਓ';
+
+  @override
+  String get rotateRight => 'ਸੱਜੇ ਘੁਮਾਓ';
+
+  @override
+  String get sign => 'ਦਸਤਖ਼ਤ';
+
+  @override
+  String get copyText => 'ਟੈਕਸਟ ਕਾਪੀ ਕਰੋ';
+
+  @override
+  String get shareImage => 'ਤਸਵੀਰ ਸਾਂਝੀ ਕਰੋ';
+
+  @override
+  String get deletePage => 'ਪੰਨਾ ਮਿਟਾਓ';
+
+  @override
+  String get signed => 'ਦਸਤਖ਼ਤ ਹੋ ਗਏ।';
+
+  @override
+  String signPageN(int n) {
+    return 'ਪੰਨਾ $n \'ਤੇ ਦਸਤਖ਼ਤ ਕਰੋ';
+  }
+
+  @override
+  String get deleteThisSignature => 'ਇਹ ਦਸਤਖ਼ਤ ਮਿਟਾਓ';
+
+  @override
+  String get newSignature => 'ਨਵੇਂ ਦਸਤਖ਼ਤ';
+
+  @override
+  String readingPage(int n, int total) {
+    return 'ਪੰਨਾ $n / $total ਪੜ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ';
+  }
+
+  @override
+  String get ocrFailed => 'ਟੈਕਸਟ ਪਛਾਣ ਅਸਫਲ ਰਹੀ।';
+
+  @override
+  String ocrFailedWith(String error) {
+    return 'ਟੈਕਸਟ ਪਛਾਣ ਅਸਫਲ ਰਹੀ: $error';
+  }
+
+  @override
+  String get textSaved => 'ਟੈਕਸਟ ਸੇਵ ਹੋ ਗਿਆ।';
+
+  @override
+  String get text => 'ਟੈਕਸਟ';
+
+  @override
+  String get copyAll => 'ਸਭ ਕਾਪੀ ਕਰੋ';
+
+  @override
+  String get shareText => 'ਟੈਕਸਟ ਸਾਂਝਾ ਕਰੋ';
+
+  @override
+  String get saveAsTxt => '.txt ਵਜੋਂ ਸੇਵ ਕਰੋ';
+
+  @override
+  String get readAgain => 'ਮੁੜ ਪੜ੍ਹੋ';
+
+  @override
+  String get readAsLatin => 'ਅੰਗਰੇਜ਼ੀ / ਲਾਤੀਨੀ ਵਜੋਂ ਪੜ੍ਹੋ';
+
+  @override
+  String get readAsDevanagari => 'ਹਿੰਦੀ / ਨੇਪਾਲੀ ਵਜੋਂ ਪੜ੍ਹੋ';
+
+  @override
+  String get ocrModelHint =>
+      'Android \'ਤੇ ਟੈਕਸਟ ਮਾਡਲ Google Play ਸੇਵਾਵਾਂ ਇੱਕ ਵਾਰ ਡਾਊਨਲੋਡ ਕਰਦੀਆਂ ਹਨ। ਜੇ ਇਹ ਪਹਿਲੀ ਵਰਤੋਂ ਹੈ, ਤਾਂ ਇੱਕ ਮਿੰਟ ਉਡੀਕੋ ਅਤੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।';
+
+  @override
+  String get noTextFound => 'ਕੋਈ ਟੈਕਸਟ ਨਹੀਂ ਮਿਲਿਆ।';
+
+  @override
+  String pageSeparator(int n) {
+    return '--- ਪੰਨਾ $n ---';
+  }
+
+  @override
+  String get scanner => 'ਸਕੈਨਰ';
+
+  @override
+  String get scanMode => 'ਸਕੈਨ ਮੋਡ';
+
+  @override
+  String get modeFull => 'ਪੂਰਾ: ਫਿਲਟਰ + ਧੱਬੇ ਅਤੇ ਉਂਗਲਾਂ ਸਾਫ਼ ਕਰੋ';
+
+  @override
+  String get modeFilter => 'ਸਿਰਫ਼ ਫਿਲਟਰ';
+
+  @override
+  String get modeBase => 'ਬੁਨਿਆਦੀ: ਸਿਰਫ਼ ਕ੍ਰੌਪ ਅਤੇ ਘੁਮਾਉਣਾ';
+
+  @override
+  String get allowGallery => 'ਗੈਲਰੀ ਤੋਂ ਇੰਪੋਰਟ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ';
+
+  @override
+  String get allowGalleryHint => 'ਸਕੈਨਰ ਦੇ ਅੰਦਰ ਗੈਲਰੀ ਬਟਨ ਦਿਖਾਉਂਦਾ ਹੈ';
+
+  @override
+  String get pagesPerScan => 'ਪ੍ਰਤੀ ਸਕੈਨ ਪੰਨੇ';
+
+  @override
+  String get iosScannerNote =>
+      'iPhone \'ਤੇ ਸਕੈਨਰ Apple ਦਾ ਆਪਣਾ ਦਸਤਾਵੇਜ਼ ਕੈਮਰਾ ਹੈ।';
+
+  @override
+  String get iosScannerNote2 =>
+      'ਆਟੋ ਕੈਪਚਰ, ਕਿਨਾਰਿਆਂ ਦੀ ਪਛਾਣ ਅਤੇ ਰੰਗ ਮੋਡ ਇਸ ਵਿੱਚ ਪਹਿਲਾਂ ਹੀ ਹਨ।';
+
+  @override
+  String get pdf => 'PDF';
+
+  @override
+  String get pageSize => 'ਪੰਨੇ ਦਾ ਆਕਾਰ';
+
+  @override
+  String get usLetter => 'US Letter';
+
+  @override
+  String get fitScan => 'ਸਕੈਨ ਵਰਗਾ ਹੀ ਆਕਾਰ';
+
+  @override
+  String get searchablePdf => 'ਖੋਜਣਯੋਗ PDF';
+
+  @override
+  String get searchablePdfHint =>
+      'ਇੱਕ ਅਦਿੱਖ ਟੈਕਸਟ ਪਰਤ ਜੋੜਦਾ ਹੈ ਤਾਂ ਜੋ PDF ਵਿੱਚ ਖੋਜ ਅਤੇ ਟੈਕਸਟ ਕਾਪੀ ਕੀਤਾ ਜਾ ਸਕੇ';
+
+  @override
+  String get textRecognition => 'ਟੈਕਸਟ ਪਛਾਣ';
+
+  @override
+  String get quality => 'ਗੁਣਵੱਤਾ';
+
+  @override
+  String get qualityBest =>
+      'ਸਭ ਤੋਂ ਵਧੀਆ: ਪੂਰਾ ਰੈਜ਼ੋਲਿਊਸ਼ਨ, ਬਾਰੀਕ ਲਿਖਤ ਵੀ ਪੜ੍ਹਦਾ ਹੈ';
+
+  @override
+  String get qualityFast => 'ਤੇਜ਼: ਪੰਨੇ ਦੀ ਛੋਟੀ ਕਾਪੀ';
+
+  @override
+  String get language => 'ਭਾਸ਼ਾ';
+
+  @override
+  String get scriptLatin => 'ਅੰਗਰੇਜ਼ੀ ਅਤੇ ਲਾਤੀਨੀ ਲਿਪੀ ਦੀਆਂ ਹੋਰ ਭਾਸ਼ਾਵਾਂ';
+
+  @override
+  String get scriptDevanagari => 'ਹਿੰਦੀ, ਨੇਪਾਲੀ, ਮਰਾਠੀ (+ ਲਾਤੀਨੀ)';
+
+  @override
+  String get scriptChinese => 'ਚੀਨੀ (+ ਲਾਤੀਨੀ)';
+
+  @override
+  String get scriptJapanese => 'ਜਾਪਾਨੀ (+ ਲਾਤੀਨੀ)';
+
+  @override
+  String get scriptKorean => 'ਕੋਰੀਆਈ (+ ਲਾਤੀਨੀ)';
+
+  @override
+  String get readAsChinese => 'ਚੀਨੀ ਵਜੋਂ ਪੜ੍ਹੋ';
+
+  @override
+  String get readAsJapanese => 'ਜਾਪਾਨੀ ਵਜੋਂ ਪੜ੍ਹੋ';
+
+  @override
+  String get readAsKorean => 'ਕੋਰੀਆਈ ਵਜੋਂ ਪੜ੍ਹੋ';
+
+  @override
+  String get languageAuto => 'ਭਾਸ਼ਾ ਆਪਣੇ ਆਪ ਪਛਾਣੀ ਜਾਂਦੀ ਹੈ।';
+
+  @override
+  String get appearance => 'ਦਿੱਖ';
+
+  @override
+  String get theme => 'ਥੀਮ';
+
+  @override
+  String get themeSystem => 'ਫ਼ੋਨ ਮੁਤਾਬਕ';
+
+  @override
+  String get themeLight => 'ਹਲਕਾ';
+
+  @override
+  String get themeDark => 'ਗੂੜ੍ਹਾ';
+
+  @override
+  String get about => 'ਬਾਰੇ';
+
+  @override
+  String get aboutPromise => 'ਨਾ ਇਸ਼ਤਿਹਾਰ। ਨਾ ਖਾਤਾ। ਨਾ ਟਰੈਕਿੰਗ।';
+
+  @override
+  String get aboutPromiseBody =>
+      'ਸਕੈਨ ਇਸੇ ਫ਼ੋਨ \'ਤੇ ਰਹਿੰਦੇ ਹਨ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਸਾਂਝਾ ਜਾਂ ਐਕਸਪੋਰਟ ਨਹੀਂ ਕਰਦੇ। ਐਪ ਅਣਇੰਸਟਾਲ ਕਰਨ ਨਾਲ ਉਹ ਮਿਟ ਜਾਂਦੇ ਹਨ, ਇਸ ਲਈ ਜੋ ਰੱਖਣਾ ਹੈ ਉਸਨੂੰ ਐਕਸਪੋਰਟ ਕਰ ਲਓ।';
+
+  @override
+  String get openSource => 'ਓਪਨ ਸੋਰਸ (Apache-2.0)';
+
+  @override
+  String get privacyPolicy => 'ਪਰਦੇਦਾਰੀ ਨੀਤੀ';
+
+  @override
+  String get opensInBrowser => 'ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ';
+
+  @override
+  String get aboutTechAndroid =>
+      'ਸਕੈਨਿੰਗ ਅਤੇ ਟੈਕਸਟ ਪਛਾਣ Google ML Kit ਰਾਹੀਂ (ਡਿਵਾਈਸ \'ਤੇ)। PDF ਮਰਜ PDFBox-Android ਰਾਹੀਂ। ਦੇਵਨਾਗਰੀ ਫੌਂਟ: Noto (OFL)।';
+
+  @override
+  String get aboutTechIos =>
+      'ਸਕੈਨਿੰਗ Apple VisionKit ਰਾਹੀਂ, ਟੈਕਸਟ ਪਛਾਣ Apple Vision ਰਾਹੀਂ (ਡਿਵਾਈਸ \'ਤੇ)। ਦੇਵਨਾਗਰੀ ਫੌਂਟ: Noto (OFL)।';
+
+  @override
+  String couldNotOpenUrl(String url) {
+    return '$url ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕਿਆ';
+  }
+
+  @override
+  String get drawFirst => 'ਪਹਿਲਾਂ ਆਪਣੇ ਦਸਤਖ਼ਤ ਬਣਾਓ।';
+
+  @override
+  String get clear => 'ਸਾਫ਼ ਕਰੋ';
+
+  @override
+  String get undo => 'ਵਾਪਸ ਲਓ';
+
+  @override
+  String get save => 'ਸੇਵ ਕਰੋ';
+
+  @override
+  String get signHint =>
+      'ਡੱਬੇ ਵਿੱਚ ਉਂਗਲ ਨਾਲ ਦਸਤਖ਼ਤ ਕਰੋ। ਵੱਧ ਥਾਂ ਲਈ ਫ਼ੋਨ ਨੂੰ ਲੇਟਵਾਂ ਕਰੋ।';
+
+  @override
+  String get thin => 'ਪਤਲਾ';
+
+  @override
+  String get medium => 'ਦਰਮਿਆਨਾ';
+
+  @override
+  String get thick => 'ਮੋਟਾ';
+
+  @override
+  String couldNotReadPage(String error) {
+    return 'ਪੰਨਾ ਪੜ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: $error';
+  }
+
+  @override
+  String couldNotSign(String error) {
+    return 'ਦਸਤਖ਼ਤ ਨਹੀਂ ਹੋ ਸਕੇ: $error';
+  }
+
+  @override
+  String get placeSignature => 'ਦਸਤਖ਼ਤ ਰੱਖੋ';
+
+  @override
+  String get apply => 'ਲਾਗੂ ਕਰੋ';
+
+  @override
+  String get dragPinchHint => 'ਹਿਲਾਉਣ ਲਈ ਖਿੱਚੋ। ਆਕਾਰ ਬਦਲਣ ਲਈ ਪਿੰਚ ਕਰੋ।';
+
+  @override
+  String get smaller => 'ਛੋਟਾ';
+
+  @override
+  String get larger => 'ਵੱਡਾ';
+}

@@ -1,0 +1,634 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Filipino Pilipino (`fil`).
+class AppLocalizationsFil extends AppLocalizations {
+  AppLocalizationsFil([String locale = 'fil']) : super(locale);
+
+  @override
+  String get appName => 'BRIDGE PHOTO';
+
+  @override
+  String get scan => 'I-scan';
+
+  @override
+  String get cancel => 'Kanselahin';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get close => 'Isara';
+
+  @override
+  String get delete => 'I-delete';
+
+  @override
+  String get share => 'Ibahagi';
+
+  @override
+  String get copy => 'Kopyahin';
+
+  @override
+  String get copied => 'Nakopya.';
+
+  @override
+  String get saved => 'Na-save.';
+
+  @override
+  String get name => 'Pangalan';
+
+  @override
+  String get rename => 'Palitan ang pangalan';
+
+  @override
+  String get settings => 'Mga Setting';
+
+  @override
+  String get dismiss => 'I-dismiss';
+
+  @override
+  String get tryAgain => 'Subukan ulit';
+
+  @override
+  String get cannotBeUndone => 'Hindi ito maibabalik.';
+
+  @override
+  String get savingPages => 'Sine-save ang mga pahina…';
+
+  @override
+  String get preparingScanner =>
+      'Inihahanda ang scanner…\nSa unang paggamit, ida-download ito nang isang beses ng Google Play services.';
+
+  @override
+  String get scannerUnavailable => 'Hindi available ang scanner.';
+
+  @override
+  String scannerUnavailableWith(String error) {
+    return 'Hindi available ang scanner: $error';
+  }
+
+  @override
+  String couldNotSavePages(String error) {
+    return 'Hindi ma-save ang mga pahina: $error';
+  }
+
+  @override
+  String couldNotOpenPicker(String error) {
+    return 'Hindi mabuksan ang file picker: $error';
+  }
+
+  @override
+  String get importingPdf => 'Ini-import ang PDF…';
+
+  @override
+  String get importedPdf => 'Na-import na PDF';
+
+  @override
+  String couldNotImport(String error) {
+    return 'Hindi ma-import: $error';
+  }
+
+  @override
+  String get pickTwoPdfs => 'Pumili ng hindi bababa sa dalawang PDF file.';
+
+  @override
+  String mergingPdfs(int count) {
+    return 'Pinagsasama ang $count PDF file…';
+  }
+
+  @override
+  String mergedFileName(String stamp) {
+    return 'Pinagsama $stamp';
+  }
+
+  @override
+  String couldNotMerge(String error) {
+    return 'Hindi mapagsama: $error';
+  }
+
+  @override
+  String get saveToFolder => 'I-save sa folder';
+
+  @override
+  String couldNotSave(String error) {
+    return 'Hindi ma-save: $error';
+  }
+
+  @override
+  String get mergedDocument => 'Pinagsamang dokumento';
+
+  @override
+  String mergedDefaultName(String first, int count) {
+    return '$first + $count pa';
+  }
+
+  @override
+  String get merging => 'Pinagsasama…';
+
+  @override
+  String deleteDocumentsQuestion(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'I-delete ang $count dokumento?',
+      one: 'I-delete ang 1 dokumento?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get buildingPdf => 'Binubuo ang PDF…';
+
+  @override
+  String buildingPdfN(int n, int total) {
+    return 'Binubuo ang PDF $n / $total…';
+  }
+
+  @override
+  String buildingPdfPage(int n, int total) {
+    return 'Binubuo ang PDF, pahina $n / $total';
+  }
+
+  @override
+  String couldNotBuildPdf(String error) {
+    return 'Hindi mabuo ang PDF: $error';
+  }
+
+  @override
+  String get searchDocuments => 'Maghanap ng dokumento';
+
+  @override
+  String get closeSearch => 'Isara ang paghahanap';
+
+  @override
+  String get search => 'Maghanap';
+
+  @override
+  String get importPdfAsPages => 'I-import ang PDF bilang mga pahina';
+
+  @override
+  String get mergePdfFiles => 'Pagsamahin ang mga PDF file';
+
+  @override
+  String get clearSelection => 'I-clear ang pinili';
+
+  @override
+  String nSelected(int count) {
+    return '$count ang napili';
+  }
+
+  @override
+  String nSelectedMergeOrder(int count) {
+    return '$count ang napili · pagsasamahin sa ganitong pagkakasunod';
+  }
+
+  @override
+  String get mergeIntoOne => 'Pagsamahin sa isang dokumento';
+
+  @override
+  String get shareAsPdf => 'Ibahagi bilang PDF';
+
+  @override
+  String get selectAll => 'Piliin lahat';
+
+  @override
+  String get noScansYet => 'Wala pang scan';
+
+  @override
+  String get nothingMatches => 'Walang tumugma';
+
+  @override
+  String get emptyHint =>
+      'I-tap ang I-scan para kunan ng larawan ang isang dokumento. Nananatili ang lahat sa teleponong ito.';
+
+  @override
+  String get tryAnotherWord => 'Sumubok ng ibang salita.';
+
+  @override
+  String nPages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pahina',
+      one: '1 pahina',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pagesAndDate(String pages, String date) {
+    return '$pages · $date';
+  }
+
+  @override
+  String scanDefaultName(String stamp) {
+    return 'Scan $stamp';
+  }
+
+  @override
+  String get crashTitle => 'Hindi inaasahang nagsara ang BRIDGE PHOTO';
+
+  @override
+  String get crashBody =>
+      'Na-save sa teleponong ito lang ang ulat tungkol sa nangyaring problema. Makakatulong sa pag-aayos ng problema kung ibabahagi mo ito sa developer. Naglalaman ito ng mga teknikal na detalye, hindi ang iyong mga dokumento.';
+
+  @override
+  String get reportCopied => 'Nakopya ang ulat.';
+
+  @override
+  String get crashReportSubject => 'Ulat ng pag-crash ng BRIDGE PHOTO';
+
+  @override
+  String get pdfSaved => 'Na-save ang PDF.';
+
+  @override
+  String couldNotSavePdf(String error) {
+    return 'Hindi ma-save ang PDF: $error';
+  }
+
+  @override
+  String get exportPagesAsImages =>
+      'I-export ang mga pahina bilang mga larawan';
+
+  @override
+  String get saveToPhotos => 'I-save sa Photos';
+
+  @override
+  String get savingToPhotos => 'Sine-save sa Photos…';
+
+  @override
+  String get photosNeedsAndroid10 =>
+      'Kailangan ng Android 10 o mas bago para makapag-save sa Photos. Gamitin na lang ang Ibahagi.';
+
+  @override
+  String get photosNotAllowed =>
+      'Hindi pinapayagan ang BRIDGE PHOTO na magdagdag sa Photos. Payagan ito sa Mga Setting, o gamitin ang Ibahagi.';
+
+  @override
+  String imagesSavedToPhotos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count larawan ang na-save sa Photos.',
+      one: '1 larawan ang na-save sa Photos.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String couldNotExport(String error) {
+    return 'Hindi ma-export: $error';
+  }
+
+  @override
+  String get deleteDocumentQuestion => 'I-delete ang dokumentong ito?';
+
+  @override
+  String deleteDocumentBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Made-delete ang $count pahina. Hindi ito maibabalik.',
+      one: 'Made-delete ang 1 pahina. Hindi ito maibabalik.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get textOcr => 'Teksto (OCR)';
+
+  @override
+  String get sharePdf => 'Ibahagi ang PDF';
+
+  @override
+  String get savePdfToFolder => 'I-save ang PDF sa folder';
+
+  @override
+  String get exportAsImages => 'I-export bilang JPEG / PNG';
+
+  @override
+  String get deleteDocument => 'I-delete ang dokumento';
+
+  @override
+  String get noPages => 'Walang pahina. I-tap ang Magdagdag ng pahina.';
+
+  @override
+  String get addPages => 'Magdagdag ng pahina';
+
+  @override
+  String get holdToReorder =>
+      'pindutin nang matagal ang pahina para ayusin ang pagkakasunod';
+
+  @override
+  String get savePdfDialogTitle => 'I-save ang PDF';
+
+  @override
+  String get saveDialogTitle => 'I-save';
+
+  @override
+  String couldNotRotate(String error) {
+    return 'Hindi ma-rotate: $error';
+  }
+
+  @override
+  String couldNotShare(String error) {
+    return 'Hindi maibahagi: $error';
+  }
+
+  @override
+  String get noTextOnPage => 'Walang nakitang teksto sa pahinang ito.';
+
+  @override
+  String pageNText(int n) {
+    return 'Teksto ng pahina $n';
+  }
+
+  @override
+  String deletePageQuestion(int n) {
+    return 'I-delete ang pahina $n?';
+  }
+
+  @override
+  String pageNOfTotal(int n, int total) {
+    return 'Pahina $n ng $total';
+  }
+
+  @override
+  String get rotateLeft => 'I-rotate pakaliwa';
+
+  @override
+  String get rotateRight => 'I-rotate pakanan';
+
+  @override
+  String get sign => 'Pirmahan';
+
+  @override
+  String get copyText => 'Kopyahin ang teksto';
+
+  @override
+  String get shareImage => 'Ibahagi ang larawan';
+
+  @override
+  String get deletePage => 'I-delete ang pahina';
+
+  @override
+  String get signed => 'Napirmahan.';
+
+  @override
+  String signPageN(int n) {
+    return 'Pirmahan ang pahina $n';
+  }
+
+  @override
+  String get deleteThisSignature => 'I-delete ang pirmang ito';
+
+  @override
+  String get newSignature => 'Bagong pirma';
+
+  @override
+  String readingPage(int n, int total) {
+    return 'Binabasa ang pahina $n / $total';
+  }
+
+  @override
+  String get ocrFailed => 'Hindi nagtagumpay ang pagkilala sa teksto.';
+
+  @override
+  String ocrFailedWith(String error) {
+    return 'Hindi nagtagumpay ang pagkilala sa teksto: $error';
+  }
+
+  @override
+  String get textSaved => 'Na-save ang teksto.';
+
+  @override
+  String get text => 'Teksto';
+
+  @override
+  String get copyAll => 'Kopyahin lahat';
+
+  @override
+  String get shareText => 'Ibahagi ang teksto';
+
+  @override
+  String get saveAsTxt => 'I-save bilang .txt';
+
+  @override
+  String get readAgain => 'Basahin ulit';
+
+  @override
+  String get readAsLatin => 'Basahin bilang English / Latin';
+
+  @override
+  String get readAsDevanagari => 'Basahin bilang Hindi / Nepali';
+
+  @override
+  String get ocrModelHint =>
+      'Sa Android, isang beses dina-download ng Google Play services ang text model. Kung ito ang unang paggamit, maghintay ng isang minuto at subukan ulit.';
+
+  @override
+  String get noTextFound => 'Walang nakitang teksto.';
+
+  @override
+  String pageSeparator(int n) {
+    return '--- Pahina $n ---';
+  }
+
+  @override
+  String get scanner => 'Scanner';
+
+  @override
+  String get scanMode => 'Mode ng pag-scan';
+
+  @override
+  String get modeFull => 'Buo: mga filter + linisin ang mantsa at daliri';
+
+  @override
+  String get modeFilter => 'Mga filter lang';
+
+  @override
+  String get modeBase => 'Basic: crop at rotate lang';
+
+  @override
+  String get allowGallery => 'Payagan ang pag-import mula sa gallery';
+
+  @override
+  String get allowGalleryHint =>
+      'Nagpapakita ng gallery button sa loob ng scanner';
+
+  @override
+  String get pagesPerScan => 'Pahina bawat scan';
+
+  @override
+  String get iosScannerNote =>
+      'Sa iPhone, ang scanner ay ang sariling document camera ng Apple.';
+
+  @override
+  String get iosScannerNote2 =>
+      'Built-in na ang awtomatikong pagkuha, edge detection, at mga color mode.';
+
+  @override
+  String get pdf => 'PDF';
+
+  @override
+  String get pageSize => 'Laki ng pahina';
+
+  @override
+  String get usLetter => 'US Letter';
+
+  @override
+  String get fitScan => 'Kapareho ng hugis ng scan';
+
+  @override
+  String get searchablePdf => 'Searchable na PDF';
+
+  @override
+  String get searchablePdfHint =>
+      'Nagdaragdag ng hindi nakikitang text layer para mahanap at makopya ang teksto sa PDF';
+
+  @override
+  String get textRecognition => 'Pagkilala sa teksto';
+
+  @override
+  String get quality => 'Kalidad';
+
+  @override
+  String get qualityBest =>
+      'Pinakamahusay: buong resolution, nababasa ang maliliit na letra';
+
+  @override
+  String get qualityFast => 'Mabilis: mas maliit na kopya ng pahina';
+
+  @override
+  String get language => 'Wika';
+
+  @override
+  String get scriptLatin =>
+      'English at iba pang wikang gumagamit ng Latin script';
+
+  @override
+  String get scriptDevanagari => 'Hindi, Nepali, Marathi (+ Latin)';
+
+  @override
+  String get scriptChinese => 'Chinese (+ Latin)';
+
+  @override
+  String get scriptJapanese => 'Japanese (+ Latin)';
+
+  @override
+  String get scriptKorean => 'Korean (+ Latin)';
+
+  @override
+  String get readAsChinese => 'Basahin bilang Chinese';
+
+  @override
+  String get readAsJapanese => 'Basahin bilang Japanese';
+
+  @override
+  String get readAsKorean => 'Basahin bilang Korean';
+
+  @override
+  String get languageAuto => 'Awtomatikong natutukoy ang wika.';
+
+  @override
+  String get appearance => 'Hitsura';
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get themeSystem => 'Sundin ang telepono';
+
+  @override
+  String get themeLight => 'Maliwanag';
+
+  @override
+  String get themeDark => 'Madilim';
+
+  @override
+  String get about => 'Tungkol dito';
+
+  @override
+  String get aboutPromise => 'Walang ads. Walang account. Walang pag-track.';
+
+  @override
+  String get aboutPromiseBody =>
+      'Nananatili ang mga scan sa teleponong ito maliban kung ibabahagi o ie-export mo ang mga ito. Made-delete ang mga ito kapag in-uninstall ang app, kaya i-export ang gusto mong itago.';
+
+  @override
+  String get openSource => 'Open source (Apache-2.0)';
+
+  @override
+  String get privacyPolicy => 'Patakaran sa privacy';
+
+  @override
+  String get opensInBrowser => 'Bubukas sa iyong browser';
+
+  @override
+  String get aboutTechAndroid =>
+      'Pag-scan at pagkilala sa teksto ng Google ML Kit (sa device). Pagsasama ng PDF ng PDFBox-Android. Devanagari font: Noto (OFL).';
+
+  @override
+  String get aboutTechIos =>
+      'Pag-scan ng Apple VisionKit, pagkilala sa teksto ng Apple Vision (sa device). Devanagari font: Noto (OFL).';
+
+  @override
+  String couldNotOpenUrl(String url) {
+    return 'Hindi mabuksan ang $url';
+  }
+
+  @override
+  String get drawFirst => 'Iguhit muna ang iyong pirma.';
+
+  @override
+  String get clear => 'I-clear';
+
+  @override
+  String get undo => 'I-undo';
+
+  @override
+  String get save => 'I-save';
+
+  @override
+  String get signHint =>
+      'Pumirma sa loob ng kahon gamit ang iyong daliri. Ihiga ang telepono para mas malawak ang espasyo.';
+
+  @override
+  String get thin => 'Manipis';
+
+  @override
+  String get medium => 'Katamtaman';
+
+  @override
+  String get thick => 'Makapal';
+
+  @override
+  String couldNotReadPage(String error) {
+    return 'Hindi mabasa ang pahina: $error';
+  }
+
+  @override
+  String couldNotSign(String error) {
+    return 'Hindi mapirmahan: $error';
+  }
+
+  @override
+  String get placeSignature => 'Ilagay ang pirma';
+
+  @override
+  String get apply => 'Ilapat';
+
+  @override
+  String get dragPinchHint =>
+      'I-drag para ilipat. I-pinch para baguhin ang laki.';
+
+  @override
+  String get smaller => 'Paliitin';
+
+  @override
+  String get larger => 'Palakihin';
+}

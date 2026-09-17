@@ -1,0 +1,629 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Danish (`da`).
+class AppLocalizationsDa extends AppLocalizations {
+  AppLocalizationsDa([String locale = 'da']) : super(locale);
+
+  @override
+  String get appName => 'BRIDGE PHOTO';
+
+  @override
+  String get scan => 'Scan';
+
+  @override
+  String get cancel => 'Annuller';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get close => 'Luk';
+
+  @override
+  String get delete => 'Slet';
+
+  @override
+  String get share => 'Del';
+
+  @override
+  String get copy => 'Kopiér';
+
+  @override
+  String get copied => 'Kopieret.';
+
+  @override
+  String get saved => 'Gemt.';
+
+  @override
+  String get name => 'Navn';
+
+  @override
+  String get rename => 'Omdøb';
+
+  @override
+  String get settings => 'Indstillinger';
+
+  @override
+  String get dismiss => 'Afvis';
+
+  @override
+  String get tryAgain => 'Prøv igen';
+
+  @override
+  String get cannotBeUndone => 'Dette kan ikke fortrydes.';
+
+  @override
+  String get savingPages => 'Gemmer sider…';
+
+  @override
+  String get preparingScanner =>
+      'Forbereder scanneren…\nFørste gang: Google Play-tjenester downloader den én gang.';
+
+  @override
+  String get scannerUnavailable => 'Scanneren er ikke tilgængelig.';
+
+  @override
+  String scannerUnavailableWith(String error) {
+    return 'Scanneren er ikke tilgængelig: $error';
+  }
+
+  @override
+  String couldNotSavePages(String error) {
+    return 'Siderne kunne ikke gemmes: $error';
+  }
+
+  @override
+  String couldNotOpenPicker(String error) {
+    return 'Filvælgeren kunne ikke åbnes: $error';
+  }
+
+  @override
+  String get importingPdf => 'Importerer PDF…';
+
+  @override
+  String get importedPdf => 'Importeret PDF';
+
+  @override
+  String couldNotImport(String error) {
+    return 'Kunne ikke importere: $error';
+  }
+
+  @override
+  String get pickTwoPdfs => 'Vælg mindst to PDF-filer.';
+
+  @override
+  String mergingPdfs(int count) {
+    return 'Fletter $count PDF-filer…';
+  }
+
+  @override
+  String mergedFileName(String stamp) {
+    return 'Flettet $stamp';
+  }
+
+  @override
+  String couldNotMerge(String error) {
+    return 'Kunne ikke flette: $error';
+  }
+
+  @override
+  String get saveToFolder => 'Gem i en mappe';
+
+  @override
+  String couldNotSave(String error) {
+    return 'Kunne ikke gemme: $error';
+  }
+
+  @override
+  String get mergedDocument => 'Flettet dokument';
+
+  @override
+  String mergedDefaultName(String first, int count) {
+    return '$first + $count mere';
+  }
+
+  @override
+  String get merging => 'Fletter…';
+
+  @override
+  String deleteDocumentsQuestion(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Slet $count dokumenter?',
+      one: 'Slet 1 dokument?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get buildingPdf => 'Opretter PDF…';
+
+  @override
+  String buildingPdfN(int n, int total) {
+    return 'Opretter PDF $n / $total…';
+  }
+
+  @override
+  String buildingPdfPage(int n, int total) {
+    return 'Opretter PDF, side $n / $total';
+  }
+
+  @override
+  String couldNotBuildPdf(String error) {
+    return 'PDF-filen kunne ikke oprettes: $error';
+  }
+
+  @override
+  String get searchDocuments => 'Søg i dokumenter';
+
+  @override
+  String get closeSearch => 'Luk søgning';
+
+  @override
+  String get search => 'Søg';
+
+  @override
+  String get importPdfAsPages => 'Importér PDF som sider';
+
+  @override
+  String get mergePdfFiles => 'Flet PDF-filer';
+
+  @override
+  String get clearSelection => 'Ryd markering';
+
+  @override
+  String nSelected(int count) {
+    return '$count valgt';
+  }
+
+  @override
+  String nSelectedMergeOrder(int count) {
+    return '$count valgt · flettes i denne rækkefølge';
+  }
+
+  @override
+  String get mergeIntoOne => 'Flet til ét dokument';
+
+  @override
+  String get shareAsPdf => 'Del som PDF';
+
+  @override
+  String get selectAll => 'Vælg alle';
+
+  @override
+  String get noScansYet => 'Ingen scanninger endnu';
+
+  @override
+  String get nothingMatches => 'Ingen resultater';
+
+  @override
+  String get emptyHint =>
+      'Tryk på Scan for at fotografere et dokument. Alt bliver på denne telefon.';
+
+  @override
+  String get tryAnotherWord => 'Prøv et andet ord.';
+
+  @override
+  String nPages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sider',
+      one: '1 side',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pagesAndDate(String pages, String date) {
+    return '$pages · $date';
+  }
+
+  @override
+  String scanDefaultName(String stamp) {
+    return 'Scanning $stamp';
+  }
+
+  @override
+  String get crashTitle => 'BRIDGE PHOTO lukkede uventet';
+
+  @override
+  String get crashBody =>
+      'En rapport om, hvad der gik galt, er kun gemt på denne telefon. Deler du den med udvikleren, hjælper det med at løse problemet. Den indeholder tekniske detaljer, ikke dine dokumenter.';
+
+  @override
+  String get reportCopied => 'Rapport kopieret.';
+
+  @override
+  String get crashReportSubject => 'Nedbrudsrapport fra BRIDGE PHOTO';
+
+  @override
+  String get pdfSaved => 'PDF gemt.';
+
+  @override
+  String couldNotSavePdf(String error) {
+    return 'PDF-filen kunne ikke gemmes: $error';
+  }
+
+  @override
+  String get exportPagesAsImages => 'Eksportér sider som billeder';
+
+  @override
+  String get saveToPhotos => 'Gem i Fotos';
+
+  @override
+  String get savingToPhotos => 'Gemmer i Fotos…';
+
+  @override
+  String get photosNeedsAndroid10 =>
+      'At gemme i Fotos kræver Android 10 eller nyere. Brug Del i stedet.';
+
+  @override
+  String get photosNotAllowed =>
+      'BRIDGE PHOTO må ikke tilføje til Fotos. Tillad det under Indstillinger, eller brug Del.';
+
+  @override
+  String imagesSavedToPhotos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count billeder gemt i Fotos.',
+      one: '1 billede gemt i Fotos.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String couldNotExport(String error) {
+    return 'Kunne ikke eksportere: $error';
+  }
+
+  @override
+  String get deleteDocumentQuestion => 'Slet dette dokument?';
+
+  @override
+  String deleteDocumentBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sider slettes. Dette kan ikke fortrydes.',
+      one: '1 side slettes. Dette kan ikke fortrydes.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get textOcr => 'Tekst (OCR)';
+
+  @override
+  String get sharePdf => 'Del PDF';
+
+  @override
+  String get savePdfToFolder => 'Gem PDF i en mappe';
+
+  @override
+  String get exportAsImages => 'Eksportér som JPEG / PNG';
+
+  @override
+  String get deleteDocument => 'Slet dokument';
+
+  @override
+  String get noPages => 'Ingen sider. Tryk på Tilføj sider.';
+
+  @override
+  String get addPages => 'Tilføj sider';
+
+  @override
+  String get holdToReorder => 'hold på en side for at ændre rækkefølgen';
+
+  @override
+  String get savePdfDialogTitle => 'Gem PDF';
+
+  @override
+  String get saveDialogTitle => 'Gem';
+
+  @override
+  String couldNotRotate(String error) {
+    return 'Kunne ikke rotere: $error';
+  }
+
+  @override
+  String couldNotShare(String error) {
+    return 'Kunne ikke dele: $error';
+  }
+
+  @override
+  String get noTextOnPage => 'Der blev ikke fundet tekst på denne side.';
+
+  @override
+  String pageNText(int n) {
+    return 'Tekst på side $n';
+  }
+
+  @override
+  String deletePageQuestion(int n) {
+    return 'Slet side $n?';
+  }
+
+  @override
+  String pageNOfTotal(int n, int total) {
+    return 'Side $n af $total';
+  }
+
+  @override
+  String get rotateLeft => 'Rotér til venstre';
+
+  @override
+  String get rotateRight => 'Rotér til højre';
+
+  @override
+  String get sign => 'Underskriv';
+
+  @override
+  String get copyText => 'Kopiér tekst';
+
+  @override
+  String get shareImage => 'Del billede';
+
+  @override
+  String get deletePage => 'Slet side';
+
+  @override
+  String get signed => 'Underskrevet.';
+
+  @override
+  String signPageN(int n) {
+    return 'Underskriv side $n';
+  }
+
+  @override
+  String get deleteThisSignature => 'Slet denne underskrift';
+
+  @override
+  String get newSignature => 'Ny underskrift';
+
+  @override
+  String readingPage(int n, int total) {
+    return 'Læser side $n / $total';
+  }
+
+  @override
+  String get ocrFailed => 'Tekstgenkendelse mislykkedes.';
+
+  @override
+  String ocrFailedWith(String error) {
+    return 'Tekstgenkendelse mislykkedes: $error';
+  }
+
+  @override
+  String get textSaved => 'Tekst gemt.';
+
+  @override
+  String get text => 'Tekst';
+
+  @override
+  String get copyAll => 'Kopiér alt';
+
+  @override
+  String get shareText => 'Del tekst';
+
+  @override
+  String get saveAsTxt => 'Gem som .txt';
+
+  @override
+  String get readAgain => 'Læs igen';
+
+  @override
+  String get readAsLatin => 'Læs som engelsk / latinsk skrift';
+
+  @override
+  String get readAsDevanagari => 'Læs som hindi / nepalesisk';
+
+  @override
+  String get ocrModelHint =>
+      'På Android downloades tekstmodellen én gang af Google Play-tjenester. Hvis det er første gang, så vent et minut, og prøv igen.';
+
+  @override
+  String get noTextFound => 'Der blev ikke fundet tekst.';
+
+  @override
+  String pageSeparator(int n) {
+    return '--- Side $n ---';
+  }
+
+  @override
+  String get scanner => 'Scanner';
+
+  @override
+  String get scanMode => 'Scanningstilstand';
+
+  @override
+  String get modeFull => 'Fuld: filtre + fjerner pletter og fingre';
+
+  @override
+  String get modeFilter => 'Kun filtre';
+
+  @override
+  String get modeBase => 'Basis: kun beskæring og rotation';
+
+  @override
+  String get allowGallery => 'Tillad import fra galleri';
+
+  @override
+  String get allowGalleryHint => 'Viser en galleriknap i scanneren';
+
+  @override
+  String get pagesPerScan => 'Sider pr. scanning';
+
+  @override
+  String get iosScannerNote =>
+      'På iPhone er scanneren Apples eget dokumentkamera.';
+
+  @override
+  String get iosScannerNote2 =>
+      'Automatisk optagelse, kantregistrering og farvetilstande er indbygget.';
+
+  @override
+  String get pdf => 'PDF';
+
+  @override
+  String get pageSize => 'Sidestørrelse';
+
+  @override
+  String get usLetter => 'US Letter';
+
+  @override
+  String get fitScan => 'Samme form som scanningen';
+
+  @override
+  String get searchablePdf => 'Søgbar PDF';
+
+  @override
+  String get searchablePdfHint =>
+      'Tilføjer et usynligt tekstlag, så der kan søges i PDF-filen og kopieres tekst';
+
+  @override
+  String get textRecognition => 'Tekstgenkendelse';
+
+  @override
+  String get quality => 'Kvalitet';
+
+  @override
+  String get qualityBest => 'Bedst: fuld opløsning, læser små bogstaver';
+
+  @override
+  String get qualityFast => 'Hurtig: formindsket kopi af siden';
+
+  @override
+  String get language => 'Sprog';
+
+  @override
+  String get scriptLatin => 'Engelsk og andre sprog med latinsk skrift';
+
+  @override
+  String get scriptDevanagari => 'Hindi, nepalesisk, marathi (+ latinsk)';
+
+  @override
+  String get scriptChinese => 'Kinesisk (+ latinsk)';
+
+  @override
+  String get scriptJapanese => 'Japansk (+ latinsk)';
+
+  @override
+  String get scriptKorean => 'Koreansk (+ latinsk)';
+
+  @override
+  String get readAsChinese => 'Læs som kinesisk';
+
+  @override
+  String get readAsJapanese => 'Læs som japansk';
+
+  @override
+  String get readAsKorean => 'Læs som koreansk';
+
+  @override
+  String get languageAuto => 'Sproget registreres automatisk.';
+
+  @override
+  String get appearance => 'Udseende';
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get themeSystem => 'Følg telefonen';
+
+  @override
+  String get themeLight => 'Lys';
+
+  @override
+  String get themeDark => 'Mørk';
+
+  @override
+  String get about => 'Om';
+
+  @override
+  String get aboutPromise => 'Ingen reklamer. Ingen konto. Ingen sporing.';
+
+  @override
+  String get aboutPromiseBody =>
+      'Scanninger bliver på denne telefon, medmindre du deler eller eksporterer dem. Afinstalleres appen, slettes de, så eksportér det, du vil beholde.';
+
+  @override
+  String get openSource => 'Åben kildekode (Apache-2.0)';
+
+  @override
+  String get privacyPolicy => 'Privatlivspolitik';
+
+  @override
+  String get opensInBrowser => 'Åbnes i din browser';
+
+  @override
+  String get aboutTechAndroid =>
+      'Scanning og tekstgenkendelse af Google ML Kit (på enheden). PDF-fletning af PDFBox-Android. Devanagari-skrifttype: Noto (OFL).';
+
+  @override
+  String get aboutTechIos =>
+      'Scanning af Apple VisionKit, tekstgenkendelse af Apple Vision (på enheden). Devanagari-skrifttype: Noto (OFL).';
+
+  @override
+  String couldNotOpenUrl(String url) {
+    return 'Kunne ikke åbne $url';
+  }
+
+  @override
+  String get drawFirst => 'Tegn din underskrift først.';
+
+  @override
+  String get clear => 'Ryd';
+
+  @override
+  String get undo => 'Fortryd';
+
+  @override
+  String get save => 'Gem';
+
+  @override
+  String get signHint =>
+      'Skriv under i feltet med fingeren. Vend telefonen på siden for at få mere plads.';
+
+  @override
+  String get thin => 'Tynd';
+
+  @override
+  String get medium => 'Mellem';
+
+  @override
+  String get thick => 'Tyk';
+
+  @override
+  String couldNotReadPage(String error) {
+    return 'Siden kunne ikke læses: $error';
+  }
+
+  @override
+  String couldNotSign(String error) {
+    return 'Kunne ikke underskrive: $error';
+  }
+
+  @override
+  String get placeSignature => 'Placer underskrift';
+
+  @override
+  String get apply => 'Anvend';
+
+  @override
+  String get dragPinchHint =>
+      'Træk for at flytte. Knib for at ændre størrelse.';
+
+  @override
+  String get smaller => 'Mindre';
+
+  @override
+  String get larger => 'Større';
+}

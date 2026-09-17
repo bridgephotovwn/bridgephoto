@@ -1,0 +1,624 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Amharic (`am`).
+class AppLocalizationsAm extends AppLocalizations {
+  AppLocalizationsAm([String locale = 'am']) : super(locale);
+
+  @override
+  String get appName => 'BRIDGE PHOTO';
+
+  @override
+  String get scan => 'ቃኝ';
+
+  @override
+  String get cancel => 'ይቅር';
+
+  @override
+  String get ok => 'እሺ';
+
+  @override
+  String get close => 'ዝጋ';
+
+  @override
+  String get delete => 'ሰርዝ';
+
+  @override
+  String get share => 'አጋራ';
+
+  @override
+  String get copy => 'ቅዳ';
+
+  @override
+  String get copied => 'ተቀድቷል።';
+
+  @override
+  String get saved => 'ተቀምጧል።';
+
+  @override
+  String get name => 'ስም';
+
+  @override
+  String get rename => 'ዳግም ሰይም';
+
+  @override
+  String get settings => 'ቅንብሮች';
+
+  @override
+  String get dismiss => 'አሰናብት';
+
+  @override
+  String get tryAgain => 'እንደገና ይሞክሩ';
+
+  @override
+  String get cannotBeUndone => 'ይህ ሊቀለበስ አይችልም።';
+
+  @override
+  String get savingPages => 'ገጾችን በማስቀመጥ ላይ…';
+
+  @override
+  String get preparingScanner =>
+      'ቃኚውን በማዘጋጀት ላይ…\nለመጀመሪያ ጊዜ ሲጠቀሙ፦ የGoogle Play አገልግሎቶች አንድ ጊዜ ያወርዱታል።';
+
+  @override
+  String get scannerUnavailable => 'ቃኚው አይገኝም።';
+
+  @override
+  String scannerUnavailableWith(String error) {
+    return 'ቃኚው አይገኝም፦ $error';
+  }
+
+  @override
+  String couldNotSavePages(String error) {
+    return 'ገጾቹን ማስቀመጥ አልተቻለም፦ $error';
+  }
+
+  @override
+  String couldNotOpenPicker(String error) {
+    return 'የፋይል መራጩን መክፈት አልተቻለም፦ $error';
+  }
+
+  @override
+  String get importingPdf => 'PDF በማስመጣት ላይ…';
+
+  @override
+  String get importedPdf => 'የመጣ PDF';
+
+  @override
+  String couldNotImport(String error) {
+    return 'ማስመጣት አልተቻለም፦ $error';
+  }
+
+  @override
+  String get pickTwoPdfs => 'ቢያንስ ሁለት የPDF ፋይሎችን ይምረጡ።';
+
+  @override
+  String mergingPdfs(int count) {
+    return '$count የPDF ፋይሎችን በማዋሃድ ላይ…';
+  }
+
+  @override
+  String mergedFileName(String stamp) {
+    return 'የተዋሃደ $stamp';
+  }
+
+  @override
+  String couldNotMerge(String error) {
+    return 'ማዋሃድ አልተቻለም፦ $error';
+  }
+
+  @override
+  String get saveToFolder => 'ወደ አቃፊ አስቀምጥ';
+
+  @override
+  String couldNotSave(String error) {
+    return 'ማስቀመጥ አልተቻለም፦ $error';
+  }
+
+  @override
+  String get mergedDocument => 'የተዋሃደ ሰነድ';
+
+  @override
+  String mergedDefaultName(String first, int count) {
+    return '$first + ተጨማሪ $count';
+  }
+
+  @override
+  String get merging => 'በማዋሃድ ላይ…';
+
+  @override
+  String deleteDocumentsQuestion(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ሰነዶች ይሰረዙ?',
+      one: '$count ሰነድ ይሰረዝ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get buildingPdf => 'PDF በመገንባት ላይ…';
+
+  @override
+  String buildingPdfN(int n, int total) {
+    return 'PDF በመገንባት ላይ $n / $total…';
+  }
+
+  @override
+  String buildingPdfPage(int n, int total) {
+    return 'PDF በመገንባት ላይ፣ ገጽ $n / $total';
+  }
+
+  @override
+  String couldNotBuildPdf(String error) {
+    return 'PDF መገንባት አልተቻለም፦ $error';
+  }
+
+  @override
+  String get searchDocuments => 'ሰነዶችን ይፈልጉ';
+
+  @override
+  String get closeSearch => 'ፍለጋን ዝጋ';
+
+  @override
+  String get search => 'ፈልግ';
+
+  @override
+  String get importPdfAsPages => 'PDF እንደ ገጾች አስመጣ';
+
+  @override
+  String get mergePdfFiles => 'የPDF ፋይሎችን አዋህድ';
+
+  @override
+  String get clearSelection => 'ምርጫን አጽዳ';
+
+  @override
+  String nSelected(int count) {
+    return '$count ተመርጧል';
+  }
+
+  @override
+  String nSelectedMergeOrder(int count) {
+    return '$count ተመርጧል · በዚህ ቅደም ተከተል ይዋሃዳል';
+  }
+
+  @override
+  String get mergeIntoOne => 'ወደ አንድ ሰነድ አዋህድ';
+
+  @override
+  String get shareAsPdf => 'እንደ PDF አጋራ';
+
+  @override
+  String get selectAll => 'ሁሉንም ምረጥ';
+
+  @override
+  String get noScansYet => 'እስካሁን ምንም ቅኝት የለም';
+
+  @override
+  String get nothingMatches => 'ምንም አይዛመድም';
+
+  @override
+  String get emptyHint => 'ሰነድ ፎቶ ለማንሳት ቃኝን መታ ያድርጉ። ሁሉም ነገር በዚህ ስልክ ላይ ይቆያል።';
+
+  @override
+  String get tryAnotherWord => 'ሌላ ቃል ይሞክሩ።';
+
+  @override
+  String nPages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ገጾች',
+      one: '$count ገጽ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pagesAndDate(String pages, String date) {
+    return '$pages · $date';
+  }
+
+  @override
+  String scanDefaultName(String stamp) {
+    return 'ቅኝት $stamp';
+  }
+
+  @override
+  String get crashTitle => 'BRIDGE PHOTO ባልተጠበቀ ሁኔታ ተዘግቷል';
+
+  @override
+  String get crashBody =>
+      'ስለተፈጠረው ችግር ሪፖርት በዚህ ስልክ ላይ ብቻ ተቀምጧል። ለገንቢው ማጋራት ችግሩን ለማስተካከል ይረዳል። ቴክኒካዊ ዝርዝሮችን እንጂ ሰነዶችዎን አልያዘም።';
+
+  @override
+  String get reportCopied => 'ሪፖርቱ ተቀድቷል።';
+
+  @override
+  String get crashReportSubject => 'የBRIDGE PHOTO ብልሽት ሪፖርት';
+
+  @override
+  String get pdfSaved => 'PDF ተቀምጧል።';
+
+  @override
+  String couldNotSavePdf(String error) {
+    return 'PDF ማስቀመጥ አልተቻለም፦ $error';
+  }
+
+  @override
+  String get exportPagesAsImages => 'ገጾችን እንደ ምስሎች ላክ';
+
+  @override
+  String get saveToPhotos => 'ወደ ፎቶዎች አስቀምጥ';
+
+  @override
+  String get savingToPhotos => 'ወደ ፎቶዎች በማስቀመጥ ላይ…';
+
+  @override
+  String get photosNeedsAndroid10 =>
+      'ወደ ፎቶዎች ማስቀመጥ Android 10 ወይም ከዚያ በላይ ያስፈልገዋል። በምትኩ አጋራን ይጠቀሙ።';
+
+  @override
+  String get photosNotAllowed =>
+      'BRIDGE PHOTO ወደ ፎቶዎች እንዲያክል አልተፈቀደለትም። በቅንብሮች ውስጥ ይፍቀዱለት፣ ወይም አጋራን ይጠቀሙ።';
+
+  @override
+  String imagesSavedToPhotos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ምስሎች ወደ ፎቶዎች ተቀምጠዋል።',
+      one: '$count ምስል ወደ ፎቶዎች ተቀምጧል።',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String couldNotExport(String error) {
+    return 'መላክ አልተቻለም፦ $error';
+  }
+
+  @override
+  String get deleteDocumentQuestion => 'ይህ ሰነድ ይሰረዝ?';
+
+  @override
+  String deleteDocumentBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ገጾች ይሰረዛሉ። ይህ ሊቀለበስ አይችልም።',
+      one: '$count ገጽ ይሰረዛል። ይህ ሊቀለበስ አይችልም።',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get textOcr => 'ጽሑፍ (OCR)';
+
+  @override
+  String get sharePdf => 'PDF አጋራ';
+
+  @override
+  String get savePdfToFolder => 'PDF ወደ አቃፊ አስቀምጥ';
+
+  @override
+  String get exportAsImages => 'እንደ JPEG / PNG ላክ';
+
+  @override
+  String get deleteDocument => 'ሰነድ ሰርዝ';
+
+  @override
+  String get noPages => 'ምንም ገጾች የሉም። ገጾችን አክልን መታ ያድርጉ።';
+
+  @override
+  String get addPages => 'ገጾችን አክል';
+
+  @override
+  String get holdToReorder => 'ቅደም ተከተል ለመቀየር ገጽን ተጭነው ይያዙ';
+
+  @override
+  String get savePdfDialogTitle => 'PDF አስቀምጥ';
+
+  @override
+  String get saveDialogTitle => 'አስቀምጥ';
+
+  @override
+  String couldNotRotate(String error) {
+    return 'ማሽከርከር አልተቻለም፦ $error';
+  }
+
+  @override
+  String couldNotShare(String error) {
+    return 'ማጋራት አልተቻለም፦ $error';
+  }
+
+  @override
+  String get noTextOnPage => 'በዚህ ገጽ ላይ ምንም ጽሑፍ አልተገኘም።';
+
+  @override
+  String pageNText(int n) {
+    return 'የገጽ $n ጽሑፍ';
+  }
+
+  @override
+  String deletePageQuestion(int n) {
+    return 'ገጽ $n ይሰረዝ?';
+  }
+
+  @override
+  String pageNOfTotal(int n, int total) {
+    return 'ገጽ $n ከ$total';
+  }
+
+  @override
+  String get rotateLeft => 'ወደ ግራ አሽከርክር';
+
+  @override
+  String get rotateRight => 'ወደ ቀኝ አሽከርክር';
+
+  @override
+  String get sign => 'ፈርም';
+
+  @override
+  String get copyText => 'ጽሑፍ ቅዳ';
+
+  @override
+  String get shareImage => 'ምስል አጋራ';
+
+  @override
+  String get deletePage => 'ገጽ ሰርዝ';
+
+  @override
+  String get signed => 'ተፈርሟል።';
+
+  @override
+  String signPageN(int n) {
+    return 'ገጽ $n ፈርም';
+  }
+
+  @override
+  String get deleteThisSignature => 'ይህን ፊርማ ሰርዝ';
+
+  @override
+  String get newSignature => 'አዲስ ፊርማ';
+
+  @override
+  String readingPage(int n, int total) {
+    return 'ገጽ $n / $total በማንበብ ላይ';
+  }
+
+  @override
+  String get ocrFailed => 'ጽሑፍ ማወቅ አልተሳካም።';
+
+  @override
+  String ocrFailedWith(String error) {
+    return 'ጽሑፍ ማወቅ አልተሳካም፦ $error';
+  }
+
+  @override
+  String get textSaved => 'ጽሑፍ ተቀምጧል።';
+
+  @override
+  String get text => 'ጽሑፍ';
+
+  @override
+  String get copyAll => 'ሁሉንም ቅዳ';
+
+  @override
+  String get shareText => 'ጽሑፍ አጋራ';
+
+  @override
+  String get saveAsTxt => 'እንደ .txt አስቀምጥ';
+
+  @override
+  String get readAgain => 'እንደገና አንብብ';
+
+  @override
+  String get readAsLatin => 'እንደ እንግሊዝኛ / ላቲን አንብብ';
+
+  @override
+  String get readAsDevanagari => 'እንደ ሂንዲ / ኔፓሊ አንብብ';
+
+  @override
+  String get ocrModelHint =>
+      'በAndroid ላይ የጽሑፍ ሞዴሉ በGoogle Play አገልግሎቶች አንድ ጊዜ ይወርዳል። ይህ የመጀመሪያ አጠቃቀም ከሆነ፣ አንድ ደቂቃ ጠብቀው እንደገና ይሞክሩ።';
+
+  @override
+  String get noTextFound => 'ምንም ጽሑፍ አልተገኘም።';
+
+  @override
+  String pageSeparator(int n) {
+    return '--- ገጽ $n ---';
+  }
+
+  @override
+  String get scanner => 'ቃኚ';
+
+  @override
+  String get scanMode => 'የቅኝት ሁነታ';
+
+  @override
+  String get modeFull => 'ሙሉ፦ ማጣሪያዎች + እድፍና ጣቶችን ማጽዳት';
+
+  @override
+  String get modeFilter => 'ማጣሪያዎች ብቻ';
+
+  @override
+  String get modeBase => 'መሠረታዊ፦ መከርከምና ማሽከርከር ብቻ';
+
+  @override
+  String get allowGallery => 'ከጋለሪ ማስመጣትን ፍቀድ';
+
+  @override
+  String get allowGalleryHint => 'በቃኚው ውስጥ የጋለሪ አዝራር ያሳያል';
+
+  @override
+  String get pagesPerScan => 'በአንድ ቅኝት የገጾች ብዛት';
+
+  @override
+  String get iosScannerNote => 'በiPhone ላይ ቃኚው የApple የራሱ የሰነድ ካሜራ ነው።';
+
+  @override
+  String get iosScannerNote2 =>
+      'ራስ-ሰር ቀረጻ፣ ጠርዝ ማወቅ እና የቀለም ሁነታዎች አብሮ የተሠሩ ናቸው።';
+
+  @override
+  String get pdf => 'PDF';
+
+  @override
+  String get pageSize => 'የገጽ መጠን';
+
+  @override
+  String get usLetter => 'US Letter';
+
+  @override
+  String get fitScan => 'ከቅኝቱ ጋር ተመሳሳይ ቅርጽ';
+
+  @override
+  String get searchablePdf => 'ሊፈለግ የሚችል PDF';
+
+  @override
+  String get searchablePdfHint => 'PDF እንዲፈለግና ጽሑፍ እንዲቀዳ የማይታይ የጽሑፍ ንብርብር ያክላል';
+
+  @override
+  String get textRecognition => 'ጽሑፍ ማወቅ';
+
+  @override
+  String get quality => 'ጥራት';
+
+  @override
+  String get qualityBest => 'ምርጥ፦ ሙሉ ጥራት፣ ትንንሽ ጽሑፍን ያነባል';
+
+  @override
+  String get qualityFast => 'ፈጣን፦ የገጹ አነስተኛ ቅጂ';
+
+  @override
+  String get language => 'ቋንቋ';
+
+  @override
+  String get scriptLatin => 'እንግሊዝኛ እና ሌሎች የላቲን ፊደል ቋንቋዎች';
+
+  @override
+  String get scriptDevanagari => 'ሂንዲ፣ ኔፓሊ፣ ማራቲ (+ ላቲን)';
+
+  @override
+  String get scriptChinese => 'ቻይንኛ (+ ላቲን)';
+
+  @override
+  String get scriptJapanese => 'ጃፓንኛ (+ ላቲን)';
+
+  @override
+  String get scriptKorean => 'ኮሪያኛ (+ ላቲን)';
+
+  @override
+  String get readAsChinese => 'እንደ ቻይንኛ አንብብ';
+
+  @override
+  String get readAsJapanese => 'እንደ ጃፓንኛ አንብብ';
+
+  @override
+  String get readAsKorean => 'እንደ ኮሪያኛ አንብብ';
+
+  @override
+  String get languageAuto => 'ቋንቋው በራስ-ሰር ይታወቃል።';
+
+  @override
+  String get appearance => 'መልክ';
+
+  @override
+  String get theme => 'ገጽታ';
+
+  @override
+  String get themeSystem => 'ስልኩን ተከተል';
+
+  @override
+  String get themeLight => 'ብሩህ';
+
+  @override
+  String get themeDark => 'ጨለማ';
+
+  @override
+  String get about => 'ስለ';
+
+  @override
+  String get aboutPromise => 'ማስታወቂያ የለም። መለያ አያስፈልግም። ክትትል የለም።';
+
+  @override
+  String get aboutPromiseBody =>
+      'ቅኝቶች እስካላጋሩ ወይም እስካልላኩ ድረስ በዚህ ስልክ ላይ ይቆያሉ። መተግበሪያውን ማራገፍ ይሰርዛቸዋል፣ ስለዚህ ማቆየት የሚፈልጉትን ይላኩ።';
+
+  @override
+  String get openSource => 'ክፍት ምንጭ (Apache-2.0)';
+
+  @override
+  String get privacyPolicy => 'የግላዊነት መመሪያ';
+
+  @override
+  String get opensInBrowser => 'በአሳሽዎ ውስጥ ይከፈታል';
+
+  @override
+  String get aboutTechAndroid =>
+      'ቅኝትና ጽሑፍ ማወቅ በGoogle ML Kit (በመሣሪያው ላይ)። የPDF ውህደት በPDFBox-Android። የደቫናጋሪ ቅርጸ-ቁምፊ፦ Noto (OFL)።';
+
+  @override
+  String get aboutTechIos =>
+      'ቅኝት በApple VisionKit፣ ጽሑፍ ማወቅ በApple Vision (በመሣሪያው ላይ)። የደቫናጋሪ ቅርጸ-ቁምፊ፦ Noto (OFL)።';
+
+  @override
+  String couldNotOpenUrl(String url) {
+    return '$urlን መክፈት አልተቻለም';
+  }
+
+  @override
+  String get drawFirst => 'መጀመሪያ ፊርማዎን ይሳሉ።';
+
+  @override
+  String get clear => 'አጽዳ';
+
+  @override
+  String get undo => 'ቀልብስ';
+
+  @override
+  String get save => 'አስቀምጥ';
+
+  @override
+  String get signHint => 'በሳጥኑ ውስጥ በጣትዎ ይፈርሙ። ተጨማሪ ቦታ ለማግኘት ስልኩን ወደ ጎን ያዙሩት።';
+
+  @override
+  String get thin => 'ቀጭን';
+
+  @override
+  String get medium => 'መካከለኛ';
+
+  @override
+  String get thick => 'ወፍራም';
+
+  @override
+  String couldNotReadPage(String error) {
+    return 'ገጹን ማንበብ አልተቻለም፦ $error';
+  }
+
+  @override
+  String couldNotSign(String error) {
+    return 'መፈረም አልተቻለም፦ $error';
+  }
+
+  @override
+  String get placeSignature => 'ፊርማ አስቀምጥ';
+
+  @override
+  String get apply => 'ተግብር';
+
+  @override
+  String get dragPinchHint => 'ለማንቀሳቀስ ይጎትቱ። መጠኑን ለመቀየር በሁለት ጣቶች ይቆንጥጡ።';
+
+  @override
+  String get smaller => 'አሳንስ';
+
+  @override
+  String get larger => 'አሳድግ';
+}
