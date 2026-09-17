@@ -49,6 +49,7 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
 
     companion object {
         const val REQ_SCAN = 7101
+        val NL: String = System.lineSeparator()
     }
 
     init {
@@ -58,6 +59,18 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     private val pendingDir: File get() = File(activity.cacheDir, "scan_pending")
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            dispatch(call, result)
+        } catch (e: Throwable) {
+            CrashLog.append(activity, "method " + call.method + " threw: " + e + NL + e.stackTraceToString())
+            try {
+                result.error("engine", call.method + ": " + e, null)
+            } catch (_: IllegalStateException) {
+            }
+        }
+    }
+
+    private fun dispatch(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "scan" -> scan(call, result)
             "warmUp" -> result.success(warmUp())
@@ -239,7 +252,14 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         // task only completes afterwards. Do not wait forever.
         main.postDelayed(s.timeout, 90_000)
 
-        GmsDocumentScanning.getClient(options).getStartScanIntent(activity)
+        val task = try {
+            GmsDocumentScanning.getClient(options).getStartScanIntent(activity)
+        } catch (e: Throwable) {
+            CrashLog.append(activity, "getStartScanIntent threw: " + e + NL + e.stackTraceToString())
+            finish(s, "threw") { it.error("scanner", "Could not start the scanner: " + e, null) }
+            return
+        }
+        task
             .addOnSuccessListener { sender ->
                 if (s.done || session !== s) return@addOnSuccessListener
                 main.removeCallbacks(s.timeout)

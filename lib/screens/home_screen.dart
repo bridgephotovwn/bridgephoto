@@ -121,9 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
         pageLimit: Prefs.pageLimit,
       );
     } on PlatformException catch (e) {
+      Engine.logError('scan failed: ${e.code}: ${e.message}\n${e.details ?? ''}');
       if (mounted) context.snack(e.message ?? 'The scanner is not available.');
       return;
     } catch (e) {
+      Engine.logError('scan failed: $e');
       if (mounted) context.snack('The scanner is not available: ${_msg(e)}');
       return;
     } finally {
