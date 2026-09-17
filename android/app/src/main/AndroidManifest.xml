@@ -1,8 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- No permissions. The camera is operated by the Google Play services
          document-scanner activity. No INTERNET permission: the app cannot
          make network calls. -->
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <!-- Google's ML Kit telemetry transport library adds INTERNET to the merged
+         manifest. Strip it: this app must not be able to send anything.
+         ACCESS_NETWORK_STATE (also from that library) stays; it only lets an app
+         ask whether the phone is online and cannot move data. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
     <application
         android:label="BRIDGE PHOTO"
         android:allowBackup="false"

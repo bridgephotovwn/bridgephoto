@@ -60,7 +60,7 @@
 <h2>The short version</h2>
 <ul>
   <li>BRIDGE PHOTO collects no personal data. It has no account, no analytics, no crash reporting and no advertising.</li>
-  <li>The app never connects to the internet. On Android it asks for no permissions at all. On iOS it asks for the camera when you open the scanner, and for add-only access to Photos only if you choose "Save to Photos".</li>
+  <li>The app never connects to the internet. On Android it has no internet permission, so it cannot send or receive data. On iOS it asks for the camera when you open the scanner, and for add-only access to Photos only if you choose "Save to Photos".</li>
   <li>Your scans stay in the app's private storage on your phone. They leave the phone only when you share or export them.</li>
   <li>Scanning and text recognition run on your phone: on Android inside Google ML Kit (part of Google Play services), on iOS inside Apple's VisionKit and Vision frameworks (part of iOS).</li>
   <li>The app is open source, so anyone can check that all of this is true.</li>
@@ -78,7 +78,7 @@
 
 <h2>3. Permissions and prompts</h2>
 <h3>Android</h3>
-<p>BRIDGE PHOTO for Android declares <strong>no permissions</strong>. When you install it, Android will not ask you to grant anything.</p>
+<p>BRIDGE PHOTO for Android has <strong>no internet permission</strong>, so it cannot send or receive data. The only permission in the app is <em>ACCESS_NETWORK_STATE</em>, which a Google library adds; it only lets an app ask whether the phone is online and cannot move data. When you install the app, Android will not ask you to grant anything.</p>
 <ul>
   <li><strong>Camera:</strong> the scanning screen is provided by Google Play services (see section 5), which operates the camera and hands the finished page images to the app. The app itself has no camera permission.</li>
   <li><strong>Photos and files:</strong> importing a photo or a PDF goes through the scanner's own gallery option or Android's file picker. Exporting and sharing go through Android's own system dialogs (the save dialog or the share sheet). These need no app permission, and the app only ever sees the files you pick.</li>

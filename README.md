@@ -12,7 +12,7 @@ A free, open-source document scanner for Android and iPhone. No ads, no account,
 
 - No ads, no in-app purchases, no account, no sign-in.
 - No analytics, no crash-reporting SDKs, no tracking of any kind in the app.
-- The app never connects to the internet. On Android the manifest declares **no permissions at all**, not even `INTERNET`. On iOS the app asks the system for the camera only when the scanner opens (Apple's `NSCameraUsageDescription` prompt) and for add-only Photos access only if you choose "Save to Photos".
+- The app never connects to the internet. On Android the app has **no `INTERNET` permission**, so it cannot send or receive data. The only permission in the built app is `ACCESS_NETWORK_STATE`, pulled in by a Google library; it lets an app ask whether the phone is online and cannot move data. Android will not ask you to grant anything at install. On iOS the app asks the system for the camera only when the scanner opens (Apple's `NSCameraUsageDescription` prompt) and for add-only Photos access only if you choose "Save to Photos".
 - Scans live in the app's private storage on the phone. Nothing leaves the phone unless you share or export it.
 - Android backup is switched off, so uninstalling deletes the scans. Export what you want to keep.
 - Scanning and text recognition run on the device: Google ML Kit through Google Play services on Android, Apple's VisionKit and Vision frameworks on iOS. Google Play services downloads the Android scanner and OCR models once; that traffic is Google's, not the app's, and Google's ML Kit publishes its own [data disclosure](https://developers.google.com/ml-kit/android-data-disclosure). The privacy policy explains all of this in plain English.

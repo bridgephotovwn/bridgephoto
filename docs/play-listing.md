@@ -47,7 +47,7 @@ PRIVATE BY DESIGN
 • No ads, no in-app purchases, no subscriptions.
 • No account and no sign-in.
 • No analytics or crash-reporting SDKs. No tracking of its own.
-• The app asks for no permissions at all - not even internet. It cannot send your documents anywhere.
+• No internet permission. The app cannot send your documents anywhere.
 • Scans stay in the app's private storage on your phone. Nothing leaves the phone unless you share or export it.
 • Open source under the Apache 2.0 licence, so anyone can check the code.
 
@@ -239,7 +239,7 @@ Risk: if Google's reviewers disagree, you will get a Data safety policy email wi
 
 ### 3.13 Permission declarations
 
-- Photo and video permissions, foreground service, exact alarms, full-screen intent, SMS/call log, accessibility, VPN, package visibility: **none apply.** The Android manifest declares no permissions at all. If the Console still shows one of these forms, answer that the app does not use the permission.
+- Photo and video permissions, foreground service, exact alarms, full-screen intent, SMS/call log, accessibility, VPN, package visibility: **none apply.** The built app has no INTERNET permission; its only permission is ACCESS_NETWORK_STATE (added by a Google library, cannot move data). If the Console still shows one of these forms, answer that the app does not use the permission.
 
 ### 3.14 Anything else the Console adds
 

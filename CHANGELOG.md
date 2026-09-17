@@ -24,7 +24,7 @@ First public release for Android and iOS. Package / bundle ID `app.bridgephoto`,
 ### Privacy
 
 - No account, no ads, no in-app purchases, no analytics, no crash reporting, no tracking; the app never connects to the internet.
-- Android: no permissions declared in the manifest, not even `INTERNET`; Android backup switched off.
+- Android: no `INTERNET` permission (stripped from the merged manifest); the only permission is `ACCESS_NETWORK_STATE` from a Google library; Android backup switched off.
 - iOS: camera prompt only when the scanner opens; add-only Photos prompt only for "Save to Photos".
 - Scans are stored in the app's private storage on the phone.
 
