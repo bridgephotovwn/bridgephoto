@@ -11,6 +11,7 @@ Future<void> main() async {
   await DocStore.init();
   Engine.init();
   runApp(const BridgePhotoApp());
+  Engine.warmUp(); // Android: pre-download the scanner module in the background
 }
 
 const kSeed = Color(0xFF0F766E);

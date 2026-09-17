@@ -63,6 +63,8 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
       scan(result: result)
     case "takePendingScan":
       result([String]()) // Android-only recovery path
+    case "warmUp":
+      result(false) // Android-only: nothing to pre-download on iOS
     case "ocr":
       bg(result) { try self.ocr(path: args["path"] as? String ?? "") }
     case "mergePdf":

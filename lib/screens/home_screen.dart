@@ -36,7 +36,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     if (Engine.onPendingScan == _recoverScan) Engine.onPendingScan = null;
+    if (Engine.onScanState == _onScanState) Engine.onScanState = null;
     super.dispose();
+  }
+
+  /// Feedback while Play services prepares the scanner (slow on first use).
+  void _onScanState(String s) {
+    if (!mounted) return;
+    if (s == 'preparing') {
+      _setBusy('Preparing the scanner…\nFirst use: Google Play services downloads it once.');
+    } else {
+      _setBusy(null);
+    }
   }
 
   Future<void> _reload() async {
@@ -67,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _scan() async {
     List<String> paths;
+    Engine.onScanState = _onScanState;
     try {
       paths = await Engine.scan(
         mode: Prefs.scannerMode,
@@ -79,6 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       if (mounted) context.snack('The scanner is not available: ${_msg(e)}');
       return;
+    } finally {
+      if (Engine.onScanState == _onScanState) Engine.onScanState = null;
+      _setBusy(null);
     }
     if (paths.isEmpty) return;
     await _saveNewDocument(paths);

@@ -75,6 +75,7 @@ flutter {
 dependencies {
     // Google ML Kit, on-device. Models are delivered by Google Play services.
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
+    implementation("com.google.android.gms:play-services-base:18.11.0") // ModuleInstall (pre-download the scanner)
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
     implementation("com.google.android.gms:play-services-mlkit-text-recognition-devanagari:16.0.1")
     // PDF merge (Apache-2.0)

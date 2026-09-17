@@ -62,6 +62,7 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "scan" -> scan(call, result)
+            "warmUp" -> result.success(warmUp())
             "takePendingScan" -> bg(result) { takePendingScan() }
             "ocr" -> bg(result) {
                 ocr(call.argument<String>("path")!!, call.argument<String>("script") ?: "latin")
@@ -127,10 +128,43 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
 
     // ---------------------------------------------------------------- scan
 
+    /** True once the scanner activity has actually been launched for [pendingScan]. */
+    private var scanLaunched = false
+    private var scanToken = 0
+
+    /** Ask Google Play services to install the scanner module now, so the first
+     *  Scan does not have to wait for a download. Fire and forget. */
+    private fun warmUp(): Boolean {
+        return try {
+            val client = GmsDocumentScanning.getClient(
+                GmsDocumentScannerOptions.Builder()
+                    .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+                    .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+                    .build()
+            )
+            val request = com.google.android.gms.common.moduleinstall.ModuleInstallRequest.newBuilder()
+                .addApi(client)
+                .build()
+            com.google.android.gms.common.moduleinstall.ModuleInstall.getClient(activity)
+                .installModules(request)
+            true
+        } catch (e: Throwable) {
+            false
+        }
+    }
+
     private fun scan(call: MethodCall, result: MethodChannel.Result) {
-        if (pendingScan != null) {
-            result.error("busy", "The scanner is already open.", null)
-            return
+        val old = pendingScan
+        if (old != null) {
+            if (scanLaunched) {
+                // The previous scanner activity never reported back (it cannot
+                // still be open: the user is tapping our button). Drop it.
+                pendingScan = null
+                old.success(emptyList<String>())
+            } else {
+                result.error("busy", "The scanner is still being prepared. Please wait a moment.", null)
+                return
+            }
         }
         val mode = when (call.argument<String>("mode")) {
             "base" -> GmsDocumentScannerOptions.SCANNER_MODE_BASE
@@ -144,20 +178,50 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             .setScannerMode(mode)
             .build()
         pendingScan = result
+        scanLaunched = false
+        val token = ++scanToken
+        channel?.invokeMethod("scanState", "preparing")
+
+        // First use: Play services downloads the scanner module and the intent
+        // task only completes afterwards. Do not wait forever.
+        val timeout = Runnable {
+            if (token == scanToken && pendingScan === result && !scanLaunched) {
+                pendingScan = null
+                channel?.invokeMethod("scanState", "closed")
+                result.error(
+                    "scanner",
+                    "Google Play services is still downloading the scanner (this happens once). " +
+                        "Please try again in a minute.",
+                    null
+                )
+            }
+        }
+        main.postDelayed(timeout, 90_000)
+
         GmsDocumentScanning.getClient(options).getStartScanIntent(activity)
             .addOnSuccessListener { sender ->
+                main.removeCallbacks(timeout)
+                if (token != scanToken || pendingScan !== result) return@addOnSuccessListener
                 try {
                     activity.startIntentSenderForResult(sender, REQ_SCAN, null, 0, 0, 0)
+                    scanLaunched = true
+                    channel?.invokeMethod("scanState", "open")
                 } catch (e: Exception) {
                     pendingScan = null
+                    channel?.invokeMethod("scanState", "closed")
                     result.error("scanner", e.message ?: "Could not open the scanner.", null)
                 }
             }
             .addOnFailureListener { e ->
+                main.removeCallbacks(timeout)
+                if (token != scanToken || pendingScan !== result) return@addOnFailureListener
                 pendingScan = null
+                channel?.invokeMethod("scanState", "closed")
                 result.error(
                     "scanner",
-                    "The scanner needs Google Play services. " + (e.message ?: ""),
+                    "Could not open the scanner. If this is the first use, Google Play services " +
+                        "may still be downloading it: wait a minute and try again. (" +
+                        (e.message ?: e.toString()) + ")",
                     null
                 )
             }
@@ -168,6 +232,8 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         if (requestCode != REQ_SCAN) return false
         val res = pendingScan
         pendingScan = null
+        scanLaunched = false
+        channel?.invokeMethod("scanState", "closed")
         if (resultCode != Activity.RESULT_OK || data == null) {
             res?.success(emptyList<String>())
             return true

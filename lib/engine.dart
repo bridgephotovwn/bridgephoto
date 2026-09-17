@@ -56,14 +56,32 @@ class Engine {
   /// home screen so nothing is lost.
   static void Function(List<String> paths)? onPendingScan;
 
+  /// Scanner lifecycle from the native side: 'preparing' (waiting for Google
+  /// Play services, slow on first use), 'open' (camera showing), 'closed'.
+  static void Function(String state)? onScanState;
+
   static void init() {
     _ch.setMethodCallHandler((call) async {
-      if (call.method == 'pendingScan') {
-        final paths = ((call.arguments as List?) ?? const []).cast<String>();
-        if (paths.isNotEmpty) onPendingScan?.call(paths);
+      switch (call.method) {
+        case 'pendingScan':
+          final paths = ((call.arguments as List?) ?? const []).cast<String>();
+          if (paths.isNotEmpty) onPendingScan?.call(paths);
+        case 'scanState':
+          onScanState?.call(call.arguments as String? ?? '');
       }
       return null;
     });
+  }
+
+  /// Android: ask Play services to download the scanner module in the
+  /// background so the first Scan is quick. Harmless elsewhere.
+  static Future<void> warmUp() async {
+    if (!isAndroid) return;
+    try {
+      await _ch.invokeMethod('warmUp');
+    } catch (_) {
+      // best effort
+    }
   }
 
   /// Fetches (and clears) parked pages saved while the app was not listening.

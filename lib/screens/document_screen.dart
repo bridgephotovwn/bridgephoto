@@ -54,14 +54,26 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   // ---- actions
 
+  void _onScanState(String s) {
+    if (!mounted) return;
+    if (s == 'preparing') {
+      _setBusy('Preparing the scanner…\nFirst use: Google Play services downloads it once.');
+    } else {
+      _setBusy(null);
+    }
+  }
+
   Future<void> _addPages() async {
     final d = _doc!;
+    Engine.onScanState = _onScanState;
     try {
       final paths = await Engine.scan(
         mode: Prefs.scannerMode,
         gallery: Prefs.galleryImport,
         pageLimit: Prefs.pageLimit,
       );
+      if (Engine.onScanState == _onScanState) Engine.onScanState = null;
+      _setBusy(null);
       if (paths.isEmpty) return;
       _setBusy('Saving pages…');
       for (final p in paths) {
@@ -74,6 +86,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
     } catch (e) {
       if (mounted) context.snack('Could not save the pages: ${_msg(e)}');
     } finally {
+      if (Engine.onScanState == _onScanState) Engine.onScanState = null;
       _setBusy(null);
     }
   }
