@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,7 +7,9 @@ import '../engine.dart';
 import '../exporter.dart';
 import '../main.dart';
 import '../ocr.dart';
+import '../signatures.dart';
 import '../store.dart';
+import 'sign_place_screen.dart';
 
 /// One page, full screen, with rotate / share / copy text / delete.
 class PageScreen extends StatefulWidget {
@@ -117,6 +121,87 @@ class _PageScreenState extends State<PageScreen> {
     );
   }
 
+  // ---- signing
+
+  Future<void> _sign() async {
+    final sig = await _pickSignature();
+    if (sig == null || !mounted) return;
+    final applied = await Navigator.of(context).push<bool>(MaterialPageRoute(
+        builder: (_) => SignPlaceScreen(doc: d, page: page, signature: sig)));
+    if (applied == true && mounted) {
+      _tc(_index).value = Matrix4.identity();
+      _zoomed = false;
+      setState(() {});
+      context.snack('Signed.');
+    }
+  }
+
+  Future<File?> _pickSignature() async {
+    final sigs = await SignatureStore.list();
+    if (!mounted) return null;
+    return showModalBottomSheet<File>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            ListTile(title: Text('Sign page ${_index + 1}', style: Theme.of(ctx).textTheme.titleMedium)),
+            if (sigs.isNotEmpty)
+              SizedBox(
+                height: 120,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  children: [
+                    for (final f in sigs)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Stack(children: [
+                          Card(
+                            color: Colors.white,
+                            clipBehavior: Clip.antiAlias,
+                            child: InkWell(
+                              onTap: () => Navigator.pop(ctx, f),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Image.file(f, width: 170, height: 76, fit: BoxFit.contain),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              tooltip: 'Delete this signature',
+                              iconSize: 18,
+                              icon: const Icon(Icons.close, color: Colors.black54),
+                              onPressed: () async {
+                                await SignatureStore.delete(f);
+                                setSheet(() => sigs.remove(f));
+                              },
+                            ),
+                          ),
+                        ]),
+                      ),
+                  ],
+                ),
+              ),
+            ListTile(
+              leading: const Icon(Icons.draw_outlined),
+              title: const Text('New signature'),
+              onTap: () async {
+                final f = await Navigator.of(ctx).push<File>(
+                    MaterialPageRoute(builder: (_) => const SignatureScreen()));
+                if (ctx.mounted) Navigator.pop(ctx, f);
+              },
+            ),
+            const SizedBox(height: 8),
+          ]),
+        ),
+      ),
+    );
+  }
+
   Future<void> _delete() async {
     final ok = await showDialog<bool>(
       context: context,
@@ -150,6 +235,7 @@ class _PageScreenState extends State<PageScreen> {
         actions: [
           IconButton(tooltip: 'Rotate left', icon: const Icon(Icons.rotate_left), onPressed: _busy ? null : () => _rotate(-90)),
           IconButton(tooltip: 'Rotate right', icon: const Icon(Icons.rotate_right), onPressed: _busy ? null : () => _rotate(90)),
+          IconButton(tooltip: 'Sign', icon: const Icon(Icons.draw_outlined), onPressed: _busy ? null : _sign),
           IconButton(tooltip: 'Copy text', icon: const Icon(Icons.text_fields), onPressed: _busy ? null : _copyText),
           IconButton(tooltip: 'Share image', icon: const Icon(Icons.share), onPressed: _busy ? null : _share),
           IconButton(tooltip: 'Delete page', icon: const Icon(Icons.delete_outline), onPressed: _busy ? null : _delete),
