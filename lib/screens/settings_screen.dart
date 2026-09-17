@@ -62,6 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     const limits = [(10, '10 pages'), (25, '25 pages'), (50, '50 pages'), (100, '100 pages')];
     const sizes = [('a4', 'A4'), ('letter', 'US Letter'), ('fit', 'Same shape as the scan')];
     const scripts = [('latin', 'English and other Latin-script languages'), ('devanagari', 'Hindi, Nepali, Marathi (+ Latin)')];
+    const qualities = [('best', 'Best: full resolution, reads small print'), ('fast', 'Fast: smaller copy of the page')];
     const themes = [('system', 'Follow the phone'), ('light', 'Light'), ('dark', 'Dark')];
 
     Widget header(String t) => Padding(
@@ -110,6 +111,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onChanged: (v) => setState(() => Prefs.pdfOcr = v),
         ),
         header('Text recognition'),
+        if (android)
+          ListTile(
+            title: const Text('Quality'),
+            subtitle: Text(_label(Prefs.ocrQuality, qualities)),
+            onTap: () => _choose('Quality', Prefs.ocrQuality, qualities, (v) => Prefs.ocrQuality = v),
+          ),
         if (android)
           ListTile(
             title: const Text('Language'),

@@ -46,6 +46,12 @@ class Prefs {
   /// The value actually sent to the engine.
   static String get ocrScriptForEngine => Platform.isAndroid ? ocrScript : 'auto';
 
+  /// best = full-resolution image (default), fast = 2400 px copy.
+  static String get ocrQuality => _p.getString('ocr_quality') ?? 'best';
+  static set ocrQuality(String v) => _p.setString('ocr_quality', v);
+
+  static int get ocrMaxDim => ocrQuality == 'fast' ? 2400 : 4096;
+
   // Appearance
   static String get theme => _p.getString('theme') ?? 'system';
   static set theme(String v) {

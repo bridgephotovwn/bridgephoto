@@ -129,10 +129,13 @@ class Engine {
   }
 
   /// On-device text recognition. [script] is latin, devanagari or auto.
-  static Future<OcrResult> ocr(String path, String script) async {
+  /// [maxDim] caps the longest image side handed to the engine (Android);
+  /// smaller is faster, larger reads small print better.
+  static Future<OcrResult> ocr(String path, String script, {int maxDim = 4096}) async {
     final m = await _ch.invokeMapMethod<String, dynamic>('ocr', {
       'path': path,
       'script': script,
+      'maxDim': maxDim,
     });
     return OcrResult.fromJson(m ?? const {'w': 0, 'h': 0, 'lines': []});
   }

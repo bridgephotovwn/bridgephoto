@@ -8,17 +8,22 @@ import 'store.dart';
 class Ocr {
   static Future<OcrResult> page(Doc d, String p, {bool force = false}) async {
     final script = Prefs.ocrScriptForEngine;
+    final quality = Prefs.ocrQuality;
     final f = d.ocrFile(p);
     if (!force && await f.exists()) {
       try {
         final j = jsonDecode(await f.readAsString()) as Map<String, dynamic>;
-        if (j['script'] == script) return OcrResult.fromJson(j);
+        if (j['script'] == script && (j['quality'] ?? 'best') == quality) {
+          return OcrResult.fromJson(j);
+        }
       } catch (_) {
         // fall through and recognise again
       }
     }
-    final r = await Engine.ocr(d.pageFile(p).path, script);
-    final j = r.toJson()..['script'] = script;
+    final r = await Engine.ocr(d.pageFile(p).path, script, maxDim: Prefs.ocrMaxDim);
+    final j = r.toJson()
+      ..['script'] = script
+      ..['quality'] = quality;
     await f.writeAsString(jsonEncode(j), flush: true);
     return r;
   }

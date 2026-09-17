@@ -81,7 +81,11 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 result.success(true)
             }
             "ocr" -> bg(result) {
-                ocr(call.argument<String>("path")!!, call.argument<String>("script") ?: "latin")
+                ocr(
+                    call.argument<String>("path")!!,
+                    call.argument<String>("script") ?: "latin",
+                    call.argument<Int>("maxDim") ?: 4096
+                )
             }
             "mergePdf" -> bg(result) {
                 mergePdf(call.argument<List<String>>("inputs")!!, call.argument<String>("output")!!)
@@ -333,14 +337,16 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
 
     // ----------------------------------------------------------------- ocr
 
-    private fun ocr(path: String, script: String): Map<String, Any> {
+    private fun ocr(path: String, script: String, maxDim: Int): Map<String, Any> {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(path, bounds)
         val ow = bounds.outWidth
         val oh = bounds.outHeight
         if (ow <= 0 || oh <= 0) throw IllegalArgumentException("Cannot read the image.")
+        // Only shrink when the image is larger than the caller allows: full
+        // resolution reads small print better, a 2400 px copy is faster.
         var sample = 1
-        while (max(ow, oh) / sample > 2400) sample *= 2
+        while (max(ow, oh) / sample > max(1200, maxDim)) sample *= 2
         val bmp = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
             ?: throw IllegalArgumentException("Cannot decode the image.")
         val sx = ow.toDouble() / bmp.width
