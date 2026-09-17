@@ -30,7 +30,42 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Engine.onPendingScan = _recoverScan;
-    _reload().then((_) => _checkPendingScan());
+    _reload().then((_) => _checkPendingScan()).then((_) => _offerCrashReport());
+  }
+
+  /// After a crash, offer the private report. Nothing is sent unless shared.
+  Future<void> _offerCrashReport() async {
+    final report = await Engine.takeCrashLog();
+    if (report == null || report.trim().isEmpty || !mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('BRIDGE PHOTO closed unexpectedly'),
+        content: const Text(
+            'A report of what went wrong was saved on this phone only. '
+            'Sharing it with the developer helps fix the problem. It contains '
+            'technical details, not your documents.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Dismiss')),
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: report));
+              Navigator.pop(ctx);
+              context.snack('Report copied.');
+            },
+            child: const Text('Copy'),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.share),
+            label: const Text('Share'),
+            onPressed: () {
+              Navigator.pop(ctx);
+              Exporter.shareText(context, report, subject: 'BRIDGE PHOTO crash report');
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override

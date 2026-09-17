@@ -64,6 +64,11 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             "scan" -> scan(call, result)
             "warmUp" -> result.success(warmUp())
             "takePendingScan" -> bg(result) { takePendingScan() }
+            "takeCrashLog" -> result.success(CrashLog.take(activity))
+            "logError" -> {
+                CrashLog.append(activity, call.argument<String>("text") ?: "")
+                result.success(true)
+            }
             "ocr" -> bg(result) {
                 ocr(call.argument<String>("path")!!, call.argument<String>("script") ?: "latin")
             }

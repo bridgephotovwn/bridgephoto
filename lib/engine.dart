@@ -73,6 +73,25 @@ class Engine {
     });
   }
 
+  /// The crash report written by the previous run, if any. Reading it
+  /// deletes it. Nothing is ever sent unless the user shares it.
+  static Future<String?> takeCrashLog() async {
+    try {
+      return await _ch.invokeMethod<String>('takeCrashLog');
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Records a Dart-side error in the same private crash file.
+  static Future<void> logError(String text) async {
+    try {
+      await _ch.invokeMethod('logError', {'text': text});
+    } catch (_) {
+      // never let logging fail the app
+    }
+  }
+
   /// Android: ask Play services to download the scanner module in the
   /// background so the first Scan is quick. Harmless elsewhere.
   static Future<void> warmUp() async {

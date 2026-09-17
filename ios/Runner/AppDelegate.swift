@@ -65,6 +65,11 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
       result([String]()) // Android-only recovery path
     case "warmUp":
       result(false) // Android-only: nothing to pre-download on iOS
+    case "takeCrashLog":
+      result(Engine.takeCrashLog())
+    case "logError":
+      Engine.appendCrashLog(args["text"] as? String ?? "")
+      result(true)
     case "ocr":
       bg(result) { try self.ocr(path: args["path"] as? String ?? "") }
     case "mergePdf":
@@ -248,6 +253,28 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
       out.append(url.path)
     }
     return out
+  }
+
+  // MARK: - crash log (Dart-side errors; the user decides whether to share it)
+
+  private static var crashFile: URL {
+    let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    return dir.appendingPathComponent("crash.txt")
+  }
+
+  static func appendCrashLog(_ text: String) {
+    let f = crashFile
+    var existing = (try? String(contentsOf: f, encoding: .utf8)) ?? ""
+    if existing.utf8.count > 200_000 { existing = "" }
+    let entry = "=== \(Date())  BRIDGE PHOTO iOS \(UIDevice.current.systemVersion)\n\(text)\n\n"
+    try? (existing + entry).write(to: f, atomically: true, encoding: .utf8)
+  }
+
+  static func takeCrashLog() -> String? {
+    let f = crashFile
+    guard let s = try? String(contentsOf: f, encoding: .utf8) else { return nil }
+    try? FileManager.default.removeItem(at: f)
+    return s
   }
 
   // MARK: - image

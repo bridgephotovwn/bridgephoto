@@ -1,3 +1,5 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart';
 
 import 'engine.dart';
@@ -7,6 +9,15 @@ import 'store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Dart-side errors go to the private crash file too (never sent anywhere).
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    Engine.logError('FlutterError: ${details.exceptionAsString()}\n${details.stack ?? ''}');
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    Engine.logError('Uncaught: $error\n$stack');
+    return true;
+  };
   await Prefs.init();
   await DocStore.init();
   Engine.init();
