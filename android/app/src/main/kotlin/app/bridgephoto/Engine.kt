@@ -44,8 +44,6 @@ import kotlin.math.min
  */
 class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     private val main = Handler(Looper.getMainLooper())
-    private var pendingScan: MethodChannel.Result? = null
-
     /** Set by MainActivity so the engine can push events (recovered scans) to Dart. */
     var channel: MethodChannel? = null
 
@@ -104,15 +102,32 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         }
     }
 
+    /** A reply that can only happen once; a second attempt is logged, never fatal. */
+    private inner class SafeResult(private val r: MethodChannel.Result) {
+        private var done = false
+        fun success(v: Any?) = reply { r.success(v) }
+        fun error(code: String, msg: String) = reply { r.error(code, msg, null) }
+        private fun reply(block: () -> Unit) {
+            if (done) return
+            done = true
+            try {
+                block()
+            } catch (e: IllegalStateException) {
+                CrashLog.append(activity, "double reply: " + e + "\n" + Throwable().stackTraceToString())
+            }
+        }
+    }
+
     private fun bg(result: MethodChannel.Result, work: () -> Any?) {
+        val safe = SafeResult(result)
         Thread {
             try {
                 val v = work()
-                main.post { result.success(v) }
+                main.post { safe.success(v) }
             } catch (e: Throwable) {
                 // Tasks.await wraps the real failure in an ExecutionException.
                 val c = (e as? java.util.concurrent.ExecutionException)?.cause ?: e
-                main.post { result.error("engine", c.message ?: c.toString(), null) }
+                main.post { safe.error("engine", c.message ?: c.toString()) }
             }
         }.start()
     }
@@ -132,10 +147,45 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // ---------------------------------------------------------------- scan
+    //
+    // One ScanSession per Scan tap. Every way a session can end (pages, cancel,
+    // error, timeout, replaced by a newer tap) goes through finish(), which
+    // replies exactly once. Flutter throws "Reply already submitted" on a
+    // second reply, and that would kill the app.
 
-    /** True once the scanner activity has actually been launched for [pendingScan]. */
-    private var scanLaunched = false
-    private var scanToken = 0
+    private inner class ScanSession(val result: MethodChannel.Result) {
+        var launched = false
+        var done = false
+        val timeout = Runnable {
+            if (!done && !launched) {
+                finish(this, "timeout") {
+                    it.error(
+                        "scanner",
+                        "Google Play services is still downloading the scanner (this happens once). " +
+                            "Please try again in a minute.",
+                        null
+                    )
+                }
+            }
+        }
+    }
+
+    private var session: ScanSession? = null
+
+    /** Ends [s] once. Must run on the main thread. */
+    private fun finish(s: ScanSession, why: String, reply: (MethodChannel.Result) -> Unit) {
+        if (s.done) return
+        s.done = true
+        main.removeCallbacks(s.timeout)
+        if (session === s) session = null
+        channel?.invokeMethod("scanState", "closed")
+        try {
+            reply(s.result)
+        } catch (e: IllegalStateException) {
+            // Already answered: never fatal, but record how it happened.
+            CrashLog.append(activity, "scan double reply ($why): " + e + "\n" + Throwable().stackTraceToString())
+        }
+    }
 
     /** Ask Google Play services to install the scanner module now, so the first
      *  Scan does not have to wait for a download. Fire and forget. */
@@ -159,13 +209,12 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     private fun scan(call: MethodCall, result: MethodChannel.Result) {
-        val old = pendingScan
-        if (old != null) {
-            if (scanLaunched) {
-                // The previous scanner activity never reported back (it cannot
-                // still be open: the user is tapping our button). Drop it.
-                pendingScan = null
-                old.success(emptyList<String>())
+        val cur = session
+        if (cur != null) {
+            if (cur.launched) {
+                // The previous scanner never reported back (it cannot still be
+                // open: the user is tapping our button). Drop it and go on.
+                finish(cur, "replaced") { it.success(emptyList<String>()) }
             } else {
                 result.error("busy", "The scanner is still being prepared. Please wait a moment.", null)
                 return
@@ -182,74 +231,66 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
             .setScannerMode(mode)
             .build()
-        pendingScan = result
-        scanLaunched = false
-        val token = ++scanToken
-        channel?.invokeMethod("scanState", "preparing")
 
+        val s = ScanSession(result)
+        session = s
+        channel?.invokeMethod("scanState", "preparing")
         // First use: Play services downloads the scanner module and the intent
         // task only completes afterwards. Do not wait forever.
-        val timeout = Runnable {
-            if (token == scanToken && pendingScan === result && !scanLaunched) {
-                pendingScan = null
-                channel?.invokeMethod("scanState", "closed")
-                result.error(
-                    "scanner",
-                    "Google Play services is still downloading the scanner (this happens once). " +
-                        "Please try again in a minute.",
-                    null
-                )
-            }
-        }
-        main.postDelayed(timeout, 90_000)
+        main.postDelayed(s.timeout, 90_000)
 
         GmsDocumentScanning.getClient(options).getStartScanIntent(activity)
             .addOnSuccessListener { sender ->
-                main.removeCallbacks(timeout)
-                if (token != scanToken || pendingScan !== result) return@addOnSuccessListener
+                if (s.done || session !== s) return@addOnSuccessListener
+                main.removeCallbacks(s.timeout)
                 try {
                     activity.startIntentSenderForResult(sender, REQ_SCAN, null, 0, 0, 0)
-                    scanLaunched = true
+                    s.launched = true
                     channel?.invokeMethod("scanState", "open")
                 } catch (e: Exception) {
-                    pendingScan = null
-                    channel?.invokeMethod("scanState", "closed")
-                    result.error("scanner", e.message ?: "Could not open the scanner.", null)
+                    finish(s, "launch failed") {
+                        it.error("scanner", e.message ?: "Could not open the scanner.", null)
+                    }
                 }
             }
             .addOnFailureListener { e ->
-                main.removeCallbacks(timeout)
-                if (token != scanToken || pendingScan !== result) return@addOnFailureListener
-                pendingScan = null
-                channel?.invokeMethod("scanState", "closed")
-                result.error(
-                    "scanner",
-                    "Could not open the scanner. If this is the first use, Google Play services " +
-                        "may still be downloading it: wait a minute and try again. (" +
-                        (e.message ?: e.toString()) + ")",
-                    null
-                )
+                if (s.done || session !== s) return@addOnFailureListener
+                finish(s, "task failed") {
+                    it.error(
+                        "scanner",
+                        "Could not open the scanner. If this is the first use, Google Play services " +
+                            "may still be downloading it: wait a minute and try again. (" +
+                            (e.message ?: e.toString()) + ")",
+                        null
+                    )
+                }
             }
     }
 
     /** Called by MainActivity. Returns true when the result was ours. */
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode != REQ_SCAN) return false
-        val res = pendingScan
-        pendingScan = null
-        scanLaunched = false
-        channel?.invokeMethod("scanState", "closed")
+        val s = session
         if (resultCode != Activity.RESULT_OK || data == null) {
-            res?.success(emptyList<String>())
+            if (s != null) finish(s, "cancelled") { it.success(emptyList<String>()) }
+            else channel?.invokeMethod("scanState", "closed")
             return true
         }
         val scan = GmsDocumentScanningResult.fromActivityResultIntent(data)
         val uris = scan?.pages?.map { it.imageUri } ?: emptyList()
-        if (res != null) {
-            bg(res) { copyPages(uris, File(activity.cacheDir, "scan")) }
+        if (s != null) {
+            Thread {
+                try {
+                    val paths = copyPages(uris, File(activity.cacheDir, "scan"))
+                    main.post { finish(s, "pages") { it.success(paths) } }
+                } catch (e: Throwable) {
+                    main.post { finish(s, "copy failed") { it.error("engine", e.message ?: e.toString(), null) } }
+                }
+            }.start()
         } else {
             // The activity was recreated while the scanner was open: nobody is
             // waiting. Park the pages and tell Dart when it is listening.
+            channel?.invokeMethod("scanState", "closed")
             Thread {
                 val paths = try { copyPages(uris, pendingDir) } catch (e: Throwable) { emptyList() }
                 if (paths.isNotEmpty()) main.post { channel?.invokeMethod("pendingScan", paths) }
