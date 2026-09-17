@@ -21,7 +21,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
+import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
@@ -362,10 +365,13 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             ?: throw IllegalArgumentException("Cannot decode the image.")
         val sx = ow.toDouble() / bmp.width
         val sy = oh.toDouble() / bmp.height
-        val recognizer: TextRecognizer = if (script == "devanagari") {
-            TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
-        } else {
-            TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        // Every non-Latin recogniser also reads Latin text.
+        val recognizer: TextRecognizer = when (script) {
+            "devanagari" -> TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
+            "chinese" -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+            "japanese" -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+            "korean" -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+            else -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         }
         try {
             val text = Tasks.await(recognizer.process(InputImage.fromBitmap(bmp, 0)))

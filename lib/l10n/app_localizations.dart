@@ -904,6 +904,42 @@ abstract class AppLocalizations {
   /// **'Hindi, Nepali, Marathi (+ Latin)'**
   String get scriptDevanagari;
 
+  /// No description provided for @scriptChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese (+ Latin)'**
+  String get scriptChinese;
+
+  /// No description provided for @scriptJapanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese (+ Latin)'**
+  String get scriptJapanese;
+
+  /// No description provided for @scriptKorean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean (+ Latin)'**
+  String get scriptKorean;
+
+  /// No description provided for @readAsChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Read as Chinese'**
+  String get readAsChinese;
+
+  /// No description provided for @readAsJapanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Read as Japanese'**
+  String get readAsJapanese;
+
+  /// No description provided for @readAsKorean.
+  ///
+  /// In en, this message translates to:
+  /// **'Read as Korean'**
+  String get readAsKorean;
+
   /// No description provided for @languageAuto.
   ///
   /// In en, this message translates to:

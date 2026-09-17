@@ -509,6 +509,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scriptDevanagari => 'Hindi, Nepali, Marathi (+ Latin)';
 
   @override
+  String get scriptChinese => 'Chinese (+ Latin)';
+
+  @override
+  String get scriptJapanese => 'Japanese (+ Latin)';
+
+  @override
+  String get scriptKorean => 'Korean (+ Latin)';
+
+  @override
+  String get readAsChinese => 'Read as Chinese';
+
+  @override
+  String get readAsJapanese => 'Read as Japanese';
+
+  @override
+  String get readAsKorean => 'Read as Korean';
+
+  @override
   String get languageAuto => 'The language is detected automatically.';
 
   @override

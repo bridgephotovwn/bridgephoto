@@ -102,21 +102,32 @@ class _TextScreenState extends State<TextScreen> {
                 case 'rerun':
                   _run(force: true);
                 case 'latin':
-                  Prefs.ocrScript = 'latin';
-                  _run(force: true);
                 case 'devanagari':
-                  Prefs.ocrScript = 'devanagari';
+                case 'chinese':
+                case 'japanese':
+                case 'korean':
+                  Prefs.ocrScript = v;
                   _run(force: true);
               }
             },
-            itemBuilder: (_) => [
-              PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.saveAsTxt))),
-              PopupMenuItem(value: 'rerun', child: ListTile(leading: const Icon(Icons.refresh), title: Text(l.readAgain))),
-              if (Engine.isAndroid && Prefs.ocrScript != 'latin')
-                PopupMenuItem(value: 'latin', child: ListTile(leading: const Icon(Icons.language), title: Text(l.readAsLatin))),
-              if (Engine.isAndroid && Prefs.ocrScript != 'devanagari')
-                PopupMenuItem(value: 'devanagari', child: ListTile(leading: const Icon(Icons.language), title: Text(l.readAsDevanagari))),
-            ],
+            itemBuilder: (_) {
+              final scripts = {
+                'latin': l.readAsLatin,
+                'devanagari': l.readAsDevanagari,
+                'chinese': l.readAsChinese,
+                'japanese': l.readAsJapanese,
+                'korean': l.readAsKorean,
+              };
+              return [
+                PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.saveAsTxt))),
+                PopupMenuItem(value: 'rerun', child: ListTile(leading: const Icon(Icons.refresh), title: Text(l.readAgain))),
+                if (Engine.isAndroid) const PopupMenuDivider(),
+                if (Engine.isAndroid)
+                  for (final e in scripts.entries)
+                    if (Prefs.ocrScript != e.key)
+                      PopupMenuItem(value: e.key, child: ListTile(leading: const Icon(Icons.language), title: Text(e.value))),
+              ];
+            },
           ),
         ],
       ),

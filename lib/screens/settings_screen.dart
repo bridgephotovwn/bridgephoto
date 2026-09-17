@@ -58,7 +58,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final modes = [('full', l.modeFull), ('filter', l.modeFilter), ('base', l.modeBase)];
     final limits = [for (final n in [10, 25, 50, 100]) (n, l.nPages(n))];
     final sizes = [('a4', 'A4'), ('letter', 'US Letter'), ('fit', l.fitScan)];
-    final scripts = [('latin', l.scriptLatin), ('devanagari', l.scriptDevanagari)];
+    final scripts = [
+      ('latin', l.scriptLatin),
+      ('devanagari', l.scriptDevanagari),
+      ('chinese', l.scriptChinese),
+      ('japanese', l.scriptJapanese),
+      ('korean', l.scriptKorean),
+    ];
     final qualities = [('best', l.qualityBest), ('fast', l.qualityFast)];
     final themes = [('system', l.themeSystem), ('light', l.themeLight), ('dark', l.themeDark)];
 

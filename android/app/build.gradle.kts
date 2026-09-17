@@ -78,6 +78,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-base:18.11.0") // ModuleInstall (pre-download the scanner)
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
     implementation("com.google.android.gms:play-services-mlkit-text-recognition-devanagari:16.0.1")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition-chinese:16.0.1")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition-japanese:16.0.1")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.1")
     // PDF merge (Apache-2.0)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 }
