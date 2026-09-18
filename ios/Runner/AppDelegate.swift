@@ -369,9 +369,11 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     c.phoneNumbers = phones
     if let e = v("email") { c.emailAddresses = [CNLabeledValue(label: CNLabelWork, value: e as NSString)] }
     if let w = v("website") { c.urlAddresses = [CNLabeledValue(label: CNLabelWork, value: w as NSString)] }
-    if let ad = v("address") {
+    if v("address") != nil || v("city") != nil || v("country") != nil {
       let pa = CNMutablePostalAddress()
-      pa.street = ad
+      pa.street = v("address") ?? ""
+      pa.city = v("city") ?? ""
+      pa.country = v("country") ?? ""
       c.postalAddresses = [CNLabeledValue(label: CNLabelWork, value: pa)]
     }
     if let p = v("photo"), let img = UIImage(contentsOfFile: p) {

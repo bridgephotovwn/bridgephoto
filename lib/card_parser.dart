@@ -10,6 +10,8 @@ class ContactCard {
   String email = '';
   String website = '';
   String address = '';
+  String city = '';
+  String country = '';
   String notes = '';
 
   Map<String, String> toMap() => {
@@ -22,6 +24,8 @@ class ContactCard {
         'email': email,
         'website': website,
         'address': address,
+        'city': city,
+        'country': country,
         'notes': notes,
       };
 
@@ -62,6 +66,106 @@ const _addressWords = [
   'riyadh', 'jeddah', 'dammam', 'doha', 'qatar', 'kuwait', 'muscat', 'oman', 'bahrain', 'kathmandu', 'nepal', 'india',
   'pakistan', 'p.o', 'box',
 ];
+/// Country by dialling code and by well-known city / country words.
+class _Country {
+  final String name, dial;
+  final List<String> words;
+  const _Country(this.name, this.dial, this.words);
+}
+
+const _countries = [
+  _Country('UAE', '971', ['uae', 'u.a.e', 'united arab emirates', 'emirates', 'dubai', 'abu dhabi', 'abudhabi', 'sharjah',
+      'ajman', 'fujairah', 'ras al khaimah', 'rak', 'umm al quwain', 'al ain', 'musaffah', 'mussafah', 'al quoz', 'deira',
+      'jebel ali', 'jafza', 'dafza', 'jlt', 'dip', 'icad', 'kizad']),
+  _Country('Nepal', '977', ['nepal', 'kathmandu', 'pokhara', 'lalitpur', 'biratnagar', 'birgunj', 'butwal', 'bhairahawa']),
+  _Country('Saudi Arabia', '966', ['saudi', 'ksa', 'riyadh', 'jeddah', 'dammam', 'khobar', 'jubail', 'makkah', 'madinah']),
+  _Country('Qatar', '974', ['qatar', 'doha']),
+  _Country('Oman', '968', ['oman', 'muscat', 'sohar', 'salalah']),
+  _Country('Kuwait', '965', ['kuwait']),
+  _Country('Bahrain', '973', ['bahrain', 'manama']),
+  _Country('India', '91', ['india', 'mumbai', 'delhi', 'new delhi', 'chennai', 'bangalore', 'bengaluru', 'kolkata', 'hyderabad',
+      'pune', 'ahmedabad', 'kochi', 'cochin', 'kerala', 'gujarat', 'tamil nadu']),
+  _Country('Pakistan', '92', ['pakistan', 'karachi', 'lahore', 'islamabad', 'rawalpindi', 'peshawar']),
+  _Country('Bangladesh', '880', ['bangladesh', 'dhaka', 'chittagong']),
+  _Country('Sri Lanka', '94', ['sri lanka', 'colombo']),
+  _Country('Philippines', '63', ['philippines', 'manila', 'cebu']),
+  _Country('Egypt', '20', ['egypt', 'cairo', 'alexandria']),
+  _Country('Jordan', '962', ['jordan', 'amman']),
+  _Country('Lebanon', '961', ['lebanon', 'beirut']),
+  _Country('Turkey', '90', ['turkey', 'türkiye', 'istanbul', 'ankara']),
+  _Country('United Kingdom', '44', ['united kingdom', 'england', 'london', 'manchester', 'birmingham']),
+  _Country('Germany', '49', ['germany', 'deutschland', 'berlin', 'hamburg', 'munich', 'münchen', 'frankfurt']),
+  _Country('Italy', '39', ['italy', 'italia', 'milan', 'milano', 'rome', 'roma']),
+  _Country('France', '33', ['france', 'paris', 'lyon', 'marseille']),
+  _Country('Spain', '34', ['spain', 'españa', 'madrid', 'barcelona']),
+  _Country('Netherlands', '31', ['netherlands', 'amsterdam', 'rotterdam']),
+  _Country('China', '86', ['china', 'shanghai', 'beijing', 'guangzhou', 'shenzhen', 'ningbo', 'hangzhou', 'xiamen', 'qingdao']),
+  _Country('Hong Kong', '852', ['hong kong']),
+  _Country('Japan', '81', ['japan', 'tokyo', 'osaka', 'yokohama']),
+  _Country('South Korea', '82', ['korea', 'seoul', 'busan']),
+  _Country('Singapore', '65', ['singapore']),
+  _Country('Malaysia', '60', ['malaysia', 'kuala lumpur', 'penang']),
+  _Country('Indonesia', '62', ['indonesia', 'jakarta', 'surabaya']),
+  _Country('Thailand', '66', ['thailand', 'bangkok']),
+  _Country('Vietnam', '84', ['vietnam', 'hanoi', 'ho chi minh']),
+  _Country('Australia', '61', ['australia', 'sydney', 'melbourne', 'perth', 'brisbane']),
+  _Country('USA', '1', ['usa', 'u.s.a', 'united states', 'new york', 'houston', 'chicago', 'los angeles', 'texas', 'florida',
+      'california', 'miami']),
+  _Country('Canada', '1', ['canada', 'toronto', 'vancouver', 'montreal']),
+  _Country('South Africa', '27', ['south africa', 'johannesburg', 'cape town', 'durban']),
+  _Country('Kenya', '254', ['kenya', 'nairobi', 'mombasa']),
+  _Country('Nigeria', '234', ['nigeria', 'lagos', 'abuja']),
+  _Country('Russia', '7', ['russia', 'moscow', 'st. petersburg']),
+];
+
+/// The country a number belongs to, by its international prefix.
+_Country? _countryByDial(String n) {
+  if (!n.startsWith('+')) return null;
+  final digits = n.substring(1);
+  _Country? best;
+  for (final c in _countries) {
+    if (digits.startsWith(c.dial) && (best == null || c.dial.length > best.dial.length)) best = c;
+  }
+  return best;
+}
+
+/// A country named (or a well-known city of it) in the text.
+_Country? _countryByWords(String lower) {
+  for (final c in _countries) {
+    if (_hasWord(lower, c.words)) return c;
+  }
+  return null;
+}
+
+/// The city word found in the text, capitalised.
+String _cityIn(String lower, _Country c) {
+  for (final w in c.words.skip(1)) {
+    if (_hasWord(lower, w.split(RegExp(r'\s+')).length > 1 ? [w] : [w])) {
+      if (['uae', 'u.a.e', 'emirates', 'saudi', 'ksa', 'usa', 'u.s.a', 'united states', 'korea', 'nepal', 'india', 'china',
+              'japan', 'italy', 'italia', 'france', 'spain', 'españa', 'germany', 'deutschland', 'england', 'united kingdom',
+              'egypt', 'oman', 'qatar', 'kuwait', 'bahrain', 'jordan', 'lebanon', 'turkey', 'türkiye', 'netherlands',
+              'singapore', 'malaysia', 'indonesia', 'thailand', 'vietnam', 'australia', 'canada', 'south africa', 'kenya',
+              'nigeria', 'russia', 'pakistan', 'bangladesh', 'sri lanka', 'philippines', 'hong kong', 'texas', 'florida',
+              'california', 'kerala', 'gujarat', 'tamil nadu', 'jafza', 'dafza', 'jlt', 'dip', 'icad', 'kizad']
+          .contains(w)) {
+        continue;
+      }
+      return w.split(' ').map((p) => p.isEmpty ? p : p[0].toUpperCase() + p.substring(1)).join(' ');
+    }
+  }
+  return '';
+}
+
+/// "050 571 9594" in the UAE -> "+971505719594"; already-international numbers stay.
+String _internationalise(String n, _Country? c) {
+  if (n.isEmpty || n.startsWith('+') || c == null) return n;
+  if (n.startsWith('00')) return '+${n.substring(2)}';
+  if (n.startsWith('0')) return '+${c.dial}${n.substring(1)}';
+  // Nepal mobiles are written without a leading zero: 98xxxxxxxx
+  if (c.dial == '977' && n.length == 10 && n.startsWith('9')) return '+977$n';
+  return n;
+}
+
 const _labelWords = [
   'tel', 'tele', 'telephone', 'phone', 'ph', 'fax', 'mobile', 'mob', 'cell', 'gsm', 'whatsapp', 'e-mail', 'email', 'mail',
   'web', 'website', 'www', 'address', 'add', 'off', 'office', 'direct', 'toll free',
@@ -85,14 +189,16 @@ String _cleanPhone(String raw) {
   var s = raw.trim().replaceAll(RegExp(r'[Oo]'), '0').replaceAll(RegExp(r'[lI|]'), '1');
   final plus = s.startsWith('+');
   s = s.replaceAll(RegExp(r'[^\d]'), '');
-  if (s.length < 7 || s.length > 16) return '';
+  if (s.length < 7 || s.length > 13) return ''; // longer runs are tax or account numbers
   return (plus ? '+' : '') + s;
 }
 
 String _stripLabel(String line) {
   var s = line.trim();
   // "Tel : ", "E-mail:", "Mob. " ... at the start
-  s = s.replaceFirst(RegExp(r'^(?:' + _labelWords.map(RegExp.escape).join('|') + r')\.?\s*[:\-]?\s*', caseSensitive: false), '');
+  // Longest label first, so "website" wins over "web" and "site" is not left behind.
+  final labels = [..._labelWords]..sort((a, b) => b.length.compareTo(a.length));
+  s = s.replaceFirst(RegExp(r'^(?:' + labels.map(RegExp.escape).join('|') + r')\.?\s*[:\-]?\s*', caseSensitive: false), '');
   return s.trim();
 }
 
@@ -140,6 +246,11 @@ ContactCard parseCard(String text) {
       if (n.isEmpty) continue;
       final before = l.substring(0, m.start).toLowerCase();
       final labelZone = before.length > 18 ? before.substring(before.length - 18) : before;
+      // Tax numbers, order numbers, boxes, accounts: digits, but not phones.
+      if (RegExp(r'trn|tax|vat|box|order|invoice|\binv\b|lpo|account|\bacc\b|iban|licen|\breg|\bcr\b|date|ref|serial|\bs/?n\b').hasMatch(labelZone)) {
+        rest = rest.replaceFirst(m.group(0)!, ' ');
+        continue;
+      }
       if (RegExp(r'fax|\bf\b').hasMatch(labelZone)) {
         phonesFax.add(n);
       } else if (RegExp(r'mob|cell|gsm|whatsapp|\bm\b|\bhp\b').hasMatch(labelZone)) {
@@ -176,10 +287,28 @@ ContactCard parseCard(String text) {
     }
   }
 
-  card.mobile = phonesMobile.isNotEmpty ? phonesMobile.first : '';
-  card.phone = phonesWork.isNotEmpty ? phonesWork.first : '';
-  card.fax = phonesFax.isNotEmpty ? phonesFax.first : '';
-  final extraPhones = [...phonesMobile.skip(1), ...phonesWork.skip(1), ...phonesFax.skip(1)];
+  // Country: from an international prefix first, else from a city or country word anywhere on the card.
+  final allLower = lines.join('\n').toLowerCase();
+  _Country? country;
+  for (final n in [...phonesMobile, ...phonesWork, ...phonesFax]) {
+    country ??= _countryByDial(n);
+  }
+  country ??= _countryByWords(allLower);
+  // A local UAE mobile (05x xxx xxxx) is a strong hint even without a prefix or a city.
+  if (country == null && [...phonesMobile, ...phonesWork].any((n) => RegExp(r'^05\d{8}$').hasMatch(n))) {
+    country = _countries.first; // UAE
+  }
+  if (country != null) {
+    card.country = country.name;
+    card.city = _cityIn(addressLines.join(' ').toLowerCase(), country);
+    if (card.city.isEmpty) card.city = _cityIn(allLower, country);
+  }
+  String intl(String n) => _internationalise(n, country);
+
+  card.mobile = phonesMobile.isNotEmpty ? intl(phonesMobile.first) : '';
+  card.phone = phonesWork.isNotEmpty ? intl(phonesWork.first) : '';
+  card.fax = phonesFax.isNotEmpty ? intl(phonesFax.first) : '';
+  final extraPhones = [...phonesMobile.skip(1), ...phonesWork.skip(1), ...phonesFax.skip(1)].map(intl);
 
   // Company: prefer an all-caps line, they are usually the letterhead.
   if (companyLines.isNotEmpty) {

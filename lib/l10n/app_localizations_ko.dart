@@ -570,67 +570,72 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => '명함 스캔';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => '연락처로 저장';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => '연락처에 저장';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => '명함';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      '항목을 확인한 후 저장하세요. 휴대전화의 연락처 앱이 모든 정보가 입력된 상태로 열립니다.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => '명함 인식 중…';
 
   @override
-  String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+  String get nothingRecognised => '이 명함에서 텍스트를 인식하지 못했습니다. 직접 입력할 수도 있습니다.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened => '연락처가 열렸습니다. 유지하려면 거기에서 저장을 탭하세요.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return '연락처를 열 수 없습니다: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return '명함 $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => '회사';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => '직책';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => '휴대전화';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => '전화';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => '팩스';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => '이메일';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => '웹사이트';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => '주소';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => '도시';
+
+  @override
+  String get fieldCountry => '국가';
+
+  @override
+  String get fieldNotes => '메모';
 
   @override
   String get drawFirst => '먼저 서명을 그리세요.';

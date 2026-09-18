@@ -637,6 +637,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldAddress => 'Address';
 
   @override
+  String get fieldCity => 'City';
+
+  @override
+  String get fieldCountry => 'Country';
+
+  @override
   String get fieldNotes => 'Notes';
 
   @override

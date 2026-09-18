@@ -577,67 +577,74 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'اسکن کارت ویزیت';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'ذخیره به‌عنوان مخاطب';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'ذخیره در مخاطبین';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'کارت ویزیت';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'فیلدها را بررسی و سپس ذخیره کنید. برنامه مخاطبین گوشی شما با همه اطلاعات پرشده باز می‌شود.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'در حال خواندن کارت…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'متنی روی این کارت تشخیص داده نشد. همچنان می‌توانید اطلاعات را تایپ کنید.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'مخاطبین باز شد. برای نگه داشتن، همان‌جا «ذخیره» را بزنید.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'مخاطبین باز نشد: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'کارت $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'شرکت';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'عنوان شغلی';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'تلفن همراه';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'تلفن';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'فکس';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'ایمیل';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'وب‌سایت';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'نشانی';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'شهر';
+
+  @override
+  String get fieldCountry => 'کشور';
+
+  @override
+  String get fieldNotes => 'یادداشت‌ها';
 
   @override
   String get drawFirst => 'ابتدا امضای خود را بکشید.';

@@ -581,67 +581,74 @@ class AppLocalizationsSw extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Changanua kadi ya biashara';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Hifadhi kama anwani';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Hifadhi kwenye Anwani';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Kadi ya biashara';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Kagua sehemu, kisha uhifadhi. Programu ya Anwani ya simu yako itafunguka ikiwa na kila kitu kimejazwa.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Inasoma kadi…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Hakuna maandishi yaliyotambuliwa kwenye kadi hii. Bado unaweza kuandika maelezo.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Anwani imefunguliwa. Gusa Hifadhi hapo ili kuihifadhi.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Imeshindwa kufungua Anwani: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Kadi $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Kampuni';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Cheo';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Simu ya mkononi';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Simu';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'Faksi';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'Barua pepe';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Tovuti';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Anwani';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Jiji';
+
+  @override
+  String get fieldCountry => 'Nchi';
+
+  @override
+  String get fieldNotes => 'Madokezo';
 
   @override
   String get drawFirst => 'Chora sahihi yako kwanza.';

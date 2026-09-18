@@ -26,6 +26,36 @@ Website : www.alyamama-example.com
     expect(c.website, 'www.alyamama-example.com');
     expect(c.address.contains('36384'), isTrue);
     expect(c.address.contains('Dubai'), isTrue);
+    expect(c.country, 'UAE');
+    expect(c.city, 'Dubai');
+  });
+
+  test('country from the dialling code, local numbers made international', () {
+    const text = '''
+Sita Gurung
+Sales Coordinator
+Everest Spare Parts Trading LLC
+Mob: 055 123 4567
+Tel: 02 555 1234
+''';
+    final c = parseCard(text);
+    expect(c.country, 'UAE');
+    expect(c.mobile, '+971551234567');
+    expect(c.phone, '+97125551234');
+  });
+
+  test('Nepal card', () {
+    const text = '''
+Hari Prasad Sharma
+Managing Director
+Himalaya Machinery Pvt. Ltd.
+Kathmandu, Nepal
+Mobile: 9841 234 567
+''';
+    final c = parseCard(text);
+    expect(c.country, 'Nepal');
+    expect(c.city, 'Kathmandu');
+    expect(c.mobile, '+9779841234567');
   });
 
   test('unlabelled numbers and OCR confusions', () {
@@ -41,9 +71,26 @@ info@gorkha-example.ae
     expect(c.name, 'Ram Bahadur Thapa');
     expect(c.jobTitle, 'Sales Executive');
     expect(c.company, 'Gorkha Machinery Trading Est.');
-    expect(c.mobile, '0501234567');
+    expect(c.mobile, '+971501234567'); // 050… made international from the +971 line
     expect(c.phone, '+97148801122');
+    expect(c.country, 'UAE');
     expect(c.email, 'info@gorkha-example.ae');
+  });
+
+  test('tax and order numbers are not phones', () {
+    const text = '''
+GORKHA HEAVY EQUIPMENT SPARE PARTS TRADING LLC SPC
+Customer TRN : 104923739700003
+Delivery Order No : 470
+TelePhone : +971 50 421 2345
+Mussaffah 11 | Abu Dhabi, UAE
+''';
+    final c = parseCard(text);
+    expect(c.mobile, '+971504212345');
+    expect(c.phone, '');
+    expect(c.fax, '');
+    expect(c.country, 'UAE');
+    expect(c.city, 'Abu Dhabi');
   });
 
   test('empty and junk lines', () {

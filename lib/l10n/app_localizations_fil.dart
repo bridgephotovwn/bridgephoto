@@ -582,34 +582,35 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Mag-scan ng business card';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'I-save bilang contact';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'I-save sa Mga Contact';
 
   @override
   String get contactReviewTitle => 'Business card';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Suriin ang mga field, pagkatapos ay i-save. Bubukas ang Mga Contact app ng iyong telepono na naka-fill in na ang lahat.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Binabasa ang card…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Walang nakilalang teksto sa card na ito. Maaari mo pa ring i-type ang mga detalye.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Nabuksan ang Mga Contact. I-tap ang I-save doon para itago ito.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Hindi mabuksan ang Mga Contact: $error';
   }
 
   @override
@@ -618,16 +619,16 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Kumpanya';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Posisyon sa trabaho';
 
   @override
   String get fieldMobile => 'Mobile';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telepono';
 
   @override
   String get fieldFax => 'Fax';
@@ -642,7 +643,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get fieldAddress => 'Address';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Lungsod';
+
+  @override
+  String get fieldCountry => 'Bansa';
+
+  @override
+  String get fieldNotes => 'Mga Tala';
 
   @override
   String get drawFirst => 'Iguhit muna ang iyong pirma.';

@@ -569,67 +569,72 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => '名刺をスキャン';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => '連絡先として保存';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => '連絡先に保存';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => '名刺';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      '各項目を確認してから保存してください。スマートフォンの連絡先アプリが、すべて入力済みの状態で開きます。';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => '名刺を読み取っています…';
 
   @override
-  String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+  String get nothingRecognised => 'この名刺からテキストを認識できませんでした。詳細を手入力することもできます。';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened => '連絡先を開きました。保存するには、そこで「保存」をタップしてください。';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return '連絡先を開けませんでした: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return '名刺 $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => '会社';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => '役職';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => '携帯電話';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => '電話';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'FAX';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'メール';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'ウェブサイト';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => '住所';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => '市区町村';
+
+  @override
+  String get fieldCountry => '国';
+
+  @override
+  String get fieldNotes => 'メモ';
 
   @override
   String get drawFirst => '先に署名を書いてください。';

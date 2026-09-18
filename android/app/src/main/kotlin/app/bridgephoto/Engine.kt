@@ -125,7 +125,7 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             }
             "addContact" -> bg(result) {
                 val fields = HashMap<String, String>()
-                for (k in listOf("name", "company", "jobTitle", "mobile", "phone", "fax", "email", "website", "address", "notes", "photo")) {
+                for (k in listOf("name", "company", "jobTitle", "mobile", "phone", "fax", "email", "website", "address", "city", "country", "notes", "photo")) {
                     call.argument<String>(k)?.let { fields[k] = it }
                 }
                 val intent = buildContactIntent(fields)
@@ -499,10 +499,6 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             intent.putExtra(Insert.EMAIL, it)
             intent.putExtra(Insert.EMAIL_TYPE, android.provider.ContactsContract.CommonDataKinds.Email.TYPE_WORK)
         }
-        v("address")?.let {
-            intent.putExtra(Insert.POSTAL, it)
-            intent.putExtra(Insert.POSTAL_TYPE, android.provider.ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK)
-        }
         v("notes")?.let { intent.putExtra(Insert.NOTES, it) }
         val phones = listOf(
             "mobile" to android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
@@ -513,6 +509,16 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         phones.getOrNull(1)?.let { (n, t) -> intent.putExtra(Insert.SECONDARY_PHONE, n); intent.putExtra(Insert.SECONDARY_PHONE_TYPE, t) }
         phones.getOrNull(2)?.let { (n, t) -> intent.putExtra(Insert.TERTIARY_PHONE, n); intent.putExtra(Insert.TERTIARY_PHONE_TYPE, t) }
         val data = ArrayList<ContentValues>()
+        // Structured work address: street, city and country as separate fields.
+        if (v("address") != null || v("city") != null || v("country") != null) {
+            data.add(ContentValues().apply {
+                put(android.provider.ContactsContract.Data.MIMETYPE, android.provider.ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                put(android.provider.ContactsContract.CommonDataKinds.StructuredPostal.TYPE, android.provider.ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK)
+                v("address")?.let { put(android.provider.ContactsContract.CommonDataKinds.StructuredPostal.STREET, it) }
+                v("city")?.let { put(android.provider.ContactsContract.CommonDataKinds.StructuredPostal.CITY, it) }
+                v("country")?.let { put(android.provider.ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, it) }
+            })
+        }
         v("website")?.let {
             data.add(ContentValues().apply {
                 put(android.provider.ContactsContract.Data.MIMETYPE, android.provider.ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)

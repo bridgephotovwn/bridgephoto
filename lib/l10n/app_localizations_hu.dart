@@ -579,67 +579,74 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Névjegykártya szkennelése';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Mentés névjegyként';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Mentés a Névjegyekbe';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Névjegykártya';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Ellenőrizze a mezőket, majd mentse. A telefon Névjegyek alkalmazása minden adattal kitöltve nyílik meg.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'A kártya olvasása…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Ezen a kártyán nem sikerült szöveget felismerni. Az adatokat így is beírhatja.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Megnyílt a Névjegyek. A megtartáshoz koppintson ott a Mentés gombra.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Nem sikerült megnyitni a Névjegyeket: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Kártya $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Cég';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Beosztás';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Mobil';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefon';
 
   @override
   String get fieldFax => 'Fax';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-mail';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Webhely';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Cím';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Város';
+
+  @override
+  String get fieldCountry => 'Ország';
+
+  @override
+  String get fieldNotes => 'Jegyzetek';
 
   @override
   String get drawFirst => 'Először rajzolja meg az aláírását.';

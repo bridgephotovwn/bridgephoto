@@ -582,52 +582,53 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Scansiona un biglietto da visita';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Salva come contatto';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Salva in Contatti';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Biglietto da visita';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Controlla i campi, poi salva. L\'app Contatti del telefono si apre con tutti i dati già inseriti.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Lettura del biglietto…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Nessun testo riconosciuto su questo biglietto. Puoi comunque digitare i dati.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Contatti è stato aperto. Tocca Salva lì per conservare il contatto.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Impossibile aprire Contatti: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Biglietto $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Azienda';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Qualifica';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Cellulare';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefono';
 
   @override
   String get fieldFax => 'Fax';
@@ -636,13 +637,19 @@ class AppLocalizationsIt extends AppLocalizations {
   String get fieldEmail => 'Email';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Sito web';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Indirizzo';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Città';
+
+  @override
+  String get fieldCountry => 'Paese';
+
+  @override
+  String get fieldNotes => 'Note';
 
   @override
   String get drawFirst => 'Disegna prima la tua firma.';

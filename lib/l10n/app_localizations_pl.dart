@@ -587,67 +587,74 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Skanuj wizytówkę';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Zapisz jako kontakt';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Zapisz w Kontaktach';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Wizytówka';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Sprawdź pola, a potem zapisz. Aplikacja Kontakty w telefonie otworzy się z wypełnionymi danymi.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Odczytywanie wizytówki…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Nie rozpoznano tekstu na tej wizytówce. Nadal możesz wpisać dane ręcznie.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Otwarto Kontakty. Dotknij tam Zapisz, aby zachować kontakt.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Nie udało się otworzyć Kontaktów: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Wizytówka $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Firma';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Stanowisko';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Komórka';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefon';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'Faks';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-mail';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Strona internetowa';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Adres';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Miasto';
+
+  @override
+  String get fieldCountry => 'Kraj';
+
+  @override
+  String get fieldNotes => 'Notatki';
 
   @override
   String get drawFirst => 'Najpierw narysuj swój podpis.';

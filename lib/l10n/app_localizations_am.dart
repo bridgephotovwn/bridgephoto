@@ -574,67 +574,73 @@ class AppLocalizationsAm extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'የንግድ ካርድ ቃኝ';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'እንደ እውቂያ አስቀምጥ';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'ወደ እውቂያዎች አስቀምጥ';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'የንግድ ካርድ';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'መስኮቹን ያረጋግጡ፣ ከዚያ ያስቀምጡ። የስልክዎ የእውቂያዎች መተግበሪያ ሁሉም ነገር ተሞልቶ ይከፈታል።';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'ካርዱን በማንበብ ላይ…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'በዚህ ካርድ ላይ ምንም ጽሑፍ አልታወቀም። አሁንም ዝርዝሮቹን መተየብ ይችላሉ።';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened => 'እውቂያዎች ተከፍቷል። ለማስቀመጥ እዚያ አስቀምጥን መታ ያድርጉ።';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'እውቂያዎችን መክፈት አልተቻለም፦ $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'ካርድ $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'ኩባንያ';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'የሥራ መደብ';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'ሞባይል';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'ስልክ';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'ፋክስ';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'ኢሜይል';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'ድር ጣቢያ';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'አድራሻ';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'ከተማ';
+
+  @override
+  String get fieldCountry => 'አገር';
+
+  @override
+  String get fieldNotes => 'ማስታወሻዎች';
 
   @override
   String get drawFirst => 'መጀመሪያ ፊርማዎን ይሳሉ።';

@@ -585,67 +585,74 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Сканировать визитку';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Сохранить как контакт';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Сохранить в Контакты';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Визитка';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Проверьте поля, затем сохраните. Откроется приложение «Контакты» на телефоне со всеми заполненными данными.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Чтение визитки…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'На этой визитке текст не распознан. Вы можете ввести данные вручную.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Открыто приложение «Контакты». Нажмите там «Сохранить», чтобы сохранить контакт.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Не удалось открыть Контакты: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Визитка $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Компания';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Должность';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Мобильный';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Телефон';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'Факс';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'Эл. почта';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Сайт';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Адрес';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Город';
+
+  @override
+  String get fieldCountry => 'Страна';
+
+  @override
+  String get fieldNotes => 'Заметки';
 
   @override
   String get drawFirst => 'Сначала нарисуйте подпись.';

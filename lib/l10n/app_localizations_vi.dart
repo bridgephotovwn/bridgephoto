@@ -574,52 +574,53 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Quét danh thiếp';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Lưu làm liên hệ';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Lưu vào Danh bạ';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Danh thiếp';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Kiểm tra các trường rồi lưu. Ứng dụng Danh bạ trên điện thoại của bạn sẽ mở ra với mọi thông tin đã được điền sẵn.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Đang đọc danh thiếp…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Không nhận dạng được văn bản nào trên danh thiếp này. Bạn vẫn có thể tự nhập thông tin.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Đã mở Danh bạ. Nhấn Lưu ở đó để giữ lại liên hệ.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Không thể mở Danh bạ: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Danh thiếp $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Công ty';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Chức danh';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Di động';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Điện thoại';
 
   @override
   String get fieldFax => 'Fax';
@@ -628,13 +629,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get fieldEmail => 'Email';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Trang web';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Địa chỉ';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Thành phố';
+
+  @override
+  String get fieldCountry => 'Quốc gia';
+
+  @override
+  String get fieldNotes => 'Ghi chú';
 
   @override
   String get drawFirst => 'Hãy vẽ chữ ký của bạn trước.';

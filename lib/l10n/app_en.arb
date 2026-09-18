@@ -215,6 +215,8 @@
   "fieldEmail": "Email",
   "fieldWebsite": "Website",
   "fieldAddress": "Address",
+  "fieldCity": "City",
+  "fieldCountry": "Country",
   "fieldNotes": "Notes",
 
   "drawFirst": "Draw your signature first.",

@@ -574,67 +574,74 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Imbas kad nama';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Simpan sebagai kenalan';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Simpan ke Kenalan';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Kad nama';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Semak medan, kemudian simpan. Apl Kenalan telefon anda akan dibuka dengan semua maklumat telah diisi.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Membaca kad…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Tiada teks dikenali pada kad ini. Anda masih boleh menaip butirannya.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Kenalan telah dibuka. Ketik Simpan di sana untuk menyimpannya.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Tidak dapat membuka Kenalan: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Kad $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Syarikat';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Jawatan';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Telefon bimbit';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefon';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'Faks';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-mel';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Tapak web';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Alamat';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Bandar';
+
+  @override
+  String get fieldCountry => 'Negara';
+
+  @override
+  String get fieldNotes => 'Nota';
 
   @override
   String get drawFirst => 'Lukis tandatangan anda dahulu.';

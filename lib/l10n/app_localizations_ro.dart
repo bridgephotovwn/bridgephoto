@@ -583,67 +583,74 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Scanați o carte de vizită';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Salvați ca contact';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Salvați în Contacte';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Carte de vizită';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Verificați câmpurile, apoi salvați. Aplicația Contacte de pe telefon se deschide cu toate datele completate.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Se citește cartea de vizită…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Nu s-a recunoscut niciun text pe această carte de vizită. Puteți introduce datele manual.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'S-a deschis Contacte. Atingeți Salvați acolo pentru a păstra contactul.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Nu s-a putut deschide Contacte: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Carte de vizită $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Companie';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Funcție';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Mobil';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefon';
 
   @override
   String get fieldFax => 'Fax';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-mail';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Site web';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Adresă';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Oraș';
+
+  @override
+  String get fieldCountry => 'Țară';
+
+  @override
+  String get fieldNotes => 'Note';
 
   @override
   String get drawFirst => 'Desenați mai întâi semnătura.';

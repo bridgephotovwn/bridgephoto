@@ -577,67 +577,74 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'بزنس کارڈ اسکین کریں';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'بطور رابطہ محفوظ کریں';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'رابطوں میں محفوظ کریں';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'بزنس کارڈ';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'فیلڈز چیک کریں، پھر محفوظ کریں۔ آپ کے فون کی رابطے ایپ سب کچھ بھرا ہوا کھلے گی۔';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'کارڈ پڑھا جا رہا ہے…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'اس کارڈ پر کوئی متن نہیں پہچانا گیا۔ آپ پھر بھی تفصیلات ٹائپ کر سکتے ہیں۔';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'رابطے کھل گئے۔ رکھنے کے لیے وہاں «محفوظ کریں» دبائیں۔';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'رابطے نہیں کھل سکے: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'کارڈ $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'کمپنی';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'عہدہ';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'موبائل';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'فون';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'فیکس';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'ای میل';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'ویب سائٹ';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'پتہ';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'شہر';
+
+  @override
+  String get fieldCountry => 'ملک';
+
+  @override
+  String get fieldNotes => 'نوٹس';
 
   @override
   String get drawFirst => 'پہلے اپنے دستخط بنائیں۔';

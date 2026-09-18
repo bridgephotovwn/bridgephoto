@@ -565,67 +565,71 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => '扫描名片';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => '保存为联系人';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => '保存到通讯录';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => '名片';
 
   @override
-  String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+  String get contactHint => '请核对各项信息，然后保存。手机的“通讯录”应用将打开，并已填好所有内容。';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => '正在识别名片…';
 
   @override
-  String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+  String get nothingRecognised => '未能在这张名片上识别出文字。您仍可手动输入信息。';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened => '已打开通讯录。请在那里点按“保存”以保留联系人。';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return '无法打开通讯录：$error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return '名片 $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => '公司';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => '职位';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => '手机';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => '电话';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => '传真';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => '电子邮件';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => '网站';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => '地址';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => '城市';
+
+  @override
+  String get fieldCountry => '国家/地区';
+
+  @override
+  String get fieldNotes => '备注';
 
   @override
   String get drawFirst => '请先绘制您的签名。';
@@ -1236,6 +1240,73 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String couldNotOpenUrl(String url) {
     return '無法開啟 $url';
   }
+
+  @override
+  String get scanBusinessCard => '掃描名片';
+
+  @override
+  String get saveAsContact => '儲存為聯絡人';
+
+  @override
+  String get saveToContacts => '儲存到聯絡人';
+
+  @override
+  String get contactReviewTitle => '名片';
+
+  @override
+  String get contactHint => '請確認各欄位，然後儲存。手機的「聯絡人」App 會開啟，且所有內容都已填好。';
+
+  @override
+  String get readingCard => '正在辨識名片…';
+
+  @override
+  String get nothingRecognised => '無法在這張名片上辨識出文字。您仍可手動輸入資料。';
+
+  @override
+  String get contactOpened => '已開啟「聯絡人」。請在該處點一下「儲存」以保留聯絡人。';
+
+  @override
+  String couldNotOpenContacts(String error) {
+    return '無法開啟聯絡人：$error';
+  }
+
+  @override
+  String cardDefaultName(String stamp) {
+    return '名片 $stamp';
+  }
+
+  @override
+  String get fieldCompany => '公司';
+
+  @override
+  String get fieldJobTitle => '職稱';
+
+  @override
+  String get fieldMobile => '手機';
+
+  @override
+  String get fieldPhone => '電話';
+
+  @override
+  String get fieldFax => '傳真';
+
+  @override
+  String get fieldEmail => '電子郵件';
+
+  @override
+  String get fieldWebsite => '網站';
+
+  @override
+  String get fieldAddress => '地址';
+
+  @override
+  String get fieldCity => '城市';
+
+  @override
+  String get fieldCountry => '國家/地區';
+
+  @override
+  String get fieldNotes => '備註';
 
   @override
   String get drawFirst => '請先繪製您的簽名。';

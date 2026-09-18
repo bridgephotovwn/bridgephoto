@@ -21,7 +21,7 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   final _c = <String, TextEditingController>{
-    for (final k in ['name', 'company', 'jobTitle', 'mobile', 'phone', 'fax', 'email', 'website', 'address', 'notes'])
+    for (final k in ['name', 'company', 'jobTitle', 'mobile', 'phone', 'fax', 'email', 'website', 'address', 'city', 'country', 'notes'])
       k: TextEditingController(),
   };
   bool _reading = true;
@@ -149,6 +149,10 @@ class _ContactScreenState extends State<ContactScreen> {
             _field('email', l.fieldEmail, icon: Icons.alternate_email, type: TextInputType.emailAddress),
             _field('website', l.fieldWebsite, icon: Icons.language, type: TextInputType.url),
             _field('address', l.fieldAddress, icon: Icons.place_outlined, maxLines: 2),
+            Row(children: [
+              Expanded(child: _field('city', l.fieldCity, icon: Icons.location_city_outlined)),
+              Expanded(child: _field('country', l.fieldCountry, icon: Icons.flag_outlined)),
+            ]),
             _field('notes', l.fieldNotes, icon: Icons.notes_outlined, maxLines: 3),
           ]),
         ),

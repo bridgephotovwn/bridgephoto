@@ -577,67 +577,74 @@ class AppLocalizationsNb extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Skann et visittkort';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Lagre som kontakt';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Lagre i Kontakter';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Visittkort';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Sjekk feltene, og lagre deretter. Kontakter-appen på telefonen åpnes med alt fylt ut.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Leser kortet…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Ingen tekst ble gjenkjent på dette kortet. Du kan likevel skrive inn opplysningene.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Kontakter er åpnet. Trykk på Lagre der for å beholde kontakten.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Kunne ikke åpne Kontakter: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Kort $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Firma';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Stilling';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Mobil';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefon';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'Faks';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-post';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Nettsted';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Adresse';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'By';
+
+  @override
+  String get fieldCountry => 'Land';
+
+  @override
+  String get fieldNotes => 'Notater';
 
   @override
   String get drawFirst => 'Tegn signaturen din først.';

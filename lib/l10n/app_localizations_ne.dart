@@ -577,67 +577,74 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'बिजनेस कार्ड स्क्यान गर्नुहोस्';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'सम्पर्कको रूपमा सेभ गर्नुहोस्';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'सम्पर्कमा सेभ गर्नुहोस्';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'बिजनेस कार्ड';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'फिल्डहरू जाँच्नुहोस्, त्यसपछि सेभ गर्नुहोस्। तपाईंको फोनको सम्पर्क एप सबै कुरा भरिएको अवस्थामा खुल्छ।';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'कार्ड पढ्दैछ…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'यो कार्डमा कुनै टेक्स्ट पहिचान भएन। तपाईं अझै पनि विवरण टाइप गर्न सक्नुहुन्छ।';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'सम्पर्क खुल्यो। राख्न त्यहाँ सेभ गर्नुहोस् थिच्नुहोस्।';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'सम्पर्क खोल्न सकिएन: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'कार्ड $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'कम्पनी';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'पद';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'मोबाइल';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'फोन';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'फ्याक्स';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'इमेल';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'वेबसाइट';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'ठेगाना';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'सहर';
+
+  @override
+  String get fieldCountry => 'देश';
+
+  @override
+  String get fieldNotes => 'नोटहरू';
 
   @override
   String get drawFirst => 'पहिले आफ्नो हस्ताक्षर कोर्नुहोस्।';

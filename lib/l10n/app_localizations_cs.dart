@@ -582,67 +582,74 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Skenovat vizitku';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Uložit jako kontakt';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Uložit do Kontaktů';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Vizitka';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Zkontrolujte pole a poté uložte. Otevře se aplikace Kontakty v telefonu s vyplněnými údaji.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Čtení vizitky…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Na této vizitce nebyl rozpoznán žádný text. Údaje můžete zadat ručně.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Kontakty byly otevřeny. Klepnutím na Uložit kontakt uchováte.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Nepodařilo se otevřít Kontakty: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Vizitka $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Společnost';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Pracovní pozice';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Mobil';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Telefon';
 
   @override
   String get fieldFax => 'Fax';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-mail';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Web';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Adresa';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Město';
+
+  @override
+  String get fieldCountry => 'Země';
+
+  @override
+  String get fieldNotes => 'Poznámky';
 
   @override
   String get drawFirst => 'Nejprve nakreslete svůj podpis.';

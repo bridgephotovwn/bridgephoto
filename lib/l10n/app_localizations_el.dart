@@ -581,67 +581,74 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Σάρωση επαγγελματικής κάρτας';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Αποθήκευση ως επαφή';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Αποθήκευση στις Επαφές';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Επαγγελματική κάρτα';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Ελέγξτε τα πεδία και μετά αποθηκεύστε. Η εφαρμογή Επαφές του τηλεφώνου σας ανοίγει με όλα τα στοιχεία συμπληρωμένα.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Ανάγνωση της κάρτας…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Δεν αναγνωρίστηκε κείμενο σε αυτή την κάρτα. Μπορείτε να πληκτρολογήσετε τα στοιχεία.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'Οι Επαφές άνοιξαν. Πατήστε Αποθήκευση εκεί για να κρατήσετε την επαφή.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Δεν ήταν δυνατό το άνοιγμα των Επαφών: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Κάρτα $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Εταιρεία';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Θέση εργασίας';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'Κινητό';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Τηλέφωνο';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'Φαξ';
 
   @override
   String get fieldEmail => 'Email';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Ιστότοπος';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Διεύθυνση';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'Πόλη';
+
+  @override
+  String get fieldCountry => 'Χώρα';
+
+  @override
+  String get fieldNotes => 'Σημειώσεις';
 
   @override
   String get drawFirst => 'Σχεδιάστε πρώτα την υπογραφή σας.';

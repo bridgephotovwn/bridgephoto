@@ -579,64 +579,71 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'Numériser une carte de visite';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'Enregistrer comme contact';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'Enregistrer dans Contacts';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'Carte de visite';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'Vérifiez les champs, puis enregistrez. L\'app Contacts de votre téléphone s\'ouvre avec tout déjà rempli.';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'Lecture de la carte…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'Aucun texte n\'a été reconnu sur cette carte. Vous pouvez tout de même saisir les informations.';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'L\'app Contacts est ouverte. Touchez-y Enregistrer pour conserver le contact.';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'Impossible d\'ouvrir Contacts : $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'Carte $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'Société';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'Fonction';
 
   @override
   String get fieldMobile => 'Mobile';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'Téléphone';
 
   @override
   String get fieldFax => 'Fax';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'E-mail';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'Site web';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'Adresse';
+
+  @override
+  String get fieldCity => 'Ville';
+
+  @override
+  String get fieldCountry => 'Pays';
 
   @override
   String get fieldNotes => 'Notes';

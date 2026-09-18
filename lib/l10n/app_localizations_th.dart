@@ -573,67 +573,74 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get scanBusinessCard => 'Scan a business card';
+  String get scanBusinessCard => 'สแกนนามบัตร';
 
   @override
-  String get saveAsContact => 'Save as contact';
+  String get saveAsContact => 'บันทึกเป็นรายชื่อติดต่อ';
 
   @override
-  String get saveToContacts => 'Save to Contacts';
+  String get saveToContacts => 'บันทึกลงรายชื่อติดต่อ';
 
   @override
-  String get contactReviewTitle => 'Business card';
+  String get contactReviewTitle => 'นามบัตร';
 
   @override
   String get contactHint =>
-      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+      'ตรวจสอบช่องข้อมูล แล้วบันทึก แอปรายชื่อติดต่อในโทรศัพท์ของคุณจะเปิดขึ้นพร้อมข้อมูลที่กรอกไว้ครบแล้ว';
 
   @override
-  String get readingCard => 'Reading the card…';
+  String get readingCard => 'กำลังอ่านนามบัตร…';
 
   @override
   String get nothingRecognised =>
-      'No text was recognised on this card. You can still type the details.';
+      'ไม่พบข้อความบนนามบัตรนี้ คุณยังพิมพ์รายละเอียดเองได้';
 
   @override
-  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+  String get contactOpened =>
+      'เปิดรายชื่อติดต่อแล้ว แตะบันทึกที่นั่นเพื่อเก็บไว้';
 
   @override
   String couldNotOpenContacts(String error) {
-    return 'Could not open Contacts: $error';
+    return 'เปิดรายชื่อติดต่อไม่ได้: $error';
   }
 
   @override
   String cardDefaultName(String stamp) {
-    return 'Card $stamp';
+    return 'นามบัตร $stamp';
   }
 
   @override
-  String get fieldCompany => 'Company';
+  String get fieldCompany => 'บริษัท';
 
   @override
-  String get fieldJobTitle => 'Job title';
+  String get fieldJobTitle => 'ตำแหน่งงาน';
 
   @override
-  String get fieldMobile => 'Mobile';
+  String get fieldMobile => 'มือถือ';
 
   @override
-  String get fieldPhone => 'Phone';
+  String get fieldPhone => 'โทรศัพท์';
 
   @override
-  String get fieldFax => 'Fax';
+  String get fieldFax => 'แฟกซ์';
 
   @override
-  String get fieldEmail => 'Email';
+  String get fieldEmail => 'อีเมล';
 
   @override
-  String get fieldWebsite => 'Website';
+  String get fieldWebsite => 'เว็บไซต์';
 
   @override
-  String get fieldAddress => 'Address';
+  String get fieldAddress => 'ที่อยู่';
 
   @override
-  String get fieldNotes => 'Notes';
+  String get fieldCity => 'เมือง';
+
+  @override
+  String get fieldCountry => 'ประเทศ';
+
+  @override
+  String get fieldNotes => 'หมายเหตุ';
 
   @override
   String get drawFirst => 'โปรดวาดลายเซ็นของคุณก่อน';

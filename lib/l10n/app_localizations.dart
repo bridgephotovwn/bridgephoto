@@ -1228,6 +1228,18 @@ abstract class AppLocalizations {
   /// **'Address'**
   String get fieldAddress;
 
+  /// No description provided for @fieldCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get fieldCity;
+
+  /// No description provided for @fieldCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get fieldCountry;
+
   /// No description provided for @fieldNotes.
   ///
   /// In en, this message translates to:
