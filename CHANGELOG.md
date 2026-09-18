@@ -6,8 +6,10 @@
 - Sign: draw and save signatures, place them on any page (drag, pinch), baked into the page image.
 - The app speaks 46 languages and follows the phone's language automatically (right-to-left included): Amharic, Arabic, Bengali, Chinese (Simplified), Chinese (Traditional), Czech, Danish, Dutch, English, Filipino, Finnish, French, German, Greek, Gujarati, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Kannada, Korean, Malay, Malayalam, Marathi, Nepali, Norwegian, Persian, Polish, Portuguese, Portuguese (Brazil), Punjabi, Romanian, Russian, Sinhala, Spanish, Swahili, Swedish, Tamil, Telugu, Thai, Turkish, Ukrainian, Urdu, Vietnamese.
 - Android text recognition adds Chinese, Japanese and Korean (each also reads Latin); OCR runs at full resolution (Settings > Text recognition > Quality).
+- Search reads the words inside every scanned page, not just the document names, and shows the matching line.
 - Scanner start shows a "Preparing" state on first use; a scan that finishes after the app was recreated is recovered.
 - Private on-device crash recorder, offered for sharing after a crash.
+- Business cards read more carefully: a card whose e-mail names the person no longer puts that person in the company field; numbers survive a zero read as a round shape; and digits in any script (Devanagari, Bengali, Arabic-Indic and the rest) are stored as plain digits, which a card read with the Devanagari model needs.
 
 All notable changes to BRIDGE PHOTO are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The stores see the platform version fields (Android versionName 1.0 / versionCode 1; iOS version 1.0 / build 1); this file uses the three-part form of the same number.
 
