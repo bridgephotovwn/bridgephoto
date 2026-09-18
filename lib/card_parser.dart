@@ -100,9 +100,9 @@ const _titleWords = [
   'diretor', 'directeur', 'direktor', 'gerente', 'presidente', 'geschäftsführer', 'geschaftsfuhrer', 'leiter', 'ingeniero',
   'ingenieur', 'engenheiro', 'consultor', 'coordenador', 'responsable', 'proprietario', 'socio', 'vendedor', 'minister',
   'deputy', 'attache', 'attaché', 'product manager', 'support',
-  // departments are titles, never names (Q8)
-  'department', 'dept', 'division', 'phong kinh doanh', 'kinh doanh', 'abteilung', 'departamento',
 ];
+// Department lines: never a title, never a name (S1)
+const _deptWords = ['department', 'dept', 'division', 'phong kinh doanh', 'kinh doanh', 'abteilung', 'departamento'];
 const _addressWords = [
   'p.o.box', 'po box', 'p.o. box', 'p o box', 'pobox', 'postbus', 'apartado', 'street', 'st.', 'road', 'rd.', 'avenue',
   'ave.', 'building', 'bldg', 'tower', 'office', 'floor', 'suite', 'area', 'industrial', 'zone', 'plot', 'shop no',
@@ -411,10 +411,14 @@ bool _looksLikeName(String s) {
     if (w.endsWith('.') && core.length >= 2 && !_honorifics.contains(lower)) return false; // "Research.." style
     if (core[0] != core[0].toUpperCase()) return false;
   }
-  // N3: "AagQIWwe" - a capital after a lower-case letter inside a word is OCR junk
+  // N3: "AagQIWwe" - a capital after a lower-case letter inside a word is OCR junk;
+  // "Rrrkaxrmbrilyg" - no vowel, or five consonants in a row, is junk too
   for (final w in words) {
     final core = w.replaceAll(RegExp(r"[.\-']"), '');
     if (RegExp(r'[a-z][A-Z]').hasMatch(core) && !RegExp(r"^(Mc|Mac|O'|D')").hasMatch(w)) return false;
+    final lower = core.toLowerCase();
+    if (lower.length >= 4 && !RegExp(r'[aeiouy]').hasMatch(lower)) return false;
+    if (RegExp(r'[bcdfghjklmnpqrstvwxz]{5}').hasMatch(lower)) return false;
   }
   if (words.length == 1) {
     if (words.first.replaceAll('.', '').length < 5) return false; // R1/N2: REVANTH passes, "Saat" does not
@@ -605,8 +609,20 @@ ContactCard parseCard(String text) {
     country ??= dialCountry(p, mobilesToo: false);
   }
   if (country == null) {
-    // company lines may name a foreign country ("Embassy of Sri Lanka" in Bonn) - leave them out (Q7)
-    final textNoCompany = stripped.where((l) => !_hasWord(l.toLowerCase(), _strongCompanyWords)).join('\n').toLowerCase();
+    // company lines may name a foreign country ("Embassy of Sri Lanka" in Bonn) - leave them out,
+    // together with a continuation line such as "OF SRI LANKA" (Q7, S4)
+    final keep = <String>[];
+    var afterCompany = false;
+    for (final l in stripped) {
+      if (_hasWord(l.toLowerCase(), _strongCompanyWords)) {
+        afterCompany = true;
+        continue;
+      }
+      if (afterCompany && RegExp(r'^(of|and|&|for)\b', caseSensitive: false).hasMatch(l.trim())) continue;
+      afterCompany = false;
+      keep.add(l);
+    }
+    final textNoCompany = keep.join('\n').toLowerCase();
     for (final c in _countries) {
       if (c.words.where(_countryWordsOnly.contains).any((w) => _hasWord(textNoCompany, [w]))) {
         country = c;
@@ -690,6 +706,11 @@ ContactCard parseCard(String text) {
     final lowerRest = rest.toLowerCase();
     // D6: a one-word leftover of a phone line ("Studio", "Voice") is a label, never a field.
     if (!rest.contains(' ') && (_hasWord(lowerRest, _labelWords) || lineHadPhone[li])) continue;
+    // S1: "Diagnostics Division", "Phong Kinh Doanh" are departments, not titles or names
+    if (_hasWord(lowerRest, _deptWords) && _firstWordIndex(lowerRest, _titleWords) < 0) {
+      leftovers.add(rest);
+      continue;
+    }
     idx++;
     order[rest] = idx;
 
@@ -744,8 +765,8 @@ ContactCard parseCard(String text) {
     } else if (_looksLikeName(_stripHonorific(rest))) {
       nameCandidates.add(rest);
     } else if (rest.contains(',') &&
-        !_digitsRx.hasMatch(rest) &&
-        !_mostlyPlaceWords(lowerRest) &&
+        !RegExp(r'\d{3,}').hasMatch(rest) &&
+        _countryByWords(lowerRest) == null &&
         _looksLikeName(_stripHonorific(rest.split(',').first.trim()))) { // Q6
       nameCandidates.add(rest.split(',').first.trim()); // A5: degrees after the comma
       order[rest.split(',').first.trim()] = idx;
@@ -837,8 +858,6 @@ ContactCard parseCard(String text) {
     // (a single word of 5+ letters is exempt: REVANTH)
     final oddCaps = n.split(' ').any((w) => w.length >= 2 && w == w.toUpperCase() && !_nameParticles.contains(w.toLowerCase()) && !w.contains('.'));
     if (emailLocal.isNotEmpty && oddCaps && !inLocal(n) && !(single && n.length >= 5)) score -= 8;
-    // Q5: a single word on a card with an email must be anchored to it
-    if (single && emailLocal.isNotEmpty && !inLocal(n)) score -= 8;
     score -= (order[n0] ?? 0) ~/ 10; // earlier lines slightly preferred
     if (score > bestScore) {
       bestScore = score;
@@ -846,6 +865,10 @@ ContactCard parseCard(String text) {
     }
   }
   if (bestScore <= -6) bestName = ''; // Q3: too junk-like to trust
+  // S3: a single-word name on a junk-heavy card (many short leftover lines) is probably junk too
+  if (bestName.isNotEmpty && !bestName.contains(' ') && !inLocal(bestName) && leftovers.where((l) => l.length <= 8).length >= 5) {
+    bestName = '';
+  }
   // N5: a merged column line ("ae Sawsan Ataya Team Young & Rubicam" with s.ataya@...)
   if (bestScore <= 0 && localLetters.length >= 3) {
     for (final r in rests) {
