@@ -34,6 +34,7 @@ The app speaks 46 languages and follows the phone's language automatically (righ
 | Page tools: reorder, rotate, delete; add pages to an existing document | Yes | Yes |
 | Merge scanned documents; merge existing PDF files; import a PDF as pages | Yes (PDFBox-Android) | Yes (Apple PDFKit) |
 | Export or share as PDF, JPEG or PNG; share to WhatsApp, email or any app | Yes | Yes |
+| Business cards: scan a card and save it as a phone contact (review form, then the system Contacts app; no contacts permission) | Yes | Yes |
 | Save to Photos | Yes (Android 10 and later, no permission needed) | Yes (add-only Photos access) |
 | Dark mode | Yes | Yes |
 

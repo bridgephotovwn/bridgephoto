@@ -96,7 +96,8 @@ About 2,600 characters (the exact count is in the report that accompanied this f
 First release of BRIDGE PHOTO.
 • Scan multi-page documents with automatic capture, edge detection and filters.
 • Rename, search, reorder, rotate, merge and import PDFs.
-• On-device text recognition (Latin, Devanagari, Chinese, Japanese, Korean) with searchable PDFs. The app itself speaks 46 languages.
+• On-device text recognition (Latin, Devanagari, Chinese, Japanese, Korean) with searchable PDFs.
+• Business cards: scan a card and save it straight into your phone contacts, with the fields checked by you first. The app itself speaks 46 languages.
 • Export or share as PDF, JPEG or PNG.
 • No ads, no account, no internet permission. Free and open source.
 ```

@@ -2,6 +2,7 @@
 
 ## 1.1.0 (2026-09-18)
 
+- Business cards: scan a card, review the fields, and hand it to the phone's Contacts app already filled in (name, company, title, numbers, email, website, address, card photo). No contacts permission.
 - Sign: draw and save signatures, place them on any page (drag, pinch), baked into the page image.
 - The app speaks 46 languages and follows the phone's language automatically (right-to-left included): Amharic, Arabic, Bengali, Chinese (Simplified), Chinese (Traditional), Czech, Danish, Dutch, English, Filipino, Finnish, French, German, Greek, Gujarati, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Kannada, Korean, Malay, Malayalam, Marathi, Nepali, Norwegian, Persian, Polish, Portuguese, Portuguese (Brazil), Punjabi, Romanian, Russian, Sinhala, Spanish, Swahili, Swedish, Tamil, Telugu, Thai, Turkish, Ukrainian, Urdu, Vietnamese.
 - Android text recognition adds Chinese, Japanese and Korean (each also reads Latin); OCR runs at full resolution (Settings > Text recognition > Quality).
