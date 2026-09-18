@@ -587,6 +587,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get saveToContacts => 'ಸಂಪರ್ಕಗಳಲ್ಲಿ ಉಳಿಸಿ';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'ವ್ಯಾಪಾರ ಕಾರ್ಡ್';
 
   @override

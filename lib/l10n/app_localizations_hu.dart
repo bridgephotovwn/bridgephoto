@@ -588,6 +588,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get saveToContacts => 'Mentés a Névjegyekbe';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Névjegykártya';
 
   @override

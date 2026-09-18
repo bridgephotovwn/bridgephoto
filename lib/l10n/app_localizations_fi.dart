@@ -587,6 +587,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get saveToContacts => 'Tallenna Yhteystietoihin';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Käyntikortti';
 
   @override

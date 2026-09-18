@@ -594,6 +594,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get saveToContacts => 'Сохранить в Контакты';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Визитка';
 
   @override

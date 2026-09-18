@@ -587,6 +587,9 @@ class AppLocalizationsGu extends AppLocalizations {
   String get saveToContacts => 'સંપર્કોમાં સેવ કરો';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'બિઝનેસ કાર્ડ';
 
   @override

@@ -53,6 +53,8 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
 
     companion object {
         const val REQ_SCAN = 7101
+        /** A contact photo travels inside the intent, which crosses a 1 MB Binder call. */
+        const val PHOTO_LIMIT = 400_000
         val NL: String = System.lineSeparator()
     }
 
@@ -130,6 +132,13 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 }
                 val intent = buildContactIntent(fields)
                 main.post { activity.startActivity(intent) }
+                true
+            }
+            "attachPhoto" -> bg(result) {
+                val intent = attachPhotoIntent(call.argument<String>("path")!!)
+                main.post {
+                    activity.startActivity(Intent.createChooser(intent, "Set as contact photo"))
+                }
                 true
             }
             "saveToGallery" -> bg(result) {
@@ -536,20 +545,60 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         return intent
     }
 
-    /** The card image, downsized so the contact editor accepts it. */
+    /**
+     * The card image, downsized so the contact editor accepts it. The whole
+     * intent has to cross a Binder transaction, so the picture is compressed
+     * until it is small enough instead of being dropped when the first try is
+     * too big.
+     */
     private fun contactPhoto(path: String): ByteArray? {
         return try {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeFile(path, bounds)
             var sample = 1
             while (max(bounds.outWidth, bounds.outHeight) / sample > 1024) sample *= 2
-            val bmp = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return null
-            val out = java.io.ByteArrayOutputStream()
-            bmp.compress(Bitmap.CompressFormat.JPEG, 85, out)
+            var bmp = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return null
+            var bytes: ByteArray? = null
+            for (quality in intArrayOf(85, 70, 55, 40)) {
+                val out = java.io.ByteArrayOutputStream()
+                bmp.compress(Bitmap.CompressFormat.JPEG, quality, out)
+                bytes = out.toByteArray()
+                if (bytes.size <= PHOTO_LIMIT) break
+            }
+            // Still too big: halve the picture and try once more.
+            if ((bytes?.size ?: 0) > PHOTO_LIMIT) {
+                val half = Bitmap.createScaledBitmap(bmp, max(1, bmp.width / 2), max(1, bmp.height / 2), true)
+                bmp.recycle()
+                bmp = half
+                val out = java.io.ByteArrayOutputStream()
+                bmp.compress(Bitmap.CompressFormat.JPEG, 70, out)
+                bytes = out.toByteArray()
+            }
             bmp.recycle()
-            out.toByteArray().takeIf { it.size < 700_000 }
+            bytes?.takeIf { it.size <= PHOTO_LIMIT }
         } catch (e: Throwable) {
             null
+        }
+    }
+
+    /**
+     * Hands the card image to the phone's own "set as contact photo" flow.
+     * Contact editors on some phones ignore a photo sent with the new-contact
+     * intent, so this is the way that always works: the user picks the contact
+     * and the Contacts app writes the picture itself. Still no permission.
+     */
+    private fun attachPhotoIntent(path: String): Intent {
+        val src = File(path)
+        val dir = File(activity.cacheDir, "share").apply { mkdirs() }
+        val copy = File(dir, "card-photo.jpg")
+        src.inputStream().use { input -> copy.outputStream().use { input.copyTo(it) } }
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            activity, activity.packageName + ".fileprovider", copy
+        )
+        return Intent(Intent.ACTION_ATTACH_DATA).apply {
+            setDataAndType(uri, "image/jpeg")
+            putExtra("mimeType", "image/jpeg")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }
 

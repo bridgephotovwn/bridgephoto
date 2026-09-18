@@ -198,6 +198,10 @@
   "scanBusinessCard": "Scan a business card",
   "saveAsContact": "Save as contact",
   "saveToContacts": "Save to Contacts",
+  "photoToContact": "Put the card photo on the contact",
+  "@photoToContact": {
+    "description": "Second button on the business-card screen. Some phones ignore the picture sent with the new contact, so this opens the phone's own set-as-contact-photo chooser."
+  },
   "contactReviewTitle": "Business card",
   "contactHint": "Check the fields, then save. Your phone's Contacts app opens with everything filled in.",
   "readingCard": "Reading the card…",

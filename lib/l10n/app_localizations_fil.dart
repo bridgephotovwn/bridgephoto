@@ -591,6 +591,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get saveToContacts => 'I-save sa Mga Contact';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Business card';
 
   @override

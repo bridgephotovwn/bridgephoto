@@ -591,6 +591,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get saveToContacts => 'Uložit do Kontaktů';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Vizitka';
 
   @override

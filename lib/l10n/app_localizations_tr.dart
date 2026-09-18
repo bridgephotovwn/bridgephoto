@@ -587,6 +587,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saveToContacts => 'Kişiler\'e kaydet';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Kartvizit';
 
   @override

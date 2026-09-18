@@ -588,6 +588,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get saveToContacts => 'Enregistrer dans Contacts';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Carte de visite';
 
   @override

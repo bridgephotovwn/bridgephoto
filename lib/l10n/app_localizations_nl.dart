@@ -588,6 +588,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get saveToContacts => 'Opslaan in Contacten';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Visitekaartje';
 
   @override

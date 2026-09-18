@@ -579,6 +579,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get saveToContacts => '연락처에 저장';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => '명함';
 
   @override

@@ -586,6 +586,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get saveToContacts => 'सम्पर्कमा सेभ गर्नुहोस्';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'बिजनेस कार्ड';
 
   @override

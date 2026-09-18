@@ -602,6 +602,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveToContacts => 'حفظ في جهات الاتصال';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'بطاقة عمل';
 
   @override

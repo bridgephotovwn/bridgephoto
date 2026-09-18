@@ -590,6 +590,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get saveToContacts => 'Hifadhi kwenye Anwani';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Kadi ya biashara';
 
   @override

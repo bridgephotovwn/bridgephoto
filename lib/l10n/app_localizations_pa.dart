@@ -587,6 +587,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get saveToContacts => 'ਸੰਪਰਕਾਂ ਵਿੱਚ ਸੇਵ ਕਰੋ';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'ਬਿਜ਼ਨਸ ਕਾਰਡ';
 
   @override

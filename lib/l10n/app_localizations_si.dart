@@ -587,6 +587,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get saveToContacts => 'සම්බන්ධතා වෙත සුරකින්න';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'ව්‍යාපාරික කාඩ්පත';
 
   @override

@@ -586,6 +586,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get saveToContacts => 'Lagre i Kontakter';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Visittkort';
 
   @override

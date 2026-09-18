@@ -186,6 +186,10 @@ class Engine {
   static Future<void> addContact(Map<String, String> fields, {String? photo}) =>
       _ch.invokeMethod('addContact', {...fields, if (photo != null) 'photo': photo});
 
+  /// Android: hands the page to the phone's own "set as contact photo" flow,
+  /// for the contact apps that ignore a photo sent with the new-contact form.
+  static Future<void> attachPhoto(String path) => _ch.invokeMethod('attachPhoto', {'path': path});
+
   /// Saves an image into the system photo gallery. Returns false when the
   /// platform cannot do it (Android 9 and older, or Photos access denied on
   /// iOS). Real failures throw a [PlatformException].

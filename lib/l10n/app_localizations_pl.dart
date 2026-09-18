@@ -596,6 +596,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get saveToContacts => 'Zapisz w Kontaktach';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Wizytówka';
 
   @override

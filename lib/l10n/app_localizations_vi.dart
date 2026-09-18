@@ -583,6 +583,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get saveToContacts => 'Lưu vào Danh bạ';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Danh thiếp';
 
   @override

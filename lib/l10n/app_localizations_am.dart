@@ -583,6 +583,9 @@ class AppLocalizationsAm extends AppLocalizations {
   String get saveToContacts => 'ወደ እውቂያዎች አስቀምጥ';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'የንግድ ካርድ';
 
   @override

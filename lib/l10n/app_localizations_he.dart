@@ -589,6 +589,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get saveToContacts => 'שמירה באנשי קשר';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'כרטיס ביקור';
 
   @override

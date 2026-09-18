@@ -586,6 +586,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get saveToContacts => 'Gem i Kontakter';
 
   @override
+  String get photoToContact => 'Put the card photo on the contact';
+
+  @override
   String get contactReviewTitle => 'Visitkort';
 
   @override
