@@ -2,7 +2,7 @@
 
 A free, open-source document scanner for Android and iPhone. No ads, no account, no tracking.
 
-- Package / bundle ID: `app.bridgephoto` · Version 1.0 (build 1)
+- Package / bundle ID: `app.bridgephoto` · Version 1.1.0 (build 2)
 - Licence: Apache License 2.0
 - Source: https://github.com/OWNER/bridgephoto (placeholder until the repository exists)
 - Privacy policy: [`docs/privacy-policy.html`](docs/privacy-policy.html), published at `<PRIVACY POLICY URL>` (placeholder)
@@ -22,7 +22,7 @@ A free, open-source document scanner for Android and iPhone. No ads, no account,
 
 The app speaks 46 languages and follows the phone's language automatically (right-to-left included): Amharic, Arabic, Bengali, Chinese (Simplified), Chinese (Traditional), Czech, Danish, Dutch, English, Filipino, Finnish, French, German, Greek, Gujarati, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Kannada, Korean, Malay, Malayalam, Marathi, Nepali, Norwegian, Persian, Polish, Portuguese, Portuguese (Brazil), Punjabi, Romanian, Russian, Sinhala, Spanish, Swahili, Swedish, Tamil, Telugu, Thai, Turkish, Ukrainian, Urdu, Vietnamese.
 
-## Features (version 1.0)
+## Features (version 1.1)
 
 | Feature | Android | iOS |
 |---|---|---|
