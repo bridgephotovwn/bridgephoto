@@ -629,11 +629,13 @@ ContactCard parseCard(String text) {
         break;
       }
     }
+    country ??= _countryByWords(textNoCompany); // T3: city words, company lines excluded ("Bonn")
   }
   for (final p in phones) {
     country ??= dialCountry(p, mobilesToo: true);
   }
-  country ??= countryFromText;
+  country ??= (card.website.isNotEmpty ? _countryByTld(card.website) : null) ??
+      (card.email.isNotEmpty ? _countryByTld(card.email) : null);
   if (country == null && phones.any((p) => RegExp(r'^05[024568]\d{7}$').hasMatch(p.digits))) {
     country = _countries.first; // UAE (I)
   }
@@ -704,8 +706,8 @@ ContactCard parseCard(String text) {
     if (rest.replaceAll(RegExp(r'[^A-Za-zÀ-ÿ]'), '').length < 2) continue;
     if (r0.trimRight().endsWith(',')) endedWithComma.add(rest); // N4
     final lowerRest = rest.toLowerCase();
-    // D6: a one-word leftover of a phone line ("Studio", "Voice") is a label, never a field.
-    if (!rest.contains(' ') && (_hasWord(lowerRest, _labelWords) || lineHadPhone[li])) continue;
+    // D6/T1: a one-word leftover of a line that carried digits ("Studio", "FALUES 1312 5") is never a field.
+    if (!rest.contains(' ') && (_hasWord(lowerRest, _labelWords) || lineHadPhone[li] || _digitsRx.hasMatch(stripped[li]))) continue;
     // S1: "Diagnostics Division", "Phong Kinh Doanh" are departments, not titles or names
     if (_hasWord(lowerRest, _deptWords) && _firstWordIndex(lowerRest, _titleWords) < 0) {
       leftovers.add(rest);
@@ -852,6 +854,8 @@ ContactCard parseCard(String text) {
     if (firstTitleIdx > 0 && i == firstTitleIdx - 1) score += 5; // A3
     final single = n.split(' ').length == 1;
     if (single) score -= 3;
+    // T2: "Igrand" is a fragment of the company "TMG Pro Grand Co., Ltd"
+    if (single && companies.any((c) => _tokens(c, 5).any((t) => n.toLowerCase().contains(t) || t.contains(n.toLowerCase())))) continue;
     if (n == n.toUpperCase()) score -= 2;
     if (endedWithComma.contains(n0)) score -= 4; // N4: "Mirihana Nugegoda," is an address
     // N1: with an email on the card, shouting or oddly capitalised candidates must be anchored
