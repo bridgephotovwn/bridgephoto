@@ -256,7 +256,7 @@ Sizes below are from Google's "Add preview assets" and icon-design pages, checke
 |---|---|---|---|
 | App icon | Yes | 512 × 512 px, 32-bit PNG, sRGB, max 1,024 KB. **Full square: do not round the corners and do not use transparency.** Google Play masks the icon itself (rounded corners at 30% of the icon size) and adds its own shadow. | `docs/icon-512-play.png` (upload this one). `docs/icon-512.png` is the rounded version for the README and GitHub only. |
 | Feature graphic | Yes | 1,024 × 500 px, JPEG or 24-bit PNG (no alpha). Keep the wordmark and artwork in the middle; edges may be cropped in some placements. | `docs/feature-graphic.png` (24-bit, no alpha) |
-| Phone screenshots | Yes, minimum 2, maximum 8 | JPEG or 24-bit PNG (no alpha). Each side between 320 and 3,840 px. The long side must not be more than twice the short side, so a raw 1,080 × 2,400 phone screenshot is rejected: use 9:16 (1,080 × 1,920 is the safe choice) or 16:9. Google recommends at least 1,080 px on the short side. | To be captured (shot list below) |
+| Phone screenshots | Yes, minimum 2, maximum 8 | JPEG or 24-bit PNG (no alpha). Each side between 320 and 3,840 px. The long side must not be more than twice the short side, so a raw 1,080 × 2,400 phone screenshot is rejected: use 9:16 (1,080 × 1,920 is the safe choice) or 16:9. Google recommends at least 1,080 px on the short side. | `docs/screenshots/01..08*.png` (1,080 x 2,130, captured 18 September 2026) |
 | 7-inch tablet screenshots | Optional (up to 8) | Same file rules; Google's large-screen guidance says 1,080 to 7,680 px per side, 16:9 or 9:16, and at least 4 screenshots to qualify for large-screen promotion. | Optional |
 | 10-inch tablet screenshots | Optional (up to 8) | As for 7-inch. | Optional |
 | Chromebook screenshots | Optional | As for tablets. | Optional |
@@ -264,20 +264,27 @@ Sizes below are from Google's "Add preview assets" and icon-design pages, checke
 
 How to get 1,080 × 1,920 screenshots from a modern phone: take the screenshot on the phone (usually 1,080 × 2,400 or similar), then crop the status bar area at the top and the navigation area at the bottom to 1,920 px high, or capture on an Android emulator with a 1,080 × 1,920 display. Use the same phone frame, orientation and theme for all shots.
 
-### Screenshot shot list (6 screens, all real features)
+### The screenshots (captured 18 September 2026, Galaxy S24 Ultra)
 
-Use dummy documents only: a made-up invoice, a letter, a form with fake names. Never a real customer document, ID or bank paper. Clear notifications, full battery, no personal names on screen.
+The files are in `docs/screenshots/`, 1,080 x 2,130 pixels, portrait, system status and
+navigation bars cropped away. Upload them in this order; the first two are the ones most
+people see. Every document in them is invented: no real customer paper, no real person.
 
-| # | Screen | What must be visible | Suggested caption (short, no promotional words) |
+| # | File | Screen | Suggested caption |
 |---|---|---|---|
-| 1 | Document list | Three or four scanned documents with names and dates, the search box, and the scan button. | "All your scans in one list" |
-| 2 | Scanning | The scanner screen (Google ML Kit) with a page on a table and the detected edges highlighted, or the corner-adjustment step. | "Automatic edge detection and capture" |
-| 3 | Page editing | A multi-page document open, with pages being reordered or rotated, and the "add pages" action visible. | "Reorder, rotate, add pages" |
-| 4 | Text recognition | The recognised text of a page that has both English and Nepali (Devanagari) text, with the copy and share actions visible. | "Text recognition on your phone: Latin and Devanagari" |
-| 5 | Export and share | The export choice (PDF / JPEG / PNG) and the Android share sheet with WhatsApp and email visible. | "Share as PDF, JPEG or PNG" |
-| 6 | Merge and import, in dark mode | The merge screen (two scanned documents becoming one) or "import PDF as pages", captured with dark mode on. | "Merge documents and import PDFs" |
+| 1 | `01-documents.png` | Document list with six scans, search and the scan button | "All your scans in one list" |
+| 2 | `02-business-card.png` | A scanned card turned into contact fields, ready to save | "A business card straight into your contacts" |
+| 3 | `03-search.png` | A search for a word that appears inside two documents, with the matching line shown | "Search the words inside your scans" |
+| 4 | `04-text-recognition.png` | The recognised text of a page written in Nepali and English | "Text recognition on your phone" |
+| 5 | `05-pages.png` | A two-page document made by merging two scans | "Merge documents, add pages" |
+| 6 | `06-export.png` | The export choice, JPEG or PNG, with share and save | "Share as PDF, JPEG or PNG" |
+| 7 | `07-privacy.png` | The settings screen: no ads, no account, no tracking, open source | "No ads. No account. No tracking." |
+| 8 | `08-dark-mode.png` | The same document list in dark mode | "Dark mode" |
 
-If the Play Console is set to a 9:16 phone slot, all six shots must be portrait. Do not add borders, device frames with third-party logos, or text that claims rankings or prices.
+To retake any of them: put dummy documents in the app, crop each phone screenshot to
+1,080 x 2,130 (cut 96 pixels off the top and 114 off the bottom of a 1,080 x 2,340 shot),
+and keep the ratio under 2:1 or Google rejects the file. Do not add borders, device frames
+with third-party logos, or text that claims rankings or prices.
 
 ---
 
