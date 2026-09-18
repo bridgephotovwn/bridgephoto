@@ -70,15 +70,21 @@ final _strongCompanyWords = _companyWords.where((w) => !_weakCompanyWords.contai
 
 /// "Dubai, U.A.E.", "Balaju, Kathmandu": at least half the words name places.
 bool _mostlyPlaceWords(String lower) {
-  final words = lower.split(RegExp(r'[\s,]+')).where((w) => w.isNotEmpty).toList();
-  if (words.isEmpty) return false;
+  // whole tokens only: "taiwan-hot" is not the place "taiwan" (Q4)
+  final tokens = lower.split(RegExp(r'[\s,]+')).where((w) => w.isNotEmpty).map((w) => w.replaceAll(RegExp(r'^[^a-z]+|[^a-z]+$'), '')).where((w) => w.isNotEmpty).toList();
+  if (tokens.isEmpty) return false;
+  final joined = tokens.join(' ');
   var hits = 0;
   for (final c in _countries) {
     for (final w in c.words) {
-      if (_hasWord(lower, [w])) hits += w.split(' ').length;
+      if (w.contains(' ')) {
+        if (' $joined '.contains(' $w ')) hits += w.split(' ').length;
+      } else if (tokens.contains(w)) {
+        hits += 1;
+      }
     }
   }
-  return hits * 2 >= words.length;
+  return hits * 2 >= tokens.length;
 }
 
 const _titleWords = [
@@ -94,6 +100,8 @@ const _titleWords = [
   'diretor', 'directeur', 'direktor', 'gerente', 'presidente', 'geschäftsführer', 'geschaftsfuhrer', 'leiter', 'ingeniero',
   'ingenieur', 'engenheiro', 'consultor', 'coordenador', 'responsable', 'proprietario', 'socio', 'vendedor', 'minister',
   'deputy', 'attache', 'attaché', 'product manager', 'support',
+  // departments are titles, never names (Q8)
+  'department', 'dept', 'division', 'phong kinh doanh', 'kinh doanh', 'abteilung', 'departamento',
 ];
 const _addressWords = [
   'p.o.box', 'po box', 'p.o. box', 'p o box', 'pobox', 'postbus', 'apartado', 'street', 'st.', 'road', 'rd.', 'avenue',
@@ -286,7 +294,7 @@ String _fixDigits(String line) {
     final other = tok.length - digits - confusable - punct;
     final prevHasDigits = i > 0 && RegExp(r'\d{2,}').hasMatch(toks[i - 1]);
     // X1: "86 OO" - a short token of only O/I/l right after a digit token is digits too
-    final onlyConfusable = tok.isNotEmpty && tok.length <= 3 && confusable == tok.length && prevHasDigits;
+    final onlyConfusable = RegExp(r'^[OoIl]{1,3}$').hasMatch(tok) && prevHasDigits; // Q2: never a pipe
     if ((digits >= 2 && confusable > 0 && other == 0) || onlyConfusable) {
       toks[i] = tok.replaceAll(RegExp(r'[Oo]'), '0').replaceAll(RegExp(r'[Il|]'), '1');
     }
@@ -384,7 +392,8 @@ String _titleCaseIfShouting(String s) {
 String _stripHonorific(String s) {
   var out = s.replaceFirst(RegExp(r'^(?:' + _honorifics.join('|') + r')\.?\s+', caseSensitive: false), '').trim();
   // N7: a misread honorific such as "pb." before at least two more words
-  out = out.replaceFirst(RegExp(r'^[A-Za-z]{1,3}\.\s+(?=\S+\s+\S+)'), '').trim();
+  // (a single capital initial such as "A." stays)
+  out = out.replaceFirst(RegExp(r'^(?:[a-z]{1,3}|[A-Za-z]{2,3})\.\s+(?=\S+\s+\S+)'), '').trim();
   return out;
 }
 
@@ -513,12 +522,14 @@ ContactCard parseCard(String text) {
   // 4. Phone numbers.
   final phones = <_Phone>[];
   final rests = <String>[];
+  final lineHadPhone = <bool>[]; // Q1: a number was really taken from this line
   final exclusionRx = RegExp(r'trn|tax|vat|box|order|invoice|\binv\b|lpo|account|\bacc\b|iban|licen|\breg|\bcr\b|date|ref|serial|\bs/?n\b|zip|postal|pin\b');
   final labelRx = RegExp(r'fax|tel|phone|\bph\b|\bt\b|\bf\b|mob|cell|gsm|whatsapp|\bm\b|\bhp\b|off|direct|voice|dir|handy|portable|celular|movil|móvil|tlf|fon');
   for (var l in stripped) {
     var rest = l;
     final lower = l.toLowerCase();
     final addressLine = _hasWord(lower, _addressWords);
+    var took = false;
     for (final m in _phoneRx.allMatches(l)) {
       final raw = m.group(0)!;
       final before = l.substring(0, m.start).toLowerCase();
@@ -572,8 +583,10 @@ ContactCard parseCard(String text) {
       }
       phones.add(_Phone(n, kind, hasLabel, international));
       rest = rest.replaceFirst(raw, ' ');
+      took = true;
     }
     rests.add(rest);
+    lineHadPhone.add(took);
   }
 
   // 5. Country vote (R4): international office/fax numbers, then an explicit country name,
@@ -592,7 +605,8 @@ ContactCard parseCard(String text) {
     country ??= dialCountry(p, mobilesToo: false);
   }
   if (country == null) {
-    final textNoCompany = allLower; // company lines may name a foreign country (an embassy)
+    // company lines may name a foreign country ("Embassy of Sri Lanka" in Bonn) - leave them out (Q7)
+    final textNoCompany = stripped.where((l) => !_hasWord(l.toLowerCase(), _strongCompanyWords)).join('\n').toLowerCase();
     for (final c in _countries) {
       if (c.words.where(_countryWordsOnly.contains).any((w) => _hasWord(textNoCompany, [w]))) {
         country = c;
@@ -666,15 +680,16 @@ ContactCard parseCard(String text) {
   var idx = 0;
 
   final endedWithComma = <String>{};
-  for (final r0 in rests) {
+  for (var li = 0; li < rests.length; li++) {
+    final r0 = rests[li];
     // dangling "Tel: Fax:" labels left after the numbers were taken out
     final noLabels = r0.replaceAll(_labelColonRx, ' ');
     var rest = _tidy(_stripLabel(_tidy(noLabels)));
     if (rest.replaceAll(RegExp(r'[^A-Za-zÀ-ÿ]'), '').length < 2) continue;
     if (r0.trimRight().endsWith(',')) endedWithComma.add(rest); // N4
     final lowerRest = rest.toLowerCase();
-    // D6: a one-word leftover after removing numbers is a label, never a field.
-    if (!rest.contains(' ') && _hasWord(lowerRest, _labelWords)) continue;
+    // D6: a one-word leftover of a phone line ("Studio", "Voice") is a label, never a field.
+    if (!rest.contains(' ') && (_hasWord(lowerRest, _labelWords) || lineHadPhone[li])) continue;
     idx++;
     order[rest] = idx;
 
@@ -728,7 +743,10 @@ ContactCard parseCard(String text) {
       titleLines.add(rest);
     } else if (_looksLikeName(_stripHonorific(rest))) {
       nameCandidates.add(rest);
-    } else if (rest.contains(',') && _looksLikeName(_stripHonorific(rest.split(',').first.trim()))) {
+    } else if (rest.contains(',') &&
+        !_digitsRx.hasMatch(rest) &&
+        !_mostlyPlaceWords(lowerRest) &&
+        _looksLikeName(_stripHonorific(rest.split(',').first.trim()))) { // Q6
       nameCandidates.add(rest.split(',').first.trim()); // A5: degrees after the comma
       order[rest.split(',').first.trim()] = idx;
     } else {
@@ -811,23 +829,29 @@ ContactCard parseCard(String text) {
     if (inDomain(n) && !inLocal(n)) score -= 10; // company, not a person
     final i = order[n0] ?? -1;
     if (firstTitleIdx > 0 && i == firstTitleIdx - 1) score += 5; // A3
-    if (n.split(' ').length == 1) score -= 3;
+    final single = n.split(' ').length == 1;
+    if (single) score -= 3;
     if (n == n.toUpperCase()) score -= 2;
     if (endedWithComma.contains(n0)) score -= 4; // N4: "Mirihana Nugegoda," is an address
     // N1: with an email on the card, shouting or oddly capitalised candidates must be anchored
+    // (a single word of 5+ letters is exempt: REVANTH)
     final oddCaps = n.split(' ').any((w) => w.length >= 2 && w == w.toUpperCase() && !_nameParticles.contains(w.toLowerCase()) && !w.contains('.'));
-    if (emailLocal.isNotEmpty && oddCaps && !inLocal(n)) score -= 8;
+    if (emailLocal.isNotEmpty && oddCaps && !inLocal(n) && !(single && n.length >= 5)) score -= 8;
+    // Q5: a single word on a card with an email must be anchored to it
+    if (single && emailLocal.isNotEmpty && !inLocal(n)) score -= 8;
     score -= (order[n0] ?? 0) ~/ 10; // earlier lines slightly preferred
     if (score > bestScore) {
       bestScore = score;
       bestName = n;
     }
   }
+  if (bestScore <= -6) bestName = ''; // Q3: too junk-like to trust
   // N5: a merged column line ("ae Sawsan Ataya Team Young & Rubicam" with s.ataya@...)
   if (bestScore <= 0 && localLetters.length >= 3) {
     for (final r in rests) {
       final words = _tidy(r).split(' ');
       for (var i = 0; i < words.length; i++) {
+        if (words[i].contains('@')) continue; // Q4: never a Twitter handle
         final w = words[i].replaceAll(RegExp(r'[^A-Za-z]'), '');
         if (w.length >= 3 && localLetters.contains(w.toLowerCase()) && RegExp(r'^[A-Z]').hasMatch(w)) {
           final prev = i > 0 ? words[i - 1].replaceAll(RegExp(r'[^A-Za-z]'), '') : '';
@@ -846,7 +870,7 @@ ContactCard parseCard(String text) {
     // A8 (N6): "JON 248-343-5976" leaves a short capitalised word next to a number.
     for (var i = 0; i < rests.length; i++) {
       final t = _tidy(rests[i]);
-      if (RegExp(r'^[A-Z][A-Za-z]{2,}$').hasMatch(t) && _digitsRx.hasMatch(stripped[i]) && !_hasWord(t.toLowerCase(), _labelWords)) {
+      if (RegExp(r'^[A-Z][A-Za-z]{2,}$').hasMatch(t) && lineHadPhone[i] && !_hasWord(t.toLowerCase(), _labelWords)) {
         bestName = t[0] + t.substring(1).toLowerCase();
         break;
       }
@@ -892,6 +916,7 @@ ContactCard parseCard(String text) {
     }
   }
   card.company = _titleCaseIfShouting(bestCompany);
+  if (card.name.isNotEmpty && card.name.toLowerCase() == card.company.toLowerCase()) card.name = ''; // Q4
   if (titles.isNotEmpty) card.jobTitle = _titleCaseIfShouting(titles.first);
 
   // 10. Address, city, country.
