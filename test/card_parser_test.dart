@@ -158,4 +158,13 @@ taiwanhot2021@gmail.com
     final c = parseCard('Tel +971 4 2Q5 3456\nram@shop.ae');
     expect(c.phone, '+97142053456');
   });
+
+  test('digits of any script become plain digits', () {
+    // A card read with the Devanagari model comes back with Devanagari or
+    // Bengali digits; Contacts needs plain ones.
+    final a = parseCard('Priya Sharma\nMobile +৯৭১ ৫০ ১২৩ ৪৫৬৭\npriya@shop.ae');
+    expect(a.mobile, '+971501234567');
+    final b = parseCard('Ram Thapa\nMobile +३१ ९८७६५४३२१\nram@shop.np');
+    expect(b.mobile, '+31987654321');
+  });
 }

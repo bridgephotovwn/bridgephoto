@@ -292,6 +292,32 @@ final _onlyConfusableRx = RegExp('^[${_zeroLike}Il]{1,3}\$'); // Q2: never a bar
 final _zeroLikeRx = RegExp('[$_zeroLike]');
 final _oneLikeRx = RegExp('[$_oneLike]');
 
+/// X4: text recognition returns the digits of the script it was asked to read:
+/// a card read with the Devanagari model comes back with "+९७१ ५० ००० ०००० "
+/// (or Bengali zeros). Contacts need plain digits, so every decimal digit of
+/// every script becomes 0-9 before anything else is read.
+const _digitBlocks = [
+  0x0660, 0x06F0, 0x0966, 0x09E6, 0x0A66, 0x0AE6, 0x0B66, 0x0BE6, 0x0C66, 0x0CE6,
+  0x0D66, 0x0DE6, 0x0E50, 0x0ED0, 0x0F20, 0x1040, 0x1090, 0x17E0, 0x1810, 0xFF10,
+];
+
+String _asciiDigits(String line) {
+  if (line.runes.every((r) => r < 0x0660)) return line; // fast path: no such digit
+  final out = StringBuffer();
+  for (final r in line.runes) {
+    var done = false;
+    for (final b in _digitBlocks) {
+      if (r >= b && r <= b + 9) {
+        out.writeCharCode(0x30 + (r - b));
+        done = true;
+        break;
+      }
+    }
+    if (!done) out.writeCharCode(r);
+  }
+  return out.toString();
+}
+
 String _fixDigits(String line) {
   final toks = line.split(' ');
   for (var i = 0; i < toks.length; i++) {
@@ -450,7 +476,7 @@ ContactCard parseCard(String text) {
   // 1. Clean lines.
   var lines = <String>[];
   for (var raw in text.split('\n')) {
-    var l = raw.trim();
+    var l = _asciiDigits(raw.trim()); // X4: before the junk test, which counts 0-9
     if (l.isEmpty || l.contains('�')) continue;
     final letters = RegExp(r'[A-Za-z0-9]').allMatches(l).length;
     final junk = RegExp(r'[^\w\s@.+\-:/(),&#]').allMatches(l).length;
