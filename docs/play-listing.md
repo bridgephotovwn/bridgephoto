@@ -6,8 +6,8 @@ Placeholders to fill in before pasting:
 
 - `bridgephoto.vwn@gmail.com` – the developer contact email (shown publicly on Google Play).
 - `BRIDGE PHOTO` – the public developer name.
-- `<PRIVACY POLICY URL>` – the public address of `docs/privacy-policy.html` once it is on GitHub Pages (for example `https://OWNER.github.io/bridgephoto/privacy-policy.html`).
-- `https://github.com/OWNER/bridgephoto` – the repository address (placeholder until the repository exists).
+- `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html` – the public address of `docs/privacy-policy.html` once it is on GitHub Pages (for example `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html`).
+- `https://github.com/bridgephotovwn/bridgephoto` – the repository address.
 
 Character limits are Google's as of September 2026. The Play Console shows a live counter on every field; if a limit has changed, the Console wins.
 
@@ -113,7 +113,7 @@ First release of BRIDGE PHOTO.
 | Category | Productivity (Tools is the fallback if you prefer it) |
 | Tags (up to 5, chosen from Google's fixed list) | Pick the closest that exist in the Console's list, for example: Productivity, Utilities, Document scanner, PDF, OCR. If a suggested tag is not in the list, skip it; do not invent tags. |
 | Store listing contact email (required, public) | `bridgephoto.vwn@gmail.com` |
-| Store listing website (optional) | `https://github.com/OWNER/bridgephoto` |
+| Store listing website (optional) | `https://github.com/bridgephotovwn/bridgephoto` |
 | Store listing phone (optional) | Leave blank |
 | External marketing ("Google can advertise your app outside Google Play") | Your choice; it does not change what the app does or collects. |
 | Default language | English (United Kingdom) or English (United States) – pick one and keep the spelling consistent |
@@ -128,7 +128,7 @@ Every item below must be completed before a closed-testing or production release
 
 ### 3.1 Privacy policy
 
-- URL: `<PRIVACY POLICY URL>` (the GitHub Pages copy of `docs/privacy-policy.html`; it covers Android and iOS in one page).
+- URL: `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html` (the GitHub Pages copy of `docs/privacy-policy.html`; it covers Android and iOS in one page).
 - The page must be public, must not need a login, and must not be a PDF or an editable document.
 
 ### 3.2 Ads
@@ -286,4 +286,4 @@ If the Play Console is set to a 9:16 phone slot, all six shots must be portrait.
 - With answer set A: "This app may collect these data types: App info and performance, Device or other IDs. Data is encrypted in transit. Data can't be deleted."
 - With answer set B: "No data collected. No data shared with third parties."
 
-Make sure the privacy policy at `<PRIVACY POLICY URL>` is live before you submit either.
+Make sure the privacy policy at `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html` is live before you submit either.

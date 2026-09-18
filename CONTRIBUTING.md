@@ -11,7 +11,7 @@ Thank you for helping. BRIDGE PHOTO is a small, free, open-source scanner for An
 
 ## Reporting a bug
 
-Open an issue at https://github.com/OWNER/bridgephoto/issues (placeholder address) with:
+Open an issue at https://github.com/bridgephotovwn/bridgephoto/issues with:
 
 - Phone model and Android or iOS version.
 - App version, and on Android the Google Play services version if you can find it.
@@ -41,4 +41,4 @@ Translations of the app's text and of the store listings are welcome. Open an is
 
 ## Security issues
 
-If you find something that could expose a user's documents, do not open a public issue. Email `bridgephoto.vwn@gmail.com` (placeholder) and give us reasonable time to fix it before you publish anything.
+If you find something that could expose a user's documents, do not open a public issue. Email `bridgephoto.vwn@gmail.com` and give us reasonable time to fix it before you publish anything.

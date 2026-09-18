@@ -12,8 +12,8 @@ Realistic timeline: enrolment a few days, first build and TestFlight a few days,
 
 - [ ] An Apple ID you will keep for years, with **two-factor authentication** switched on (Apple requires it for the Developer Program). Easiest on an iPhone or iPad signed in with that Apple ID; Apple's account page (`https://account.apple.com`) can also enable it with a trusted phone number – **confirm** which route Apple offers you.
 - [ ] A government photo ID and a payment card in your own legal name.
-- [ ] The privacy policy URL (`<PRIVACY POLICY URL>`, the GitHub Pages copy of `docs/privacy-policy.html`; the same page covers Android and iOS).
-- [ ] A support URL. Apple requires one on every listing; the repository address `https://github.com/OWNER/bridgephoto` (placeholder) is fine, or the GitHub Pages site.
+- [ ] The privacy policy URL (`https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html`, the GitHub Pages copy of `docs/privacy-policy.html`; the same page covers Android and iOS).
+- [ ] A support URL. Apple requires one on every listing; the repository address `https://github.com/bridgephotovwn/bridgephoto` is fine, or the GitHub Pages site.
 - [ ] The listing text (section 7 below), the 1024 × 1024 App Store icon (ask the developer; the iOS icon is built into the app, and App Store Connect takes it from the uploaded build) and screenshots taken on an iPhone (section 7).
 - [ ] The GitHub repository set up so that you (or the developer) can add repository secrets and run the iOS workflow.
 
@@ -95,7 +95,7 @@ The workflow uploads builds with an App Store Connect API key, so nobody ever ty
 | Secondary category (optional) | Utilities |
 | Content Rights | Does not contain, show or access third-party content |
 | Age Rating | Answer **None / No** to every question in the questionnaire; the result should be **4+**. Apple revised the questionnaire and age tiers in 2025 – **confirm in App Store Connect**. |
-| Privacy Policy URL | `<PRIVACY POLICY URL>` |
+| Privacy Policy URL | `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html` |
 | License Agreement | Apple's standard EULA (leave the default) |
 
 ### App Privacy (the "nutrition label")
@@ -116,7 +116,7 @@ The workflow uploads builds with an App Store Connect API key, so nobody ever ty
 | Promotional text (max 170, optional, editable without review) | `Free, open-source scanner for iPhone. No ads, no account, no tracking. On-device text recognition and searchable PDFs.` |
 | Description (max 4,000) | The text under "App Store description" below. |
 | Keywords (max 100 characters, comma-separated) | `scanner,pdf,scan,document,ocr,receipt,text recognition,camera,free,no ads` (73 characters) |
-| Support URL (required) | `https://github.com/OWNER/bridgephoto` (placeholder) |
+| Support URL (required) | `https://github.com/bridgephotovwn/bridgephoto` |
 | Marketing URL (optional) | Leave blank or the GitHub Pages site |
 | Version | `1.0` |
 | Copyright | `2026 BRIDGE PHOTO` |
@@ -172,7 +172,7 @@ BRIDGE PHOTO is a small contribution to society from an individual developer, bu
 ```
 BRIDGE PHOTO is a document scanner. No account or sign-in exists; every feature is available immediately.
 To test: tap Scan, allow the camera, capture one or more pages with the iOS document camera, then open the document to see the recognised text, share it as PDF from the share sheet, or save it to Photos (this triggers the add-only Photos prompt).
-The app makes no network connections and collects no data. Scanning uses VisionKit and text recognition uses the Vision framework, both on the device. The source code is public at https://github.com/OWNER/bridgephoto (placeholder).
+The app makes no network connections and collects no data. Scanning uses VisionKit and text recognition uses the Vision framework, both on the device. The source code is public at https://github.com/bridgephotovwn/bridgephoto.
 ```
 
 ### Screenshot sizes (**confirm in App Store Connect**, which lists the current sizes next to each slot)

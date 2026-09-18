@@ -4,8 +4,8 @@ A free, open-source document scanner for Android and iPhone. No ads, no account,
 
 - Package / bundle ID: `app.bridgephoto` · Version 1.1.0 (build 2)
 - Licence: Apache License 2.0
-- Source: https://github.com/OWNER/bridgephoto (placeholder until the repository exists)
-- Privacy policy: [`docs/privacy-policy.html`](docs/privacy-policy.html), published at `<PRIVACY POLICY URL>` (placeholder)
+- Source: https://github.com/bridgephotovwn/bridgephoto
+- Privacy policy: [`docs/privacy-policy.html`](docs/privacy-policy.html), published at `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html`
 - Runs on Android 7.0 (API 24) and later with Google Play services, and on iOS 15 and later.
 
 ## The privacy promise
@@ -57,7 +57,7 @@ One Flutter codebase with a small native engine per platform:
 Requirements: Flutter (stable channel), JDK 17 and Android SDK 36 for Android. iOS builds need Xcode on macOS.
 
 ```sh
-git clone https://github.com/OWNER/bridgephoto.git   # placeholder address
+git clone https://github.com/bridgephotovwn/bridgephoto.git
 cd bridgephoto
 flutter pub get
 flutter build apk           # debug/release APK for sideloading on a phone with Google Play services
@@ -88,8 +88,8 @@ Copyright 2026 `BRIDGE PHOTO`. Licensed under the Apache License, Version 2.0; s
 
 ## Placeholders to fill in
 
-- `https://github.com/OWNER/bridgephoto` – the real repository address (here, in `docs/`, in `CONTRIBUTING.md` and in the privacy policy).
-- `<PRIVACY POLICY URL>` – the GitHub Pages address of the privacy policy.
+- `https://github.com/bridgephotovwn/bridgephoto` – the real repository address (here, in `docs/`, in `CONTRIBUTING.md` and in the privacy policy).
+- `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html` – the GitHub Pages address of the privacy policy.
 - `BRIDGE PHOTO` and `bridgephoto.vwn@gmail.com` – in `LICENSE`, `docs/privacy-policy.html`, `docs/play-listing.md`, `docs/app-store-checklist.md` and `CONTRIBUTING.md`.
 
 Google Play, Google Play services and ML Kit are trademarks of Google LLC. Apple, iPhone, App Store and TestFlight are trademarks of Apple Inc. BRIDGE PHOTO is not affiliated with or endorsed by Google, Apple or Microsoft.

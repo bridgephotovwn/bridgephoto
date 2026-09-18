@@ -5,8 +5,8 @@ import '../engine.dart';
 import '../main.dart';
 import '../prefs.dart';
 
-const kSourceUrl = 'https://github.com/OWNER/bridgephoto'; // TODO: real repository
-const kPrivacyUrl = 'https://OWNER.github.io/bridgephoto/privacy-policy.html'; // TODO: real page
+const kSourceUrl = 'https://github.com/bridgephotovwn/bridgephoto';
+const kPrivacyUrl = 'https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html';
 const kVersion = '1.1.0';
 
 class SettingsScreen extends StatefulWidget {
