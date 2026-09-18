@@ -7,6 +7,7 @@ import '../engine.dart';
 import '../exporter.dart';
 import '../main.dart';
 import '../prefs.dart';
+import '../search_index.dart';
 import '../store.dart';
 import '../widgets/reorder_grid.dart';
 import 'page_screen.dart';
@@ -82,6 +83,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       }
       await DocStore.save(d);
       if (mounted) setState(() {});
+      SearchIndex.indexAll([d]);
     } on PlatformException catch (e) {
       if (mounted) context.snack(e.message ?? l.scannerUnavailable);
     } catch (e) {

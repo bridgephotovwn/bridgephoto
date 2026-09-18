@@ -9,6 +9,7 @@ import '../exporter.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
 import '../prefs.dart';
+import '../search_index.dart';
 import '../store.dart';
 import 'contact_screen.dart';
 import 'document_screen.dart';
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Engine.onPendingScan = _recoverScan;
+    SearchIndex.version.addListener(_onIndexChanged);
     _reload().then((_) => _checkPendingScan()).then((_) => _offerCrashReport());
   }
 
@@ -39,7 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     if (Engine.onPendingScan == _recoverScan) Engine.onPendingScan = null;
     if (Engine.onScanState == _onScanState) Engine.onScanState = null;
+    SearchIndex.version.removeListener(_onIndexChanged);
     super.dispose();
+  }
+
+  void _onIndexChanged() {
+    if (mounted) setState(() {});
   }
 
   /// After a crash, offer the private report. Nothing is sent unless shared.
@@ -87,11 +94,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _reload() async {
     final docs = await DocStore.list();
+    await SearchIndex.load(docs);
     if (!mounted) return;
     setState(() {
       _docs = docs;
       _selected.removeWhere((id) => !docs.any((d) => d.id == id));
     });
+    // Recognise any page that has no text yet, so search covers every word.
+    SearchIndex.indexAll(docs);
   }
 
   void _setBusy(String? msg) {
@@ -390,8 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Doc> get _visible {
     final docs = _docs ?? const [];
     if (_query.trim().isEmpty) return docs;
-    final q = _query.toLowerCase();
-    return docs.where((d) => d.name.toLowerCase().contains(q)).toList();
+    return docs.where((d) => SearchIndex.matches(d, _query)).toList();
   }
 
   void _toggle(Doc d) {
@@ -555,6 +564,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final order = _selected.indexOf(d.id);
           return _DocCard(
             doc: d,
+            snippet: SearchIndex.snippet(d, _query),
             order: order < 0 ? null : order + 1,
             selecting: _selected.isNotEmpty,
             onTap: () => _selected.isNotEmpty ? _toggle(d) : _open(d),
@@ -608,10 +618,11 @@ Future<String?> _askName(BuildContext context, String title, String initial) {
 
 class _DocCard extends StatelessWidget {
   final Doc doc;
+  final String? snippet; // matching text when the search hit the contents
   final int? order; // 1-based position in the selection, null when not selected
   final bool selecting;
   final VoidCallback onTap, onLongPress;
-  const _DocCard({required this.doc, required this.order, required this.selecting, required this.onTap, required this.onLongPress});
+  const _DocCard({required this.doc, this.snippet, required this.order, required this.selecting, required this.onTap, required this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
@@ -658,8 +669,14 @@ class _DocCard extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 2),
-              Text(l.pagesAndDate(l.nPages(doc.pages.length), fmtDate(context, doc.modified)),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+              Text(
+                snippet ?? l.pagesAndDate(l.nPages(doc.pages.length), fmtDate(context, doc.modified)),
+                maxLines: snippet == null ? 1 : 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: snippet == null ? cs.onSurfaceVariant : cs.primary,
+                    fontStyle: snippet == null ? FontStyle.normal : FontStyle.italic),
+              ),
             ]),
           ),
         ]),
