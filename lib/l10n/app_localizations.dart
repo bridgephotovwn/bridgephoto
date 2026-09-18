@@ -1120,6 +1120,120 @@ abstract class AppLocalizations {
   /// **'Could not open {url}'**
   String couldNotOpenUrl(String url);
 
+  /// No description provided for @scanBusinessCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a business card'**
+  String get scanBusinessCard;
+
+  /// No description provided for @saveAsContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as contact'**
+  String get saveAsContact;
+
+  /// No description provided for @saveToContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Contacts'**
+  String get saveToContacts;
+
+  /// No description provided for @contactReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Business card'**
+  String get contactReviewTitle;
+
+  /// No description provided for @contactHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.'**
+  String get contactHint;
+
+  /// No description provided for @readingCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the card…'**
+  String get readingCard;
+
+  /// No description provided for @nothingRecognised.
+  ///
+  /// In en, this message translates to:
+  /// **'No text was recognised on this card. You can still type the details.'**
+  String get nothingRecognised;
+
+  /// No description provided for @contactOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts opened. Tap Save there to keep it.'**
+  String get contactOpened;
+
+  /// No description provided for @couldNotOpenContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open Contacts: {error}'**
+  String couldNotOpenContacts(String error);
+
+  /// No description provided for @cardDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'Card {stamp}'**
+  String cardDefaultName(String stamp);
+
+  /// No description provided for @fieldCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get fieldCompany;
+
+  /// No description provided for @fieldJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get fieldJobTitle;
+
+  /// No description provided for @fieldMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile'**
+  String get fieldMobile;
+
+  /// No description provided for @fieldPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get fieldPhone;
+
+  /// No description provided for @fieldFax.
+  ///
+  /// In en, this message translates to:
+  /// **'Fax'**
+  String get fieldFax;
+
+  /// No description provided for @fieldEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get fieldEmail;
+
+  /// No description provided for @fieldWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get fieldWebsite;
+
+  /// No description provided for @fieldAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get fieldAddress;
+
+  /// No description provided for @fieldNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get fieldNotes;
+
   /// No description provided for @drawFirst.
   ///
   /// In en, this message translates to:

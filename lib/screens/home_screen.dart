@@ -10,6 +10,7 @@ import '../l10n/app_localizations.dart';
 import '../main.dart';
 import '../prefs.dart';
 import '../store.dart';
+import 'contact_screen.dart';
 import 'document_screen.dart';
 import 'settings_screen.dart';
 
@@ -133,6 +134,42 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (paths.isEmpty) return;
     await _saveNewDocument(paths);
+  }
+
+  /// Business card: one page, then straight to the contact form.
+  Future<void> _scanCard() async {
+    final l = context.l10n;
+    List<String> paths;
+    Engine.onScanState = _onScanState;
+    try {
+      paths = await Engine.scan(mode: Prefs.scannerMode, gallery: Prefs.galleryImport, pageLimit: 1);
+    } on PlatformException catch (e) {
+      Engine.logError('card scan failed: ${e.code}: ${e.message}');
+      if (mounted) context.snack(e.message ?? l.scannerUnavailable);
+      return;
+    } catch (e) {
+      if (mounted) context.snack(l.scannerUnavailableWith(_msg(e)));
+      return;
+    } finally {
+      if (Engine.onScanState == _onScanState) Engine.onScanState = null;
+      _setBusy(null);
+    }
+    if (paths.isEmpty) return;
+    _setBusy(l.savingPages);
+    try {
+      final d = await DocStore.create(l.cardDefaultName(DocStore.stamp()));
+      await DocStore.addPageFile(d, paths.first, move: true);
+      await DocStore.save(d);
+      _setBusy(null);
+      if (!mounted) return;
+      await Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => ContactScreen(doc: d, page: d.pages.first, nameDocument: true)));
+      await _reload();
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotSavePages(_msg(e)));
+    } finally {
+      _setBusy(null);
+    }
   }
 
   /// Android only: pages that arrived while the app was not waiting for them.
@@ -428,6 +465,8 @@ class _HomeScreenState extends State<HomeScreen> {
         PopupMenuButton<String>(
           onSelected: (v) {
             switch (v) {
+              case 'card':
+                _scanCard();
               case 'import':
                 _importPdf();
               case 'mergepdf':
@@ -439,6 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           },
           itemBuilder: (_) => [
+            PopupMenuItem(value: 'card', child: ListTile(leading: const Icon(Icons.contact_page_outlined), title: Text(l.scanBusinessCard))),
             PopupMenuItem(value: 'import', child: ListTile(leading: const Icon(Icons.picture_as_pdf), title: Text(l.importPdfAsPages))),
             PopupMenuItem(value: 'mergepdf', child: ListTile(leading: const Icon(Icons.merge), title: Text(l.mergePdfFiles))),
             const PopupMenuDivider(),

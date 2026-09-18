@@ -4,6 +4,8 @@ import Vision
 import VisionKit
 import PDFKit
 import Photos
+import Contacts
+import ContactsUI
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -44,7 +46,7 @@ struct EngineError: LocalizedError {
 ///  - renderPdf:     PDFKit -> JPEG pages
 ///  - transform:     rotate / re-encode an image
 ///  - saveToGallery: Photos (add-only permission)
-class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
+class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewControllerDelegate {
   private var pendingScan: FlutterResult?
 
   /// The view controller that can present the scanner right now.
@@ -101,6 +103,8 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
                          w: args["w"] as? Int ?? 0, h: args["h"] as? Int ?? 0)
         return true
       }
+    case "addContact":
+      addContact(args, result: result)
     case "saveToGallery":
       saveToGallery(path: args["path"] as? String ?? "", result: result)
     default:
@@ -337,6 +341,61 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
     }
     guard let data = out.jpegData(compressionQuality: 0.92) else { throw EngineError("Cannot encode the page.") }
     try data.write(to: URL(fileURLWithPath: page), options: .atomic)
+  }
+
+  // MARK: - contacts (the system new-contact form; no Contacts permission needed)
+
+  private func addContact(_ a: [String: Any], result: @escaping FlutterResult) {
+    func v(_ k: String) -> String? {
+      let s = (a[k] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+      return s.isEmpty ? nil : s
+    }
+    let c = CNMutableContact()
+    if let name = v("name") {
+      let parts = name.split(separator: " ").map(String.init)
+      if parts.count > 1 {
+        c.givenName = parts.dropLast().joined(separator: " ")
+        c.familyName = parts.last ?? ""
+      } else {
+        c.givenName = name
+      }
+    }
+    c.organizationName = v("company") ?? ""
+    c.jobTitle = v("jobTitle") ?? ""
+    var phones: [CNLabeledValue<CNPhoneNumber>] = []
+    if let m = v("mobile") { phones.append(CNLabeledValue(label: CNLabelPhoneNumberMobile, value: CNPhoneNumber(stringValue: m))) }
+    if let p = v("phone") { phones.append(CNLabeledValue(label: CNLabelWork, value: CNPhoneNumber(stringValue: p))) }
+    if let f = v("fax") { phones.append(CNLabeledValue(label: CNLabelPhoneNumberWorkFax, value: CNPhoneNumber(stringValue: f))) }
+    c.phoneNumbers = phones
+    if let e = v("email") { c.emailAddresses = [CNLabeledValue(label: CNLabelWork, value: e as NSString)] }
+    if let w = v("website") { c.urlAddresses = [CNLabeledValue(label: CNLabelWork, value: w as NSString)] }
+    if let ad = v("address") {
+      let pa = CNMutablePostalAddress()
+      pa.street = ad
+      c.postalAddresses = [CNLabeledValue(label: CNLabelWork, value: pa)]
+    }
+    if let p = v("photo"), let img = UIImage(contentsOfFile: p) {
+      let src = Engine.normalized(img)
+      let scale = min(1, 1024 / max(src.size.width, src.size.height))
+      let size = CGSize(width: src.size.width * scale, height: src.size.height * scale)
+      let fmt = UIGraphicsImageRendererFormat.default()
+      fmt.scale = 1
+      let small = UIGraphicsImageRenderer(size: size, format: fmt).image { _ in src.draw(in: CGRect(origin: .zero, size: size)) }
+      c.imageData = small.jpegData(compressionQuality: 0.85)
+    }
+    guard let host = presenter else {
+      result(FlutterError(code: "contacts", message: "No window to show the contact form in.", details: nil))
+      return
+    }
+    let vc = CNContactViewController(forNewContact: c)
+    vc.delegate = self
+    let nav = UINavigationController(rootViewController: vc)
+    host.present(nav, animated: true)
+    result(true)
+  }
+
+  func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+    viewController.dismiss(animated: true)
   }
 
   private func saveToGallery(path: String, result: @escaping FlutterResult) {

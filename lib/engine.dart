@@ -180,6 +180,12 @@ class Engine {
         'h': h,
       });
 
+  /// Opens the phone's own "new contact" form filled with [fields]
+  /// (name, company, jobTitle, mobile, phone, fax, email, website, address,
+  /// notes). The user saves it there; the app never touches the contact list.
+  static Future<void> addContact(Map<String, String> fields, {String? photo}) =>
+      _ch.invokeMethod('addContact', {...fields, if (photo != null) 'photo': photo});
+
   /// Saves an image into the system photo gallery. Returns false when the
   /// platform cannot do it (Android 9 and older, or Photos access denied on
   /// iOS). Real failures throw a [PlatformException].

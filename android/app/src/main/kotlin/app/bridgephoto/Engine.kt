@@ -13,6 +13,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
+import android.provider.ContactsContract.Intents.Insert
 import android.provider.MediaStore
 import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.vision.common.InputImage
@@ -120,6 +121,15 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<Int>("w") ?: 0,
                     call.argument<Int>("h") ?: 0
                 )
+                true
+            }
+            "addContact" -> bg(result) {
+                val fields = HashMap<String, String>()
+                for (k in listOf("name", "company", "jobTitle", "mobile", "phone", "fax", "email", "website", "address", "notes", "photo")) {
+                    call.argument<String>(k)?.let { fields[k] = it }
+                }
+                val intent = buildContactIntent(fields)
+                main.post { activity.startActivity(intent) }
                 true
             }
             "saveToGallery" -> bg(result) {
@@ -475,6 +485,66 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         base.recycle()
         if (target.exists()) target.delete()
         if (!tmp.renameTo(target)) throw IllegalStateException("Cannot write the page.")
+    }
+
+    /** The system "new contact" screen, pre-filled. No contacts permission is
+     *  needed: the Contacts app does the saving after the user taps Save. */
+    private fun buildContactIntent(f: Map<String, String>): Intent {
+        val intent = Intent(Insert.ACTION).apply { type = android.provider.ContactsContract.RawContacts.CONTENT_TYPE }
+        fun v(k: String): String? = f[k]?.trim()?.takeIf { it.isNotEmpty() }
+        v("name")?.let { intent.putExtra(Insert.NAME, it) }
+        v("company")?.let { intent.putExtra(Insert.COMPANY, it) }
+        v("jobTitle")?.let { intent.putExtra(Insert.JOB_TITLE, it) }
+        v("email")?.let {
+            intent.putExtra(Insert.EMAIL, it)
+            intent.putExtra(Insert.EMAIL_TYPE, android.provider.ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+        }
+        v("address")?.let {
+            intent.putExtra(Insert.POSTAL, it)
+            intent.putExtra(Insert.POSTAL_TYPE, android.provider.ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK)
+        }
+        v("notes")?.let { intent.putExtra(Insert.NOTES, it) }
+        val phones = listOf(
+            "mobile" to android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+            "phone" to android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_WORK,
+            "fax" to android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK
+        ).mapNotNull { (k, t) -> v(k)?.let { it to t } }
+        phones.getOrNull(0)?.let { (n, t) -> intent.putExtra(Insert.PHONE, n); intent.putExtra(Insert.PHONE_TYPE, t) }
+        phones.getOrNull(1)?.let { (n, t) -> intent.putExtra(Insert.SECONDARY_PHONE, n); intent.putExtra(Insert.SECONDARY_PHONE_TYPE, t) }
+        phones.getOrNull(2)?.let { (n, t) -> intent.putExtra(Insert.TERTIARY_PHONE, n); intent.putExtra(Insert.TERTIARY_PHONE_TYPE, t) }
+        val data = ArrayList<ContentValues>()
+        v("website")?.let {
+            data.add(ContentValues().apply {
+                put(android.provider.ContactsContract.Data.MIMETYPE, android.provider.ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
+                put(android.provider.ContactsContract.CommonDataKinds.Website.URL, it)
+                put(android.provider.ContactsContract.CommonDataKinds.Website.TYPE, android.provider.ContactsContract.CommonDataKinds.Website.TYPE_WORK)
+            })
+        }
+        v("photo")?.let { path -> contactPhoto(path)?.let { bytes ->
+            data.add(ContentValues().apply {
+                put(android.provider.ContactsContract.Data.MIMETYPE, android.provider.ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                put(android.provider.ContactsContract.CommonDataKinds.Photo.PHOTO, bytes)
+            })
+        } }
+        if (data.isNotEmpty()) intent.putParcelableArrayListExtra(Insert.DATA, data)
+        return intent
+    }
+
+    /** The card image, downsized so the contact editor accepts it. */
+    private fun contactPhoto(path: String): ByteArray? {
+        return try {
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(path, bounds)
+            var sample = 1
+            while (max(bounds.outWidth, bounds.outHeight) / sample > 1024) sample *= 2
+            val bmp = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return null
+            val out = java.io.ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.JPEG, 85, out)
+            bmp.recycle()
+            out.toByteArray().takeIf { it.size < 700_000 }
+        } catch (e: Throwable) {
+            null
+        }
     }
 
     private fun saveToGallery(path: String, mime: String, name: String): Boolean {

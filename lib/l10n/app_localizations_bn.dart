@@ -577,6 +577,69 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String get scanBusinessCard => 'Scan a business card';
+
+  @override
+  String get saveAsContact => 'Save as contact';
+
+  @override
+  String get saveToContacts => 'Save to Contacts';
+
+  @override
+  String get contactReviewTitle => 'Business card';
+
+  @override
+  String get contactHint =>
+      'Check the fields, then save. Your phone\'s Contacts app opens with everything filled in.';
+
+  @override
+  String get readingCard => 'Reading the card…';
+
+  @override
+  String get nothingRecognised =>
+      'No text was recognised on this card. You can still type the details.';
+
+  @override
+  String get contactOpened => 'Contacts opened. Tap Save there to keep it.';
+
+  @override
+  String couldNotOpenContacts(String error) {
+    return 'Could not open Contacts: $error';
+  }
+
+  @override
+  String cardDefaultName(String stamp) {
+    return 'Card $stamp';
+  }
+
+  @override
+  String get fieldCompany => 'Company';
+
+  @override
+  String get fieldJobTitle => 'Job title';
+
+  @override
+  String get fieldMobile => 'Mobile';
+
+  @override
+  String get fieldPhone => 'Phone';
+
+  @override
+  String get fieldFax => 'Fax';
+
+  @override
+  String get fieldEmail => 'Email';
+
+  @override
+  String get fieldWebsite => 'Website';
+
+  @override
+  String get fieldAddress => 'Address';
+
+  @override
+  String get fieldNotes => 'Notes';
+
+  @override
   String get drawFirst => 'আগে আপনার স্বাক্ষর আঁকুন।';
 
   @override

@@ -9,6 +9,7 @@ import '../main.dart';
 import '../ocr.dart';
 import '../signatures.dart';
 import '../store.dart';
+import 'contact_screen.dart';
 import 'sign_place_screen.dart';
 
 /// One page, full screen, with rotate / sign / share / copy text / delete.
@@ -237,12 +238,32 @@ class _PageScreenState extends State<PageScreen> {
         foregroundColor: Colors.white,
         title: Text(l.pageNOfTotal(_index + 1, d.pages.length)),
         actions: [
-          IconButton(tooltip: l.rotateLeft, icon: const Icon(Icons.rotate_left), onPressed: _busy ? null : () => _rotate(-90)),
           IconButton(tooltip: l.rotateRight, icon: const Icon(Icons.rotate_right), onPressed: _busy ? null : () => _rotate(90)),
           IconButton(tooltip: l.sign, icon: const Icon(Icons.draw_outlined), onPressed: _busy ? null : _sign),
-          IconButton(tooltip: l.copyText, icon: const Icon(Icons.text_fields), onPressed: _busy ? null : _copyText),
           IconButton(tooltip: l.shareImage, icon: const Icon(Icons.share), onPressed: _busy ? null : _share),
-          IconButton(tooltip: l.deletePage, icon: const Icon(Icons.delete_outline), onPressed: _busy ? null : _delete),
+          PopupMenuButton<String>(
+            enabled: !_busy,
+            onSelected: (v) {
+              switch (v) {
+                case 'left':
+                  _rotate(-90);
+                case 'text':
+                  _copyText();
+                case 'contact':
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ContactScreen(doc: d, page: page)));
+                case 'delete':
+                  _delete();
+              }
+            },
+            itemBuilder: (_) => [
+              PopupMenuItem(value: 'left', child: ListTile(leading: const Icon(Icons.rotate_left), title: Text(l.rotateLeft))),
+              PopupMenuItem(value: 'text', child: ListTile(leading: const Icon(Icons.text_fields), title: Text(l.copyText))),
+              PopupMenuItem(value: 'contact', child: ListTile(leading: const Icon(Icons.person_add_alt_1_outlined), title: Text(l.saveAsContact))),
+              const PopupMenuDivider(),
+              PopupMenuItem(value: 'delete', child: ListTile(leading: const Icon(Icons.delete_outline), title: Text(l.deletePage))),
+            ],
+          ),
         ],
       ),
       body: Stack(children: [

@@ -8,6 +8,8 @@
 	<string>BRIDGE PHOTO uses the camera to scan documents. Scans stay on your phone.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Lets you save exported pages to your Photos.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Only used when you choose Save to Contacts, to open the new-contact form filled in from a scanned business card.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
