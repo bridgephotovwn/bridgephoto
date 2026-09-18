@@ -21,7 +21,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
+import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
@@ -105,6 +108,17 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<Int>("rotate") ?: 0,
                     call.argument<String>("format") ?: "jpg",
                     call.argument<Int>("quality") ?: 92
+                )
+                true
+            }
+            "overlay" -> bg(result) {
+                overlay(
+                    call.argument<String>("page")!!,
+                    call.argument<String>("sticker")!!,
+                    call.argument<Int>("x") ?: 0,
+                    call.argument<Int>("y") ?: 0,
+                    call.argument<Int>("w") ?: 0,
+                    call.argument<Int>("h") ?: 0
                 )
                 true
             }
@@ -351,10 +365,13 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             ?: throw IllegalArgumentException("Cannot decode the image.")
         val sx = ow.toDouble() / bmp.width
         val sy = oh.toDouble() / bmp.height
-        val recognizer: TextRecognizer = if (script == "devanagari") {
-            TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
-        } else {
-            TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        // Every non-Latin recogniser also reads Latin text.
+        val recognizer: TextRecognizer = when (script) {
+            "devanagari" -> TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
+            "chinese" -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+            "japanese" -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+            "korean" -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+            else -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         }
         try {
             val text = Tasks.await(recognizer.process(InputImage.fromBitmap(bmp, 0)))
@@ -435,6 +452,29 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         bmp.recycle()
         if (target.exists()) target.delete()
         if (!tmp.renameTo(target)) throw IllegalStateException("Cannot write the image.")
+    }
+
+    /** Draws a transparent PNG (signature, stamp) onto a page and rewrites the JPEG. */
+    private fun overlay(page: String, sticker: String, x: Int, y: Int, w: Int, h: Int) {
+        if (w <= 0 || h <= 0) throw IllegalArgumentException("Nothing to draw.")
+        val base = BitmapFactory.decodeFile(page, BitmapFactory.Options().apply { inMutable = true })
+            ?: throw IllegalArgumentException("Cannot decode the page.")
+        val stk = BitmapFactory.decodeFile(sticker)
+            ?: throw IllegalArgumentException("Cannot decode the signature.")
+        val canvas = android.graphics.Canvas(base)
+        val paint = android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG or android.graphics.Paint.ANTI_ALIAS_FLAG)
+        canvas.drawBitmap(
+            stk, null,
+            android.graphics.RectF(x.toFloat(), y.toFloat(), (x + w).toFloat(), (y + h).toFloat()),
+            paint
+        )
+        stk.recycle()
+        val target = File(page)
+        val tmp = File(page + ".tmp")
+        FileOutputStream(tmp).use { base.compress(Bitmap.CompressFormat.JPEG, 92, it) }
+        base.recycle()
+        if (target.exists()) target.delete()
+        if (!tmp.renameTo(target)) throw IllegalStateException("Cannot write the page.")
     }
 
     private fun saveToGallery(path: String, mime: String, name: String): Boolean {

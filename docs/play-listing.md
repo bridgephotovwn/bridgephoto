@@ -63,7 +63,7 @@ ORGANISE
 • Merge scanned documents into one. Merge existing PDF files. Import a PDF as pages.
 
 TEXT RECOGNITION (OCR) ON YOUR PHONE
-• Recognises Latin-script text (English and many other languages) and Devanagari (Hindi, Nepali, Marathi).
+• Recognises Latin-script text (English and many other languages), Devanagari (Hindi, Nepali, Marathi), Chinese, Japanese and Korean.
 • Searchable PDFs: the recognised text is embedded as an invisible layer, so you can search the PDF and copy text out of it.
 • Copy or share the recognised text on its own.
 • Arabic is not supported in this version.
@@ -96,7 +96,7 @@ About 2,600 characters (the exact count is in the report that accompanied this f
 First release of BRIDGE PHOTO.
 • Scan multi-page documents with automatic capture, edge detection and filters.
 • Rename, search, reorder, rotate, merge and import PDFs.
-• On-device text recognition (Latin and Devanagari) with searchable PDFs.
+• On-device text recognition (Latin, Devanagari, Chinese, Japanese, Korean) with searchable PDFs. The app itself speaks 46 languages.
 • Export or share as PDF, JPEG or PNG.
 • No ads, no account, no internet permission. Free and open source.
 ```

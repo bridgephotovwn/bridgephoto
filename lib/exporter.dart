@@ -57,10 +57,10 @@ class Exporter {
   }
 
   /// Opens the system "save as" dialog. Returns the saved path or null.
-  static Future<String?> savePdf(Doc d, {Progress? progress}) async {
+  static Future<String?> savePdf(Doc d, {Progress? progress, String title = 'Save PDF'}) async {
     final bytes = await PdfBuilder.build(d, onProgress: progress);
     return FilePicker.platform.saveFile(
-      dialogTitle: 'Save PDF',
+      dialogTitle: title,
       fileName: '${DocStore.safeName(d.name)}.pdf',
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
@@ -69,9 +69,9 @@ class Exporter {
   }
 
   static Future<String?> saveBytes(String fileName, Uint8List bytes,
-      {String? ext}) {
+      {String? ext, String title = 'Save'}) {
     return FilePicker.platform.saveFile(
-      dialogTitle: 'Save',
+      dialogTitle: title,
       fileName: fileName,
       type: ext == null ? FileType.any : FileType.custom,
       allowedExtensions: ext == null ? null : [ext],

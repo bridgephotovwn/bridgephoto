@@ -2,7 +2,7 @@
 
 A free, open-source document scanner for Android and iPhone. No ads, no account, no tracking.
 
-- Package / bundle ID: `app.bridgephoto` · Version 1.0 (build 1)
+- Package / bundle ID: `app.bridgephoto` · Version 1.1.0 (build 2)
 - Licence: Apache License 2.0
 - Source: https://github.com/OWNER/bridgephoto (placeholder until the repository exists)
 - Privacy policy: [`docs/privacy-policy.html`](docs/privacy-policy.html), published at `<PRIVACY POLICY URL>` (placeholder)
@@ -18,12 +18,16 @@ A free, open-source document scanner for Android and iPhone. No ads, no account,
 - Scanning and text recognition run on the device: Google ML Kit through Google Play services on Android, Apple's VisionKit and Vision frameworks on iOS. Google Play services downloads the Android scanner and OCR models once; that traffic is Google's, not the app's, and Google's ML Kit publishes its own [data disclosure](https://developers.google.com/ml-kit/android-data-disclosure). The privacy policy explains all of this in plain English.
 - Open source, so anyone can verify all of the above.
 
-## Features (version 1.0)
+## Languages
+
+The app speaks 46 languages and follows the phone's language automatically (right-to-left included): Amharic, Arabic, Bengali, Chinese (Simplified), Chinese (Traditional), Czech, Danish, Dutch, English, Filipino, Finnish, French, German, Greek, Gujarati, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Kannada, Korean, Malay, Malayalam, Marathi, Nepali, Norwegian, Persian, Polish, Portuguese, Portuguese (Brazil), Punjabi, Romanian, Russian, Sinhala, Spanish, Swahili, Swedish, Tamil, Telugu, Thai, Turkish, Ukrainian, Urdu, Vietnamese.
+
+## Features (version 1.1)
 
 | Feature | Android | iOS |
 |---|---|---|
 | Scanner | Google ML Kit Document Scanner: autofocus, automatic capture, edge detection, corner adjustment, colour / greyscale / black-and-white filters, stain and finger removal, multi-page, import from gallery | Apple VisionKit document camera: autofocus, automatic capture, edge detection, perspective correction, colour / greyscale / black-and-white |
-| Text recognition (OCR), on the device | Google ML Kit Text Recognition: Latin (English and other Latin-script languages) and Devanagari (Hindi, Nepali, Marathi). Arabic is not in 1.0. | Apple Vision: the languages your iOS version supports; English on every version. Hindi and Nepali OCR are Android-only in 1.0. |
+| Text recognition (OCR), on the device | Google ML Kit Text Recognition: Latin (English and other Latin-script languages), Devanagari (Hindi, Nepali, Marathi), Chinese, Japanese and Korean. Arabic is not in 1.0. | Apple Vision: the languages your iOS version supports; English on every version. Hindi and Nepali OCR are Android-only in 1.0. |
 | Searchable PDF (invisible OCR text layer, so the PDF can be searched and text copied) | Yes | Yes |
 | Copy or share the recognised text | Yes | Yes |
 | Document list with rename, search, delete | Yes | Yes |

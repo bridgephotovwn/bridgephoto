@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,9 +7,11 @@ import '../engine.dart';
 import '../exporter.dart';
 import '../main.dart';
 import '../ocr.dart';
+import '../signatures.dart';
 import '../store.dart';
+import 'sign_place_screen.dart';
 
-/// One page, full screen, with rotate / share / copy text / delete.
+/// One page, full screen, with rotate / sign / share / copy text / delete.
 class PageScreen extends StatefulWidget {
   final Doc doc;
   final int index;
@@ -56,7 +60,7 @@ class _PageScreenState extends State<PageScreen> {
       _tc(_index).value = Matrix4.identity();
       _zoomed = false;
     } catch (e) {
-      if (mounted) context.snack('Could not rotate: ${_msg(e)}');
+      if (mounted) context.snack(context.l10n.couldNotRotate(_msg(e)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -71,13 +75,14 @@ class _PageScreenState extends State<PageScreen> {
       setState(() => _busy = false);
       await Exporter.shareImages(context, files, 'jpg');
     } catch (e) {
-      if (mounted) context.snack('Could not share: ${_msg(e)}');
+      if (mounted) context.snack(context.l10n.couldNotShare(_msg(e)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _copyText() async {
+    final l = context.l10n;
     setState(() => _busy = true);
     String text;
     try {
@@ -90,26 +95,26 @@ class _PageScreenState extends State<PageScreen> {
     }
     if (!mounted) return;
     if (text.isEmpty) {
-      context.snack('No text found on this page.');
+      context.snack(l.noTextOnPage);
       return;
     }
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Page ${_index + 1} text'),
+        title: Text(l.pageNText(_index + 1)),
         content: SizedBox(
           width: 600,
           child: SingleChildScrollView(child: SelectableText(text)),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.close)),
           FilledButton.icon(
             icon: const Icon(Icons.copy),
-            label: const Text('Copy'),
+            label: Text(l.copy),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: text));
               Navigator.pop(ctx);
-              context.snack('Copied.');
+              context.snack(l.copied);
             },
           ),
         ],
@@ -117,14 +122,97 @@ class _PageScreenState extends State<PageScreen> {
     );
   }
 
+  // ---- signing
+
+  Future<void> _sign() async {
+    final sig = await _pickSignature();
+    if (sig == null || !mounted) return;
+    final applied = await Navigator.of(context).push<bool>(MaterialPageRoute(
+        builder: (_) => SignPlaceScreen(doc: d, page: page, signature: sig)));
+    if (applied == true && mounted) {
+      _tc(_index).value = Matrix4.identity();
+      _zoomed = false;
+      setState(() {});
+      context.snack(context.l10n.signed);
+    }
+  }
+
+  Future<File?> _pickSignature() async {
+    final l = context.l10n;
+    final sigs = await SignatureStore.list();
+    if (!mounted) return null;
+    return showModalBottomSheet<File>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            ListTile(title: Text(l.signPageN(_index + 1), style: Theme.of(ctx).textTheme.titleMedium)),
+            if (sigs.isNotEmpty)
+              SizedBox(
+                height: 120,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  children: [
+                    for (final f in sigs)
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(end: 10),
+                        child: Stack(children: [
+                          Card(
+                            color: Colors.white,
+                            clipBehavior: Clip.antiAlias,
+                            child: InkWell(
+                              onTap: () => Navigator.pop(ctx, f),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Image.file(f, width: 170, height: 76, fit: BoxFit.contain),
+                              ),
+                            ),
+                          ),
+                          PositionedDirectional(
+                            end: 0,
+                            top: 0,
+                            child: IconButton(
+                              tooltip: l.deleteThisSignature,
+                              iconSize: 18,
+                              icon: const Icon(Icons.close, color: Colors.black54),
+                              onPressed: () async {
+                                await SignatureStore.delete(f);
+                                setSheet(() => sigs.remove(f));
+                              },
+                            ),
+                          ),
+                        ]),
+                      ),
+                  ],
+                ),
+              ),
+            ListTile(
+              leading: const Icon(Icons.draw_outlined),
+              title: Text(l.newSignature),
+              onTap: () async {
+                final f = await Navigator.of(ctx).push<File>(
+                    MaterialPageRoute(builder: (_) => const SignatureScreen()));
+                if (ctx.mounted) Navigator.pop(ctx, f);
+              },
+            ),
+            const SizedBox(height: 8),
+          ]),
+        ),
+      ),
+    );
+  }
+
   Future<void> _delete() async {
+    final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Delete page ${_index + 1}?'),
+        title: Text(l.deletePageQuestion(_index + 1)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.delete)),
         ],
       ),
     );
@@ -141,18 +229,20 @@ class _PageScreenState extends State<PageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: Text('Page ${_index + 1} of ${d.pages.length}'),
+        title: Text(l.pageNOfTotal(_index + 1, d.pages.length)),
         actions: [
-          IconButton(tooltip: 'Rotate left', icon: const Icon(Icons.rotate_left), onPressed: _busy ? null : () => _rotate(-90)),
-          IconButton(tooltip: 'Rotate right', icon: const Icon(Icons.rotate_right), onPressed: _busy ? null : () => _rotate(90)),
-          IconButton(tooltip: 'Copy text', icon: const Icon(Icons.text_fields), onPressed: _busy ? null : _copyText),
-          IconButton(tooltip: 'Share image', icon: const Icon(Icons.share), onPressed: _busy ? null : _share),
-          IconButton(tooltip: 'Delete page', icon: const Icon(Icons.delete_outline), onPressed: _busy ? null : _delete),
+          IconButton(tooltip: l.rotateLeft, icon: const Icon(Icons.rotate_left), onPressed: _busy ? null : () => _rotate(-90)),
+          IconButton(tooltip: l.rotateRight, icon: const Icon(Icons.rotate_right), onPressed: _busy ? null : () => _rotate(90)),
+          IconButton(tooltip: l.sign, icon: const Icon(Icons.draw_outlined), onPressed: _busy ? null : _sign),
+          IconButton(tooltip: l.copyText, icon: const Icon(Icons.text_fields), onPressed: _busy ? null : _copyText),
+          IconButton(tooltip: l.shareImage, icon: const Icon(Icons.share), onPressed: _busy ? null : _share),
+          IconButton(tooltip: l.deletePage, icon: const Icon(Icons.delete_outline), onPressed: _busy ? null : _delete),
         ],
       ),
       body: Stack(children: [

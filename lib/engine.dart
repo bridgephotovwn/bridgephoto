@@ -167,6 +167,19 @@ class Engine {
         'quality': quality,
       });
 
+  /// Draws [sticker] (a transparent PNG) onto [page] at the given rectangle in
+  /// page pixels and rewrites the page JPEG in place.
+  static Future<void> overlay(String page, String sticker,
+          {required int x, required int y, required int w, required int h}) =>
+      _ch.invokeMethod('overlay', {
+        'page': page,
+        'sticker': sticker,
+        'x': x,
+        'y': y,
+        'w': w,
+        'h': h,
+      });
+
   /// Saves an image into the system photo gallery. Returns false when the
   /// platform cannot do it (Android 9 and older, or Photos access denied on
   /// iOS). Real failures throw a [PlatformException].

@@ -28,18 +28,24 @@ class _TextScreenState extends State<TextScreen> {
   @override
   void initState() {
     super.initState();
-    _run();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _run());
   }
 
   Future<void> _run({bool force = false}) async {
+    final l = context.l10n;
     setState(() {
-      _status = 'Reading page 1 / ${widget.doc.pages.length}';
+      _status = l.readingPage(1, widget.doc.pages.length);
       _error = null;
     });
     try {
-      final text = await Ocr.document(widget.doc, force: force, onProgress: (done, total) {
-        if (mounted && done < total) setState(() => _status = 'Reading page ${done + 1} / $total');
-      });
+      final text = await Ocr.document(
+        widget.doc,
+        force: force,
+        separator: (n) => l.pageSeparator(n),
+        onProgress: (done, total) {
+          if (mounted && done < total) setState(() => _status = l.readingPage(done + 1, total));
+        },
+      );
       if (!mounted) return;
       setState(() {
         _c.text = text;
@@ -50,39 +56,41 @@ class _TextScreenState extends State<TextScreen> {
       setState(() {
         _status = null;
         _error = e is PlatformException
-            ? (e.message ?? 'Text recognition failed.')
-            : 'Text recognition failed: $e';
+            ? (e.message ?? l.ocrFailed)
+            : l.ocrFailedWith(e.toString());
       });
     }
   }
 
   Future<void> _save() async {
+    final l = context.l10n;
     final bytes = utf8.encode(_c.text);
     final p = await Exporter.saveBytes('${DocStore.safeName(widget.doc.name)}.txt',
-        Uint8List.fromList(bytes), ext: 'txt');
-    if (p != null && mounted) context.snack('Text saved.');
+        Uint8List.fromList(bytes), ext: 'txt', title: l.saveDialogTitle);
+    if (p != null && mounted) context.snack(l.textSaved);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final cs = Theme.of(context).colorScheme;
     final busy = _status != null;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Text'),
+        title: Text(l.text),
         actions: [
           IconButton(
-            tooltip: 'Copy all',
+            tooltip: l.copyAll,
             icon: const Icon(Icons.copy),
             onPressed: busy || _c.text.isEmpty
                 ? null
                 : () {
                     Clipboard.setData(ClipboardData(text: _c.text));
-                    context.snack('Copied.');
+                    context.snack(l.copied);
                   },
           ),
           IconButton(
-            tooltip: 'Share text',
+            tooltip: l.shareText,
             icon: const Icon(Icons.share),
             onPressed: busy || _c.text.isEmpty ? null : () => Exporter.shareText(context, _c.text, subject: widget.doc.name),
           ),
@@ -94,21 +102,32 @@ class _TextScreenState extends State<TextScreen> {
                 case 'rerun':
                   _run(force: true);
                 case 'latin':
-                  Prefs.ocrScript = 'latin';
-                  _run(force: true);
                 case 'devanagari':
-                  Prefs.ocrScript = 'devanagari';
+                case 'chinese':
+                case 'japanese':
+                case 'korean':
+                  Prefs.ocrScript = v;
                   _run(force: true);
               }
             },
-            itemBuilder: (_) => [
-              const PopupMenuItem(value: 'save', child: ListTile(leading: Icon(Icons.save_alt), title: Text('Save as .txt'))),
-              const PopupMenuItem(value: 'rerun', child: ListTile(leading: Icon(Icons.refresh), title: Text('Read again'))),
-              if (Engine.isAndroid && Prefs.ocrScript != 'latin')
-                const PopupMenuItem(value: 'latin', child: ListTile(leading: Icon(Icons.language), title: Text('Read as English / Latin'))),
-              if (Engine.isAndroid && Prefs.ocrScript != 'devanagari')
-                const PopupMenuItem(value: 'devanagari', child: ListTile(leading: Icon(Icons.language), title: Text('Read as Hindi / Nepali'))),
-            ],
+            itemBuilder: (_) {
+              final scripts = {
+                'latin': l.readAsLatin,
+                'devanagari': l.readAsDevanagari,
+                'chinese': l.readAsChinese,
+                'japanese': l.readAsJapanese,
+                'korean': l.readAsKorean,
+              };
+              return [
+                PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.saveAsTxt))),
+                PopupMenuItem(value: 'rerun', child: ListTile(leading: const Icon(Icons.refresh), title: Text(l.readAgain))),
+                if (Engine.isAndroid) const PopupMenuDivider(),
+                if (Engine.isAndroid)
+                  for (final e in scripts.entries)
+                    if (Prefs.ocrScript != e.key)
+                      PopupMenuItem(value: e.key, child: ListTile(leading: const Icon(Icons.language), title: Text(e.value))),
+              ];
+            },
           ),
         ],
       ),
@@ -125,13 +144,9 @@ class _TextScreenState extends State<TextScreen> {
             child: Column(children: [
               Text(_error!, style: TextStyle(color: cs.error)),
               const SizedBox(height: 8),
-              Text(
-                'On Android the text model is downloaded once by Google Play services. '
-                'If this is the first use, wait a minute and try again.',
-                style: TextStyle(color: cs.onSurfaceVariant),
-              ),
+              if (Engine.isAndroid) Text(l.ocrModelHint, style: TextStyle(color: cs.onSurfaceVariant)),
               const SizedBox(height: 8),
-              FilledButton(onPressed: () => _run(force: true), child: const Text('Try again')),
+              FilledButton(onPressed: () => _run(force: true), child: Text(l.tryAgain)),
             ]),
           ),
         Expanded(
@@ -145,7 +160,7 @@ class _TextScreenState extends State<TextScreen> {
               readOnly: busy,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                hintText: busy ? '' : 'No text was found.',
+                hintText: busy ? '' : l.noTextFound,
               ),
               onChanged: (_) => setState(() {}),
             ),

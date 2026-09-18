@@ -93,6 +93,14 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
                            quality: args["quality"] as? Int ?? 92)
         return true
       }
+    case "overlay":
+      bg(result) {
+        try self.overlay(page: args["page"] as? String ?? "",
+                         sticker: args["sticker"] as? String ?? "",
+                         x: args["x"] as? Int ?? 0, y: args["y"] as? Int ?? 0,
+                         w: args["w"] as? Int ?? 0, h: args["h"] as? Int ?? 0)
+        return true
+      }
     case "saveToGallery":
       saveToGallery(path: args["path"] as? String ?? "", result: result)
     default:
@@ -313,6 +321,22 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate {
       : result.jpegData(compressionQuality: CGFloat(min(max(quality, 1), 100)) / 100)
     guard let d = data else { throw EngineError("Cannot encode the image.") }
     try d.write(to: URL(fileURLWithPath: output), options: .atomic)
+  }
+
+  /// Draws a transparent PNG (signature, stamp) onto a page and rewrites the JPEG.
+  private func overlay(page: String, sticker: String, x: Int, y: Int, w: Int, h: Int) throws {
+    guard w > 0, h > 0 else { throw EngineError("Nothing to draw.") }
+    guard let base = UIImage(contentsOfFile: page) else { throw EngineError("Cannot read the page.") }
+    guard let stk = UIImage(contentsOfFile: sticker) else { throw EngineError("Cannot read the signature.") }
+    let src = Engine.normalized(base)
+    let fmt = UIGraphicsImageRendererFormat.default()
+    fmt.scale = 1
+    let out = UIGraphicsImageRenderer(size: src.size, format: fmt).image { _ in
+      src.draw(in: CGRect(origin: .zero, size: src.size))
+      stk.draw(in: CGRect(x: CGFloat(x), y: CGFloat(y), width: CGFloat(w), height: CGFloat(h)))
+    }
+    guard let data = out.jpegData(compressionQuality: 0.92) else { throw EngineError("Cannot encode the page.") }
+    try data.write(to: URL(fileURLWithPath: page), options: .atomic)
   }
 
   private func saveToGallery(path: String, result: @escaping FlutterResult) {

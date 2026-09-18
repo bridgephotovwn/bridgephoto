@@ -7,7 +7,7 @@ import '../prefs.dart';
 
 const kSourceUrl = 'https://github.com/OWNER/bridgephoto'; // TODO: real repository
 const kPrivacyUrl = 'https://OWNER.github.io/bridgephoto/privacy-policy.html'; // TODO: real page
-const kVersion = '1.0.0';
+const kVersion = '1.1.0';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -46,24 +46,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } catch (_) {
       ok = false;
     }
-    if (!ok && mounted) context.snack('Could not open $url');
+    if (!ok && mounted) context.snack(context.l10n.couldNotOpenUrl(url));
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final cs = Theme.of(context).colorScheme;
     final android = Engine.isAndroid;
 
-    const modes = [
-      ('full', 'Full: filters + clean stains and fingers'),
-      ('filter', 'Filters only'),
-      ('base', 'Basic: crop and rotate only'),
+    final modes = [('full', l.modeFull), ('filter', l.modeFilter), ('base', l.modeBase)];
+    final limits = [for (final n in [10, 25, 50, 100]) (n, l.nPages(n))];
+    final sizes = [('a4', 'A4'), ('letter', 'US Letter'), ('fit', l.fitScan)];
+    final scripts = [
+      ('latin', l.scriptLatin),
+      ('devanagari', l.scriptDevanagari),
+      ('chinese', l.scriptChinese),
+      ('japanese', l.scriptJapanese),
+      ('korean', l.scriptKorean),
     ];
-    const limits = [(10, '10 pages'), (25, '25 pages'), (50, '50 pages'), (100, '100 pages')];
-    const sizes = [('a4', 'A4'), ('letter', 'US Letter'), ('fit', 'Same shape as the scan')];
-    const scripts = [('latin', 'English and other Latin-script languages'), ('devanagari', 'Hindi, Nepali, Marathi (+ Latin)')];
-    const qualities = [('best', 'Best: full resolution, reads small print'), ('fast', 'Fast: smaller copy of the page')];
-    const themes = [('system', 'Follow the phone'), ('light', 'Light'), ('dark', 'Dark')];
+    final qualities = [('best', l.qualityBest), ('fast', l.qualityFast)];
+    final themes = [('system', l.themeSystem), ('light', l.themeLight), ('dark', l.themeDark)];
 
     Widget header(String t) => Padding(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
@@ -71,94 +74,91 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l.settings)),
       body: ListView(children: [
-        header('Scanner'),
+        header(l.scanner),
         if (android)
           ListTile(
-            title: const Text('Scan mode'),
+            title: Text(l.scanMode),
             subtitle: Text(_label(Prefs.scannerMode, modes)),
-            onTap: () => _choose('Scan mode', Prefs.scannerMode, modes, (v) => Prefs.scannerMode = v),
+            onTap: () => _choose(l.scanMode, Prefs.scannerMode, modes, (v) => Prefs.scannerMode = v),
           ),
         if (android)
           SwitchListTile(
-            title: const Text('Allow import from gallery'),
-            subtitle: const Text('Shows a gallery button inside the scanner'),
+            title: Text(l.allowGallery),
+            subtitle: Text(l.allowGalleryHint),
             value: Prefs.galleryImport,
             onChanged: (v) => setState(() => Prefs.galleryImport = v),
           ),
         ListTile(
-          title: const Text('Pages per scan'),
+          title: Text(l.pagesPerScan),
           subtitle: Text(_label(Prefs.pageLimit, limits)),
-          onTap: () => _choose('Pages per scan', Prefs.pageLimit, limits, (v) => Prefs.pageLimit = v),
+          onTap: () => _choose(l.pagesPerScan, Prefs.pageLimit, limits, (v) => Prefs.pageLimit = v),
         ),
         if (!android)
           ListTile(
             leading: Icon(Icons.info_outline, color: cs.onSurfaceVariant),
-            title: const Text('On iPhone the scanner is Apple\'s own document camera.'),
-            subtitle: const Text('Automatic capture, edge detection and colour modes are built in.'),
+            title: Text(l.iosScannerNote),
+            subtitle: Text(l.iosScannerNote2),
           ),
-        header('PDF'),
+        header(l.pdf),
         ListTile(
-          title: const Text('Page size'),
+          title: Text(l.pageSize),
           subtitle: Text(_label(Prefs.pdfSize, sizes)),
-          onTap: () => _choose('Page size', Prefs.pdfSize, sizes, (v) => Prefs.pdfSize = v),
+          onTap: () => _choose(l.pageSize, Prefs.pdfSize, sizes, (v) => Prefs.pdfSize = v),
         ),
         SwitchListTile(
-          title: const Text('Searchable PDF'),
-          subtitle: const Text('Adds an invisible text layer so the PDF can be searched and text copied'),
+          title: Text(l.searchablePdf),
+          subtitle: Text(l.searchablePdfHint),
           value: Prefs.pdfOcr,
           onChanged: (v) => setState(() => Prefs.pdfOcr = v),
         ),
-        header('Text recognition'),
+        header(l.textRecognition),
         if (android)
           ListTile(
-            title: const Text('Quality'),
+            title: Text(l.quality),
             subtitle: Text(_label(Prefs.ocrQuality, qualities)),
-            onTap: () => _choose('Quality', Prefs.ocrQuality, qualities, (v) => Prefs.ocrQuality = v),
+            onTap: () => _choose(l.quality, Prefs.ocrQuality, qualities, (v) => Prefs.ocrQuality = v),
           ),
         if (android)
           ListTile(
-            title: const Text('Language'),
+            title: Text(l.language),
             subtitle: Text(_label(Prefs.ocrScript, scripts)),
-            onTap: () => _choose('Language', Prefs.ocrScript, scripts, (v) => Prefs.ocrScript = v),
+            onTap: () => _choose(l.language, Prefs.ocrScript, scripts, (v) => Prefs.ocrScript = v),
           )
         else
           ListTile(
             leading: Icon(Icons.info_outline, color: cs.onSurfaceVariant),
-            title: const Text('The language is detected automatically.'),
+            title: Text(l.languageAuto),
           ),
-        header('Appearance'),
+        header(l.appearance),
         ListTile(
-          title: const Text('Theme'),
+          title: Text(l.theme),
           subtitle: Text(_label(Prefs.theme, themes)),
-          onTap: () => _choose('Theme', Prefs.theme, themes, (v) => Prefs.theme = v),
+          onTap: () => _choose(l.theme, Prefs.theme, themes, (v) => Prefs.theme = v),
         ),
-        header('About'),
-        const ListTile(
-          leading: Icon(Icons.verified_user_outlined),
-          title: Text('No ads. No account. No tracking.'),
-          subtitle: Text('Scans stay on this phone unless you share or export them. '
-              'Uninstalling the app deletes them, so export what you want to keep.'),
+        header(l.about),
+        ListTile(
+          leading: const Icon(Icons.verified_user_outlined),
+          title: Text(l.aboutPromise),
+          subtitle: Text(l.aboutPromiseBody),
         ),
         ListTile(
           leading: const Icon(Icons.code),
-          title: const Text('Open source (Apache-2.0)'),
+          title: Text(l.openSource),
           subtitle: const Text(kSourceUrl),
           onTap: () => _open(kSourceUrl),
         ),
         ListTile(
           leading: const Icon(Icons.policy_outlined),
-          title: const Text('Privacy policy'),
-          subtitle: const Text('Opens in your browser'),
+          title: Text(l.privacyPolicy),
+          subtitle: Text(l.opensInBrowser),
           onTap: () => _open(kPrivacyUrl),
         ),
         ListTile(
           leading: const Icon(Icons.info_outline),
-          title: const Text('BRIDGE PHOTO $kVersion'),
-          subtitle: Text(android
-              ? 'Scanning and text recognition by Google ML Kit (on device). PDF merge by PDFBox-Android. Devanagari font: Noto (OFL).'
-              : 'Scanning by Apple VisionKit, text recognition by Apple Vision (on device). Devanagari font: Noto (OFL).'),
+          title: Text('${l.appName} $kVersion'),
+          subtitle: Text(android ? l.aboutTechAndroid : l.aboutTechIos),
         ),
         const SizedBox(height: 24),
       ]),

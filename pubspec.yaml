@@ -1,7 +1,7 @@
 name: bridgephoto
 description: "BRIDGE PHOTO - a free document scanner. No ads, no account, no tracking."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.5.0
@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
   path_provider: ^2.1.4
   share_plus: ^11.0.0
   file_picker: ^10.0.0
@@ -23,5 +26,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/fonts/NotoSansDevanagari-Regular.ttf
