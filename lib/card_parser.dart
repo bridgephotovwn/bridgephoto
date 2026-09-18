@@ -251,14 +251,13 @@ ContactCard parseCard(String text) {
         rest = rest.replaceFirst(m.group(0)!, ' ');
         continue;
       }
+      // A mobile prefix outranks a generic "Tel" label: the number type is what
+      // the contact needs (WhatsApp, dialling), and cards often say "Tel" for both.
+      final mobilePrefix = RegExp(r'^(\+?9715\d{8}|05\d{8}|\+?9779[78]\d{8}|9[78]\d{8})$').hasMatch(n);
       if (RegExp(r'fax|\bf\b').hasMatch(labelZone)) {
         phonesFax.add(n);
-      } else if (RegExp(r'mob|cell|gsm|whatsapp|\bm\b|\bhp\b').hasMatch(labelZone)) {
+      } else if (RegExp(r'mob|cell|gsm|whatsapp|\bm\b|\bhp\b').hasMatch(labelZone) || mobilePrefix) {
         phonesMobile.add(n);
-      } else if (RegExp(r'tel|phone|\bph\b|\bt\b|off|direct').hasMatch(labelZone)) {
-        phonesWork.add(n);
-      } else if (RegExp(r'^(\+?9715|05)').hasMatch(n) || RegExp(r'^(\+?977(97|98)|(97|98))').hasMatch(n)) {
-        phonesMobile.add(n); // UAE / Nepal mobile prefixes
       } else {
         phonesWork.add(n);
       }
@@ -330,6 +329,12 @@ ContactCard parseCard(String text) {
   }
   if (card.address.isEmpty && addressLines.isNotEmpty) card.address = addressLines.join(', ');
 
+  // No company line? The web or email domain names it: www.gorkha.ae -> Gorkha.
+  if (card.company.isEmpty) {
+    final fromDomain = _companyFromDomain(card.website.isNotEmpty ? card.website : card.email);
+    if (fromDomain.isNotEmpty) card.company = fromDomain;
+  }
+
   final notes = <String>[
     ...leftovers.where((l) => l != card.name && l != card.company),
     ...nameCandidates.map(clean).where((n) => _titleCaseIfShouting(n) != card.name && _titleCaseIfShouting(n) != card.company),
@@ -340,6 +345,30 @@ ContactCard parseCard(String text) {
   card.notes = notes.join('\n').trim();
   if (card.notes.length > 600) card.notes = card.notes.substring(0, 600);
   return card;
+}
+
+/// "www.gorkha.ae" or "info@al-yamama.com" -> "Gorkha" / "Al Yamama".
+String _companyFromDomain(String s) {
+  var d = s.trim().toLowerCase();
+  if (d.isEmpty) return '';
+  if (d.contains('@')) d = d.substring(d.indexOf('@') + 1);
+  d = d.replaceFirst(RegExp(r'^https?://'), '').replaceFirst(RegExp(r'^www\.'), '').split('/').first;
+  final parts = d.split('.').where((p) => p.isNotEmpty).toList();
+  if (parts.length < 2) return '';
+  // drop the public suffix (.com, .ae, .co.uk ...)
+  var label = parts[parts.length - 2];
+  if (label.length <= 3 && parts.length >= 3 && ['co', 'com', 'net', 'org', 'ac', 'gov', 'edu'].contains(label)) {
+    label = parts[parts.length - 3];
+  }
+  if (['gmail', 'yahoo', 'hotmail', 'outlook', 'live', 'icloud', 'me', 'proton', 'protonmail', 'aol', 'msn', 'ymail',
+       'rediffmail', 'mail', 'email', 'example'].contains(label)) {
+    return '';
+  }
+  return label
+      .split(RegExp(r'[-_]+'))
+      .where((w) => w.isNotEmpty)
+      .map((w) => w[0].toUpperCase() + w.substring(1))
+      .join(' ');
 }
 
 /// "05O 123 4567" -> "050 123 4567": inside tokens that are mostly digits,

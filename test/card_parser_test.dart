@@ -93,6 +93,21 @@ Mussaffah 11 | Abu Dhabi, UAE
     expect(c.city, 'Abu Dhabi');
   });
 
+  test('company from the web address when the card names none', () {
+    const text = '''
+Bhuban Dhamala
+Mob: +971 56 736 2687
+sales@gorkha.ae
+www.gorkha.ae
+''';
+    final c = parseCard(text);
+    expect(c.name, 'Bhuban Dhamala');
+    expect(c.company, 'Gorkha');
+    expect(c.country, 'UAE');
+    final free = parseCard('Ram Thapa\nram.thapa@gmail.com');
+    expect(free.company, '');
+  });
+
   test('empty and junk lines', () {
     final c = parseCard('�ylail guilytio\n\n***\n');
     expect(c.name, '');
