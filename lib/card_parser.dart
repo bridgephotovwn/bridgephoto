@@ -283,20 +283,28 @@ bool _hasWord(String lower, List<String> words) {
 }
 
 /// "05O 123 4567" -> "050 123 4567": inside tokens that are mostly digits,
-/// the letters O, I, l and | are OCR misreads of 0 and 1.
+/// the letters O, I, l and | are OCR misreads of 0 and 1. X3: text recognition
+/// also returns the round shapes o, O, 0, degree and circle signs for a zero.
+const _zeroLike = 'OoQ°º○●•◦';
+const _oneLike = 'Il|ǀ│';
+final _confusableRx = RegExp('[$_zeroLike$_oneLike]');
+final _onlyConfusableRx = RegExp('^[${_zeroLike}Il]{1,3}\$'); // Q2: never a bare pipe
+final _zeroLikeRx = RegExp('[$_zeroLike]');
+final _oneLikeRx = RegExp('[$_oneLike]');
+
 String _fixDigits(String line) {
   final toks = line.split(' ');
   for (var i = 0; i < toks.length; i++) {
     final tok = toks[i];
     final digits = RegExp(r'\d').allMatches(tok).length;
-    final confusable = RegExp(r'[OoIl|]').allMatches(tok).length;
+    final confusable = _confusableRx.allMatches(tok).length;
     final punct = RegExp(r'[+()\-./]').allMatches(tok).length;
     final other = tok.length - digits - confusable - punct;
     final prevHasDigits = i > 0 && RegExp(r'\d{2,}').hasMatch(toks[i - 1]);
     // X1: "86 OO" - a short token of only O/I/l right after a digit token is digits too
-    final onlyConfusable = RegExp(r'^[OoIl]{1,3}$').hasMatch(tok) && prevHasDigits; // Q2: never a pipe
+    final onlyConfusable = _onlyConfusableRx.hasMatch(tok) && prevHasDigits; // Q2: never a pipe alone
     if ((digits >= 2 && confusable > 0 && other == 0) || onlyConfusable) {
-      toks[i] = tok.replaceAll(RegExp(r'[Oo]'), '0').replaceAll(RegExp(r'[Il|]'), '1');
+      toks[i] = tok.replaceAll(_zeroLikeRx, '0').replaceAll(_oneLikeRx, '1');
     }
   }
   return toks.join(' ');
@@ -845,6 +853,7 @@ ContactCard parseCard(String text) {
   final firstTitleIdx = titles.isEmpty ? -1 : (order[titles.first.split(' ').take(3).join(' ')] ?? order[titles.first] ?? -1);
   String bestName = '';
   var bestScore = -999;
+  var bestNameShouting = false;
   for (final n0 in names) {
     final n = _stripHonorific(n0);
     var score = 0;
@@ -866,6 +875,7 @@ ContactCard parseCard(String text) {
     if (score > bestScore) {
       bestScore = score;
       bestName = n;
+      bestNameShouting = n == n.toUpperCase();
     }
   }
   if (bestScore <= -6) bestName = ''; // Q3: too junk-like to trust
@@ -915,6 +925,12 @@ ContactCard parseCard(String text) {
   // D7: with a free-mail address, the local part can still name the company (taiwanhot2021 -> TAIWAN-HOT)
   if (anchored.isEmpty && domainLabels.isEmpty && localLetters.length >= 5) {
     for (final l in [...companies, ...leftovers, ...names]) {
+      // D8: "priya.sharma@..." names the PERSON, not the company; never move the
+      // chosen name into the company field. A SHOUTING line is still a company
+      // ("TAIWAN-HOT" with taiwanhot2021@gmail.com).
+      if (card.name.isNotEmpty && l != l.toUpperCase() && _titleCaseIfShouting(_stripHonorific(l)) == card.name) {
+        continue;
+      }
       if (_tokens(l, 5).any((t) => localLetters.startsWith(t)) && !_digitsRx.hasMatch(l)) {
         anchored.add(l);
         break;
@@ -943,7 +959,16 @@ ContactCard parseCard(String text) {
     }
   }
   card.company = _titleCaseIfShouting(bestCompany);
-  if (card.name.isNotEmpty && card.name.toLowerCase() == card.company.toLowerCase()) card.name = ''; // Q4
+  // Q4: one line cannot be both. D8: when the e-mail names that person
+  // ("priya.sharma@"), the line is the name and the company must give way.
+  if (card.name.isNotEmpty && card.name.toLowerCase() == card.company.toLowerCase()) {
+    if (inLocal(card.name) && !bestNameShouting) {
+      final other = companies.where((c) => _titleCaseIfShouting(c) != card.name).toList();
+      card.company = other.isEmpty ? '' : _titleCaseIfShouting(other.first);
+    } else {
+      card.name = '';
+    }
+  }
   if (titles.isNotEmpty) card.jobTitle = _titleCaseIfShouting(titles.first);
 
   // 10. Address, city, country.

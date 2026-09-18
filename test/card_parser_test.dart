@@ -116,4 +116,46 @@ www.gorkha.ae
     expect(c.phone, '');
     expect(c.email, '');
   });
+
+  test('a personal e-mail names the person, not the company', () {
+    const text = '''
+SUNRISE STATIONERY SUPPLIES
+Priya Sharma
+Sales Manager
+Mobile +971 50 000 0000
+Tel +971 4 000 0000
+priya.sharma@example.com
+www.example.com
+12 Harbour Road, Dubai, UAE
+''';
+    final c = parseCard(text);
+    expect(c.name, 'Priya Sharma');
+    expect(c.company, 'Sunrise Stationery Supplies');
+    expect(c.jobTitle, 'Sales Manager');
+    expect(c.mobile, '+971500000000');
+    expect(c.phone, '+97140000000');
+    expect(c.city, 'Dubai');
+    expect(c.country, 'UAE');
+  });
+
+  test('a shouting line still becomes the company (free-mail local part)', () {
+    const text = '''
+TAIWAN-HOT
+Sales Department
+taiwanhot2021@gmail.com
++886 2 1234 5678
+''';
+    final c = parseCard(text);
+    expect(c.company, 'Taiwan-Hot');
+    expect(c.name, '');
+  });
+
+  test('round shapes inside a number are zeros', () {
+    final a = parseCard('Mobile +971 50 000 ○000\nram@shop.ae');
+    expect(a.mobile, '+971500000000');
+    final b = parseCard('Mobile +971 50 000 °000\nram@shop.ae');
+    expect(b.mobile, '+971500000000');
+    final c = parseCard('Tel +971 4 2Q5 3456\nram@shop.ae');
+    expect(c.phone, '+97142053456');
+  });
 }
