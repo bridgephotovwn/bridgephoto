@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
@@ -21,8 +22,12 @@ class PdfBuilder {
   static Uint8List? _notoBytes;
   static Uint8List? _arabicBytes;
 
+  /// Builds the PDF. [pagesFrom] replaces the file used for a page, which is
+  /// how fitting a size limit re-encodes the pictures without touching the
+  /// originals; the text layer still comes from the real recognised text.
   static Future<Uint8List> build(Doc d,
-      {void Function(int done, int total)? onProgress}) async {
+      {void Function(int done, int total)? onProgress,
+      Map<String, String>? pagesFrom}) async {
     final doc = pw.Document(
       title: d.name,
       author: 'BRIDGE PHOTO',
@@ -40,7 +45,8 @@ class PdfBuilder {
 
     for (var i = 0; i < d.pages.length; i++) {
       final p = d.pages[i];
-      final bytes = await d.pageFile(p).readAsBytes();
+      final source = pagesFrom?[p];
+      final bytes = await (source == null ? d.pageFile(p) : File(source)).readAsBytes();
       // MemoryImage reads the JPEG header and EXIF orientation, the same
       // numbers drawImage will use, so the text layer lines up.
       final image = pw.MemoryImage(bytes);

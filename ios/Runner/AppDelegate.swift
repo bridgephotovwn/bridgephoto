@@ -87,6 +87,13 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
                            outDir: args["outDir"] as? String ?? "",
                            maxDim: args["maxDim"] as? Int ?? 2200)
       }
+    case "compressImage":
+      bg(result) {
+        try self.compressImage(input: args["input"] as? String ?? "",
+                               output: args["output"] as? String ?? "",
+                               maxDim: args["maxDim"] as? Int ?? 2400,
+                               quality: args["quality"] as? Int ?? 80)
+      }
     case "encryptPdf":
       bg(result) {
         try self.encryptPdf(input: args["input"] as? String ?? "",
@@ -335,6 +342,30 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     return UIGraphicsImageRenderer(size: img.size, format: fmt).image { _ in
       img.draw(in: CGRect(origin: .zero, size: img.size))
     }
+  }
+
+  /// Re-encodes an image smaller: scaled to at most `maxDim` on its longest
+  /// side, at JPEG `quality`. Returns the bytes written. The caller drives the
+  /// search for a target size.
+  private func compressImage(input: String, output: String, maxDim: Int, quality: Int) throws -> Int {
+    guard let ui = UIImage(contentsOfFile: input) else { throw EngineError("Cannot read the image.") }
+    var img = Engine.normalized(ui)
+    let longest = max(img.size.width, img.size.height)
+    if longest > CGFloat(maxDim) {
+      let k = CGFloat(maxDim) / longest
+      let size = CGSize(width: img.size.width * k, height: img.size.height * k)
+      let fmt = UIGraphicsImageRendererFormat.default()
+      fmt.scale = 1
+      fmt.opaque = true
+      img = UIGraphicsImageRenderer(size: size, format: fmt).image { _ in
+        img.draw(in: CGRect(origin: .zero, size: size))
+      }
+    }
+    guard let d = img.jpegData(compressionQuality: CGFloat(min(max(quality, 1), 100)) / 100) else {
+      throw EngineError("Cannot encode the image.")
+    }
+    try d.write(to: URL(fileURLWithPath: output), options: .atomic)
+    return d.count
   }
 
   /// Writes a password-protected copy of a PDF. PDFKit does the encryption;

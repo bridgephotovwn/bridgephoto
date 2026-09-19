@@ -8,6 +8,7 @@ import '../exporter.dart';
 import '../main.dart';
 import '../prefs.dart';
 import '../search_index.dart';
+import '../size_fit.dart';
 import '../store.dart';
 import '../widgets/reorder_grid.dart';
 import 'page_screen.dart';
@@ -146,6 +147,52 @@ class _DocumentScreenState extends State<DocumentScreen> {
   /// Saves the PDF locked with a password. Ten of the apps we looked at
   /// charge for this; PDFBox was already in the app for merging, so it costs
   /// us nothing.
+  /// Saves the PDF under a size limit somebody else set — an exam portal, a
+  /// visa site, a labour ministry. The scans themselves are never touched.
+  Future<void> _savePdfUnderSize() async {
+    final l = context.l10n;
+    final target = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Text(l.fitSizeHint, textAlign: TextAlign.center),
+          ),
+          for (final bytes in SizeFit.presets)
+            ListTile(
+              leading: const Icon(Icons.compress),
+              title: Text(SizeFit.label(bytes)),
+              onTap: () => Navigator.pop(ctx, bytes),
+            ),
+        ]),
+      ),
+    );
+    if (target == null || !mounted) return;
+    try {
+      final (file, fits) = await Exporter.pdfUnderSize(
+        _doc!,
+        target,
+        progress: _pdfProgress(),
+        onAttempt: (n, of) => _setBusy(l.fittingSize(n, of)),
+      );
+      final saved = await Exporter.saveBytes(
+          '${DocStore.safeName(_doc!.name)}.pdf', await file.readAsBytes(),
+          title: l.savePdfDialogTitle);
+      if (!mounted || saved == null) return;
+      final actual = SizeFit.label(await file.length());
+      if (!mounted) return;
+      // Never claim a limit was met when it was not: forty pages will not fit
+      // in 100 KB, and a quiet failure is worse than a plain one.
+      context.snack(fits ? l.pdfSavedAtSize(actual) : l.pdfCouldNotFit(actual));
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotSavePdf(_msg(e)));
+    } finally {
+      _setBusy(null);
+    }
+  }
+
   Future<void> _savePdfLocked() async {
     final l = context.l10n;
     final c = TextEditingController();
@@ -350,6 +397,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   _oneSheet();
                 case 'lock':
                   _savePdfLocked();
+                case 'fit':
+                  _savePdfUnderSize();
                 case 'rename':
                   _rename();
                 case 'delete':
@@ -361,6 +410,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
               PopupMenuItem(value: 'images', child: ListTile(leading: const Icon(Icons.image_outlined), title: Text(l.exportAsImages))),
               if (d.pages.length >= 2)
                 PopupMenuItem(value: 'sheet', child: ListTile(leading: const Icon(Icons.badge_outlined), title: Text(l.oneSheetTitle))),
+              PopupMenuItem(value: 'fit', child: ListTile(leading: const Icon(Icons.compress), title: Text(l.fitSizeTitle))),
               PopupMenuItem(value: 'lock', child: ListTile(leading: const Icon(Icons.lock_outline), title: Text(l.lockPdfTitle))),
               PopupMenuItem(value: 'rename', child: ListTile(leading: const Icon(Icons.edit_outlined), title: Text(l.rename))),
               const PopupMenuDivider(),

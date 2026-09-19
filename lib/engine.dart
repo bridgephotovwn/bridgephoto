@@ -157,6 +157,18 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
+  /// Re-encodes an image smaller: at most [maxDim] on its longest side, at
+  /// JPEG [quality]. Returns the bytes written.
+  static Future<int> compressImage(String input, String output,
+          {int maxDim = 2400, int quality = 80}) async =>
+      await _ch.invokeMethod<int>('compressImage', {
+        'input': input,
+        'output': output,
+        'maxDim': maxDim,
+        'quality': quality,
+      }) ??
+      0;
+
   /// Writes a password-protected copy of a PDF (AES-256). The reader must
   /// type the password to open it. Printing and copying stay allowed — a
   /// document nobody can print is a nuisance dressed as security.

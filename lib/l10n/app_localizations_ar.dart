@@ -354,6 +354,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get savePdfToFolder => 'حفظ PDF في مجلد';
 
   @override
+  String get fitSizeTitle => 'حفظ PDF ضمن حد الحجم';
+
+  @override
+  String get fitSizeHint =>
+      'للمواقع التي ترفض الملفات الكبيرة. مسحاتك لا تتغير.';
+
+  @override
+  String fittingSize(int n, int of) {
+    return 'جارٍ التصغير… $n من $of';
+  }
+
+  @override
+  String pdfSavedAtSize(String size) {
+    return 'تم الحفظ، $size';
+  }
+
+  @override
+  String pdfCouldNotFit(String size) {
+    return 'تعذر الوصول للحد. تم الحفظ بحجم $size — وهو الأصغر الممكن.';
+  }
+
+  @override
   String get lockPdfTitle => 'حفظ PDF بكلمة مرور';
 
   @override

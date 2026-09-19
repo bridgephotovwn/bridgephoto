@@ -346,6 +346,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get savePdfToFolder => 'Сохранить PDF в папку';
 
   @override
+  String get fitSizeTitle => 'Save PDF under a size limit';
+
+  @override
+  String get fitSizeHint =>
+      'For a portal that refuses anything bigger. Your scans are not changed — only the copy being saved.';
+
+  @override
+  String fittingSize(int n, int of) {
+    return 'Shrinking… attempt $n of $of';
+  }
+
+  @override
+  String pdfSavedAtSize(String size) {
+    return 'Saved, $size';
+  }
+
+  @override
+  String pdfCouldNotFit(String size) {
+    return 'Could not get under the limit. Saved at $size — the smallest it goes.';
+  }
+
+  @override
   String get lockPdfTitle => 'Save PDF with a password';
 
   @override

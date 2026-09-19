@@ -133,6 +133,14 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<Int>("maxDim") ?: 4096
                 )
             }
+            "compressImage" -> bg(result) {
+                compressImage(
+                    call.argument<String>("input")!!,
+                    call.argument<String>("output")!!,
+                    call.argument<Int>("maxDim") ?: 2400,
+                    call.argument<Int>("quality") ?: 80
+                )
+            }
             "encryptPdf" -> bg(result) {
                 encryptPdf(
                     call.argument<String>("input")!!,
@@ -650,6 +658,46 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // --------------------------------------------------------------- image
+
+    // --------------------------------------------------------- fit a size
+
+    /**
+     * Re-encodes an image smaller: scaled to at most [maxDim] on its longest
+     * side, at JPEG [quality]. Returns the bytes written.
+     *
+     * The caller drives the search for a size, because only it knows what the
+     * target is and whether a whole PDF or a single picture has to fit.
+     */
+    private fun compressImage(input: String, output: String, maxDim: Int, quality: Int): Int {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(input, bounds)
+        val ow = bounds.outWidth
+        val oh = bounds.outHeight
+        if (ow <= 0 || oh <= 0) throw IllegalArgumentException("Cannot read the image.")
+        // Ask the decoder for roughly the size we want rather than decoding a
+        // 12 MP page in full and throwing most of it away.
+        var sample = 1
+        while (max(ow, oh) / (sample * 2) >= maxDim && sample < 16) sample *= 2
+        var bmp = BitmapFactory.decodeFile(input, BitmapFactory.Options().apply { inSampleSize = sample })
+            ?: throw IllegalArgumentException("Cannot decode the image.")
+        try {
+            val longest = max(bmp.width, bmp.height)
+            if (longest > maxDim) {
+                val k = maxDim.toFloat() / longest
+                val scaled = Bitmap.createScaledBitmap(
+                    bmp, max(1, (bmp.width * k).toInt()), max(1, (bmp.height * k).toInt()), true
+                )
+                if (scaled !== bmp) {
+                    bmp.recycle()
+                    bmp = scaled
+                }
+            }
+            writeImage(bmp, output, quality)
+            return File(output).length().toInt()
+        } finally {
+            if (!bmp.isRecycled) bmp.recycle()
+        }
+    }
 
     // ---------------------------------------------------------- pdf lock
 

@@ -664,6 +664,36 @@ abstract class AppLocalizations {
   /// **'Save PDF to a folder'**
   String get savePdfToFolder;
 
+  /// No description provided for @fitSizeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save PDF under a size limit'**
+  String get fitSizeTitle;
+
+  /// No description provided for @fitSizeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For a portal that refuses anything bigger. Your scans are not changed — only the copy being saved.'**
+  String get fitSizeHint;
+
+  /// No description provided for @fittingSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Shrinking… attempt {n} of {of}'**
+  String fittingSize(int n, int of);
+
+  /// No description provided for @pdfSavedAtSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved, {size}'**
+  String pdfSavedAtSize(String size);
+
+  /// No description provided for @pdfCouldNotFit.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get under the limit. Saved at {size} — the smallest it goes.'**
+  String pdfCouldNotFit(String size);
+
   /// No description provided for @lockPdfTitle.
   ///
   /// In en, this message translates to:

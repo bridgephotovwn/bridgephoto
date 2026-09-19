@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'engine.dart';
 import 'pdf_builder.dart';
+import 'size_fit.dart';
 import 'store.dart';
 
 typedef Progress = void Function(int done, int total);
@@ -54,6 +55,46 @@ class Exporter {
       subject: d.name,
       sharePositionOrigin: _origin(context),
     ));
+  }
+
+  /// A PDF that fits under [maxBytes], by re-encoding the pictures smaller
+  /// until it does. The scans themselves are never touched.
+  ///
+  /// Returns the file and whether it actually made it under. It can fail:
+  /// forty pages will not fit in 100 KB however hard we squeeze, and saying
+  /// so is better than handing back something unreadable and calling it done.
+  static Future<(File file, bool fits)> pdfUnderSize(Doc d, int maxBytes,
+      {Progress? progress, void Function(int attempt, int of)? onAttempt}) async {
+    var bytes = await PdfBuilder.build(d, onProgress: progress);
+    if (bytes.length <= maxBytes) {
+      return (await _writeShare(d, bytes), true);
+    }
+    final dir = Directory('${(await _shareDir()).path}/fit');
+    if (await dir.exists()) await dir.delete(recursive: true);
+    await dir.create(recursive: true);
+    var best = bytes;
+    final from = SizeFit.startFor(bytes.length, maxBytes);
+    for (var i = from; i < SizeFit.steps.length; i++) {
+      onAttempt?.call(i - from + 1, SizeFit.steps.length - from);
+      final (maxDim, quality) = SizeFit.steps[i];
+      final replacements = <String, String>{};
+      for (final p in d.pages) {
+        final out = '${dir.path}/$p';
+        await Engine.compressImage(d.pageFile(p).path, out,
+            maxDim: maxDim, quality: quality);
+        replacements[p] = out;
+      }
+      bytes = await PdfBuilder.build(d, pagesFrom: replacements);
+      if (bytes.length < best.length) best = bytes;
+      if (bytes.length <= maxBytes) break;
+    }
+    return (await _writeShare(d, best), best.length <= maxBytes);
+  }
+
+  static Future<File> _writeShare(Doc d, Uint8List bytes) async {
+    final f = File('${(await _shareDir()).path}/${DocStore.safeName(d.name)}.pdf');
+    await f.writeAsBytes(bytes, flush: true);
+    return f;
   }
 
   /// The document as a PDF that needs [password] to open. Built, then
