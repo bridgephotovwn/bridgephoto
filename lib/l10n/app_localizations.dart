@@ -472,6 +472,36 @@ abstract class AppLocalizations {
   /// **'Merge into one document'**
   String get mergeIntoOne;
 
+  /// No description provided for @moveToFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to a folder'**
+  String get moveToFolder;
+
+  /// No description provided for @folderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get folderName;
+
+  /// No description provided for @moveToTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Move out to the top level'**
+  String get moveToTop;
+
+  /// No description provided for @movedToFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Moved to {folder}} other{{count} moved to {folder}}}'**
+  String movedToFolder(int count, String folder);
+
+  /// No description provided for @movedToTop.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Moved to the top level} other{{count} moved to the top level}}'**
+  String movedToTop(int count);
+
   /// No description provided for @shareAsPdf.
   ///
   /// In en, this message translates to:

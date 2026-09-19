@@ -194,6 +194,37 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mergeIntoOne => 'دمج في مستند واحد';
 
   @override
+  String get moveToFolder => 'نقل إلى مجلد';
+
+  @override
+  String get folderName => 'المجلد';
+
+  @override
+  String get moveToTop => 'النقل إلى المستوى الأعلى';
+
+  @override
+  String movedToFolder(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم نقل $count إلى $folder',
+      one: 'تم النقل إلى $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String movedToTop(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم نقل $count إلى المستوى الأعلى',
+      one: 'تم النقل إلى المستوى الأعلى',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get shareAsPdf => 'مشاركة كملف PDF';
 
   @override

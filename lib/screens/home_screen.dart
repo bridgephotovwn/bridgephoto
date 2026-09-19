@@ -24,6 +24,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Doc>? _docs;
+  /// The folder being looked at. Empty is the top level.
+  String _folder = '';
   final List<String> _selected = []; // ids, in tap order (= merge order)
   bool _searching = false;
   String _query = '';
@@ -397,10 +399,87 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ---- UI
 
+  /// Folders that exist, which is simply the folders documents are in.
+  /// Nothing to create, nothing to tidy up: the last document to leave takes
+  /// the folder with it.
+  List<String> get _folders {
+    final set = {for (final d in _docs ?? const <Doc>[]) d.folder}
+      ..removeWhere((f) => f.isEmpty);
+    final list = set.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return list;
+  }
+
   List<Doc> get _visible {
     final docs = _docs ?? const [];
-    if (_query.trim().isEmpty) return docs;
-    return docs.where((d) => SearchIndex.matches(d, _query)).toList();
+    // Searching looks EVERYWHERE. Having to remember which folder you filed
+    // something in is the thing search is supposed to spare you.
+    if (_query.trim().isNotEmpty) {
+      return docs.where((d) => SearchIndex.matches(d, _query)).toList();
+    }
+    return docs.where((d) => d.folder == _folder).toList();
+  }
+
+  /// Moves the picked documents into a folder — an existing one, a new one,
+  /// or back out to the top level.
+  Future<void> _moveToFolder() async {
+    final l = context.l10n;
+    final picked = _selectedDocs;
+    if (picked.isEmpty) return;
+    final c = TextEditingController();
+    final existing = _folders;
+    final target = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.moveToFolder),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextField(
+            controller: c,
+            autofocus: existing.isEmpty,
+            decoration: InputDecoration(
+                labelText: l.folderName, border: const OutlineInputBorder()),
+          ),
+          if (existing.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final f in existing)
+                  ActionChip(label: Text(f), onPressed: () => Navigator.pop(ctx, f)),
+              ],
+            ),
+          ],
+          const SizedBox(height: 8),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              icon: const Icon(Icons.north_west),
+              label: Text(l.moveToTop),
+              onPressed: () => Navigator.pop(ctx, ''),
+            ),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, c.text.trim()), child: Text(l.ok)),
+        ],
+      ),
+    );
+    if (target == null || !mounted) return;
+    for (final d in picked) {
+      d.folder = target;
+      await DocStore.save(d);
+    }
+    setState(() {
+      _selected.clear();
+      // Follow the documents, so the move is visible rather than a vanishing.
+      _folder = target;
+    });
+    if (mounted) {
+      context.snack(target.isEmpty
+          ? l.movedToTop(picked.length)
+          : l.movedToFolder(picked.length, target));
+    }
   }
 
   void _toggle(Doc d) {
@@ -413,18 +492,55 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// The row of folders above the documents: which folder you are in, or the
+  /// folders you could go into. Hidden entirely when there are none, so
+  /// anybody who never files anything never sees it.
+  Widget _folderStrip(AppLocalizations l) {
+    final cs = Theme.of(context).colorScheme;
+    if (_folder.isNotEmpty) {
+      return ListTile(
+        dense: true,
+        leading: const Icon(Icons.arrow_back),
+        title: Text(_folder, style: const TextStyle(fontWeight: FontWeight.w600)),
+        onTap: () => setState(() => _folder = ''),
+      );
+    }
+    final folders = _folders;
+    if (folders.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          for (final f in folders)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ActionChip(
+                avatar: Icon(Icons.folder_outlined, size: 18, color: cs.primary),
+                label: Text(f),
+                onPressed: () => setState(() => _folder = f),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
     final selecting = _selected.isNotEmpty;
     final docs = _visible;
     return PopScope(
-      canPop: !selecting && !_searching,
+      canPop: !selecting && !_searching && _folder.isEmpty,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         setState(() {
           if (selecting) {
             _selected.clear();
+          } else if (_folder.isNotEmpty && !_searching) {
+            _folder = ''; // out of the folder before out of the app
           } else {
             _searching = false;
             _query = '';
@@ -436,10 +552,11 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Stack(children: [
           if (_docs == null)
             const Center(child: CircularProgressIndicator())
-          else if (docs.isEmpty)
-            _empty(l)
           else
-            _grid(docs),
+            Column(children: [
+              if (_query.trim().isEmpty) _folderStrip(l),
+              Expanded(child: docs.isEmpty ? _empty(l) : _grid(docs)),
+            ]),
           if (_busy != null) _busyOverlay(_busy!),
         ]),
         floatingActionButton: selecting || _busy != null
@@ -509,6 +626,7 @@ class _HomeScreenState extends State<HomeScreen> {
       actions: [
         if (n >= 2)
           IconButton(tooltip: l.mergeIntoOne, icon: const Icon(Icons.merge), onPressed: _mergeSelected),
+        IconButton(tooltip: l.moveToFolder, icon: const Icon(Icons.drive_file_move_outline), onPressed: _moveToFolder),
         IconButton(tooltip: l.shareAsPdf, icon: const Icon(Icons.share), onPressed: _shareSelected),
         IconButton(tooltip: l.delete, icon: const Icon(Icons.delete_outline), onPressed: _deleteSelected),
         IconButton(

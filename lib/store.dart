@@ -10,8 +10,14 @@ class Doc {
   final int created;
   int modified;
   final List<String> pages; // file names inside [dir], in page order
+  /// The folder this document sits in. Empty means the top level. A plain
+  /// string rather than a tree: folders are derived from the documents
+  /// themselves, so there is no separate list to fall out of step, and a
+  /// folder disappears when the last document leaves it.
+  String folder;
 
-  Doc(this.id, this.name, this.created, this.modified, this.pages);
+  Doc(this.id, this.name, this.created, this.modified, this.pages,
+      {this.folder = ''});
 
   Directory get dir => Directory('${DocStore.root.path}/$id');
   File pageFile(String p) => File('${dir.path}/$p');
@@ -27,6 +33,7 @@ class Doc {
         'created': created,
         'modified': modified,
         'pages': pages,
+        'folder': folder,
       };
 
   factory Doc.fromJson(Map<String, dynamic> j) => Doc(
@@ -35,6 +42,7 @@ class Doc {
         (j['created'] as num?)?.toInt() ?? 0,
         (j['modified'] as num?)?.toInt() ?? 0,
         ((j['pages'] as List?) ?? const []).cast<String>().toList(),
+        folder: (j['folder'] as String?) ?? '',
       );
 }
 

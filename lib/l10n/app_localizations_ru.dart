@@ -192,6 +192,37 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mergeIntoOne => 'Объединить в один документ';
 
   @override
+  String get moveToFolder => 'Move to a folder';
+
+  @override
+  String get folderName => 'Folder';
+
+  @override
+  String get moveToTop => 'Move out to the top level';
+
+  @override
+  String movedToFolder(int count, String folder) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count moved to $folder',
+      one: 'Moved to $folder',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String movedToTop(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count moved to the top level',
+      one: 'Moved to the top level',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get shareAsPdf => 'Поделиться как PDF';
 
   @override
