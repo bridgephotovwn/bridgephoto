@@ -634,6 +634,30 @@ abstract class AppLocalizations {
   /// **'Save PDF to a folder'**
   String get savePdfToFolder;
 
+  /// No description provided for @lockPdfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save PDF with a password'**
+  String get lockPdfTitle;
+
+  /// No description provided for @lockPdfHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The PDF will need this password to open. Keep it safe — it cannot be recovered from the file.'**
+  String get lockPdfHint;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @pdfSavedLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. The PDF now needs the password to open.'**
+  String get pdfSavedLocked;
+
   /// No description provided for @exportAsImages.
   ///
   /// In en, this message translates to:
@@ -1131,6 +1155,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Searchable PDF'**
   String get searchablePdf;
+
+  /// No description provided for @numberPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Number the pages'**
+  String get numberPages;
+
+  /// No description provided for @numberPagesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Puts 1 / 3 at the foot of every exported page.'**
+  String get numberPagesHint;
+
+  /// No description provided for @stampText.
+  ///
+  /// In en, this message translates to:
+  /// **'Stamp on every page'**
+  String get stampText;
+
+  /// No description provided for @stampHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Words printed faintly across each exported page — COPY, your company name, FOR BANK USE ONLY. Leave it empty for no stamp.'**
+  String get stampHint;
+
+  /// No description provided for @stampNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get stampNone;
 
   /// No description provided for @searchablePdfHint.
   ///

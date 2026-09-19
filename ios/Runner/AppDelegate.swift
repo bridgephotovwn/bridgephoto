@@ -87,6 +87,13 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
                            outDir: args["outDir"] as? String ?? "",
                            maxDim: args["maxDim"] as? Int ?? 2200)
       }
+    case "encryptPdf":
+      bg(result) {
+        try self.encryptPdf(input: args["input"] as? String ?? "",
+                            output: args["output"] as? String ?? "",
+                            password: args["password"] as? String ?? "")
+        return true
+      }
     case "splitSpread":
       bg(result) {
         try self.splitSpread(input: args["input"] as? String ?? "",
@@ -327,6 +334,23 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     fmt.scale = 1
     return UIGraphicsImageRenderer(size: img.size, format: fmt).image { _ in
       img.draw(in: CGRect(origin: .zero, size: img.size))
+    }
+  }
+
+  /// Writes a password-protected copy of a PDF. PDFKit does the encryption;
+  /// printing and copying stay allowed, because a document you cannot print
+  /// is a nuisance dressed as security.
+  private func encryptPdf(input: String, output: String, password: String) throws {
+    guard !password.isEmpty else { throw EngineError("A password is needed.") }
+    guard let doc = PDFDocument(url: URL(fileURLWithPath: input)) else {
+      throw EngineError("Cannot read the PDF.")
+    }
+    let options: [AnyHashable: Any] = [
+      PDFDocumentWriteOption.userPasswordOption: password,
+      PDFDocumentWriteOption.ownerPasswordOption: password,
+    ]
+    guard doc.write(to: URL(fileURLWithPath: output), withOptions: options) else {
+      throw EngineError("Cannot write the PDF.")
     }
   }
 

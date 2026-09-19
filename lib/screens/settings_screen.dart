@@ -49,6 +49,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!ok && mounted) context.snack(context.l10n.couldNotOpenUrl(url));
   }
 
+  /// The words stamped across every exported page. Empty turns it off.
+  Future<void> _editStamp() async {
+    final l = context.l10n;
+    final c = TextEditingController(text: Prefs.pdfStamp);
+    final v = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.stampText),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(l.stampHint),
+          const SizedBox(height: 12),
+          TextField(
+            controller: c,
+            autofocus: true,
+            textCapitalization: TextCapitalization.characters,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: Text(l.ok)),
+        ],
+      ),
+    );
+    if (v != null) setState(() => Prefs.pdfStamp = v.trim());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -113,6 +140,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subtitle: Text(l.searchablePdfHint),
           value: Prefs.pdfOcr,
           onChanged: (v) => setState(() => Prefs.pdfOcr = v),
+        ),
+        SwitchListTile(
+          title: Text(l.numberPages),
+          subtitle: Text(l.numberPagesHint),
+          value: Prefs.pdfPageNumbers,
+          onChanged: (v) => setState(() => Prefs.pdfPageNumbers = v),
+        ),
+        ListTile(
+          title: Text(l.stampText),
+          subtitle: Text(Prefs.pdfStamp.trim().isEmpty ? l.stampNone : Prefs.pdfStamp),
+          onTap: _editStamp,
         ),
         header(l.textRecognition),
         if (android)

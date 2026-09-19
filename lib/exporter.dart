@@ -56,9 +56,25 @@ class Exporter {
     ));
   }
 
+  /// The document as a PDF that needs [password] to open. Built, then
+  /// encrypted in place by the native engine (AES-256).
+  static Future<File> lockedPdfFile(Doc d, String password,
+      {Progress? progress}) async {
+    final f = await pdfFile(d, progress: progress);
+    await Engine.encryptPdf(f.path, f.path, password);
+    return f;
+  }
+
   /// Opens the system "save as" dialog. Returns the saved path or null.
-  static Future<String?> savePdf(Doc d, {Progress? progress, String title = 'Save PDF'}) async {
-    final bytes = await PdfBuilder.build(d, onProgress: progress);
+  /// With a [password] the file is encrypted before it is handed over.
+  static Future<String?> savePdf(Doc d,
+      {Progress? progress, String title = 'Save PDF', String? password}) async {
+    Uint8List bytes;
+    if (password != null && password.isNotEmpty) {
+      bytes = await (await lockedPdfFile(d, password, progress: progress)).readAsBytes();
+    } else {
+      bytes = await PdfBuilder.build(d, onProgress: progress);
+    }
     return FilePicker.platform.saveFile(
       dialogTitle: title,
       fileName: '${DocStore.safeName(d.name)}.pdf',

@@ -18,6 +18,9 @@ dependencies:
   pdf: ^3.11.0
   shared_preferences: ^2.3.0
   url_launcher: ^6.3.0
+  # Only for the transform matrix used to rotate the PDF stamp. Already
+  # in the tree as a dependency of `pdf`; pure Dart, no size cost.
+  vector_math: ^2.2.0
 
 dev_dependencies:
   flutter_test:

@@ -143,6 +143,45 @@ class _DocumentScreenState extends State<DocumentScreen> {
     }
   }
 
+  /// Saves the PDF locked with a password. Ten of the apps we looked at
+  /// charge for this; PDFBox was already in the app for merging, so it costs
+  /// us nothing.
+  Future<void> _savePdfLocked() async {
+    final l = context.l10n;
+    final c = TextEditingController();
+    final password = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.lockPdfTitle),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(l.lockPdfHint),
+          const SizedBox(height: 12),
+          TextField(
+            controller: c,
+            autofocus: true,
+            obscureText: true,
+            decoration: InputDecoration(labelText: l.password, border: const OutlineInputBorder()),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, c.text), child: Text(l.savePdfToFolder)),
+        ],
+      ),
+    );
+    if (password == null || password.isEmpty || !mounted) return;
+    try {
+      final saved = await Exporter.savePdf(_doc!,
+          progress: _pdfProgress(), title: l.savePdfDialogTitle, password: password);
+      if (saved != null && mounted) context.snack(l.pdfSavedLocked);
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotSavePdf(_msg(e)));
+    } finally {
+      _setBusy(null);
+    }
+  }
+
   Future<void> _savePdf() async {
     final l = context.l10n;
     try {
@@ -309,6 +348,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   _exportImages();
                 case 'sheet':
                   _oneSheet();
+                case 'lock':
+                  _savePdfLocked();
                 case 'rename':
                   _rename();
                 case 'delete':
@@ -320,6 +361,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
               PopupMenuItem(value: 'images', child: ListTile(leading: const Icon(Icons.image_outlined), title: Text(l.exportAsImages))),
               if (d.pages.length >= 2)
                 PopupMenuItem(value: 'sheet', child: ListTile(leading: const Icon(Icons.badge_outlined), title: Text(l.oneSheetTitle))),
+              PopupMenuItem(value: 'lock', child: ListTile(leading: const Icon(Icons.lock_outline), title: Text(l.lockPdfTitle))),
               PopupMenuItem(value: 'rename', child: ListTile(leading: const Icon(Icons.edit_outlined), title: Text(l.rename))),
               const PopupMenuDivider(),
               PopupMenuItem(value: 'delete', child: ListTile(leading: const Icon(Icons.delete_outline), title: Text(l.deleteDocument))),

@@ -323,6 +323,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get savePdfToFolder => 'حفظ PDF في مجلد';
 
   @override
+  String get lockPdfTitle => 'حفظ PDF بكلمة مرور';
+
+  @override
+  String get lockPdfHint =>
+      'سيطلب الملف هذه الكلمة عند الفتح. احتفظ بها — لا يمكن استرجاعها.';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get pdfSavedLocked => 'تم الحفظ. الملف يحتاج إلى كلمة المرور لفتحه.';
+
+  @override
   String get exportAsImages => 'تصدير كـ JPEG / PNG';
 
   @override
@@ -612,6 +625,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchablePdf => 'PDF قابل للبحث';
+
+  @override
+  String get numberPages => 'ترقيم الصفحات';
+
+  @override
+  String get numberPagesHint => 'يضع 1 / 3 أسفل كل صفحة مُصدَّرة.';
+
+  @override
+  String get stampText => 'ختم على كل صفحة';
+
+  @override
+  String get stampHint =>
+      'كلمات تُطبع بخفوت على كل صفحة — نسخة، اسم الشركة. اتركها فارغة لإلغاء الختم.';
+
+  @override
+  String get stampNone => 'بلا ختم';
 
   @override
   String get searchablePdfHint =>

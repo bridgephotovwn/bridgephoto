@@ -157,6 +157,16 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
+  /// Writes a password-protected copy of a PDF (AES-256). The reader must
+  /// type the password to open it. Printing and copying stay allowed — a
+  /// document nobody can print is a nuisance dressed as security.
+  static Future<void> encryptPdf(String input, String output, String password) =>
+      _ch.invokeMethod('encryptPdf', {
+        'input': input,
+        'output': output,
+        'password': password,
+      });
+
   /// Splits a photograph of an open book into its two pages, cutting at the
   /// fold. Returns where it cut as a fraction across the page (0.5 when it
   /// could not find a fold and used the middle).

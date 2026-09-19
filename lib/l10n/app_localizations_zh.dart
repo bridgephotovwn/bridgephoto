@@ -298,6 +298,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get savePdfToFolder => '将 PDF 保存到文件夹';
 
   @override
+  String get lockPdfTitle => 'Save PDF with a password';
+
+  @override
+  String get lockPdfHint =>
+      'The PDF will need this password to open. Keep it safe — it cannot be recovered from the file.';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get pdfSavedLocked => 'Saved. The PDF now needs the password to open.';
+
+  @override
   String get exportAsImages => '导出为 JPEG / PNG';
 
   @override
@@ -585,6 +598,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get searchablePdf => '可搜索的 PDF';
+
+  @override
+  String get numberPages => 'Number the pages';
+
+  @override
+  String get numberPagesHint =>
+      'Puts 1 / 3 at the foot of every exported page.';
+
+  @override
+  String get stampText => 'Stamp on every page';
+
+  @override
+  String get stampHint =>
+      'Words printed faintly across each exported page — COPY, your company name, FOR BANK USE ONLY. Leave it empty for no stamp.';
+
+  @override
+  String get stampNone => 'None';
 
   @override
   String get searchablePdfHint => '添加不可见的文字图层，以便在 PDF 中搜索和复制文字';

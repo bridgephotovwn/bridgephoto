@@ -35,6 +35,16 @@ class Prefs {
   static set pdfSize(String v) => _p.setString('pdf_size', v);
 
   /// Add the invisible OCR text layer so the PDF is searchable.
+  /// Number every page of an exported PDF, bottom centre. Off by default:
+  /// a numbered page is right for a report and wrong for a single receipt.
+  static bool get pdfPageNumbers => _p.getBool('pdf_page_numbers') ?? false;
+  static set pdfPageNumbers(bool v) => _p.setBool('pdf_page_numbers', v);
+
+  /// Text stamped across every page of an exported PDF — "COPY", a company
+  /// name, "FOR BANK USE ONLY". Empty means no stamp.
+  static String get pdfStamp => _p.getString('pdf_stamp') ?? '';
+  static set pdfStamp(String v) => _p.setString('pdf_stamp', v);
+
   static bool get pdfOcr => _p.getBool('pdf_ocr') ?? true;
   static set pdfOcr(bool v) => _p.setBool('pdf_ocr', v);
 

@@ -1,8 +1,10 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:vector_math/vector_math_64.dart' show Matrix4;
 
 import 'engine.dart';
 import 'ocr.dart';
@@ -12,6 +14,10 @@ import 'store.dart';
 /// Builds the PDF for a document: one page per image (JPEG bytes embedded as
 /// they are), plus an invisible OCR text layer so the PDF is searchable.
 class PdfBuilder {
+  /// How much of the page's diagonal the stamp spans. 0.75 clipped the first
+  /// and last letters off the page; this leaves a margin at both corners.
+  // ignore: constant_identifier_names
+  static const STAMP_SPAN = 0.62;
   static Uint8List? _notoBytes;
   static Uint8List? _arabicBytes;
 
@@ -25,6 +31,8 @@ class PdfBuilder {
     );
     final sizeMode = Prefs.pdfSize;
     final withText = Prefs.pdfOcr;
+    final numbers = Prefs.pdfPageNumbers;
+    final stamp = Prefs.pdfStamp.trim();
 
     final latin = pw.Font.helvetica();
     pw.Font? noto; // loaded only when a page has non-Latin text
@@ -56,6 +64,7 @@ class PdfBuilder {
       }
 
       final lay = _layout(sizeMode, iw, ih);
+      final pageNo = i;
       final text = ocr;
       final notoFont = noto;
       final arabicFont = arabic;
@@ -70,6 +79,11 @@ class PdfBuilder {
                 lay.x, lay.y, lay.w, lay.h);
             if (text != null) {
               _drawTextLayer(canvas, ctx, text, lay, latin, notoFont, arabicFont);
+            }
+            if (stamp.isNotEmpty) drawStamp(canvas, ctx, latin, stamp, lay.pw, lay.ph);
+            if (numbers) {
+              drawPageNumber(canvas, ctx, latin,
+                  '${pageNo + 1} / ${d.pages.length}', lay.pw, lay.ph);
             }
           },
         ),
@@ -130,6 +144,46 @@ class PdfBuilder {
         cx += widths[i] * scale;
       }
     }
+  }
+
+  /// A page number, bottom centre, small and grey so it never competes with
+  /// the scan itself. Public so `tool/pdf_preview.dart` can render exactly
+  /// this code rather than a copy of it.
+  static void drawPageNumber(PdfGraphics canvas, pw.Context ctx, pw.Font font,
+      String text, double pageW, double pageH) {
+    final f = font.getFont(ctx);
+    final size = pageH * 0.014;
+    final w = f.stringMetrics(text).advanceWidth * size;
+    canvas
+      ..setFillColor(PdfColors.grey600)
+      ..drawString(f, size, text, (pageW - w) / 2, pageH * 0.02);
+  }
+
+  /// Text stamped diagonally across the page — "COPY", a company name, "FOR
+  /// BANK USE ONLY" — the way a rubber stamp sits on paper. Drawn faint so
+  /// the document stays readable underneath: a stamp that hides the document
+  /// defeats the document.
+  static void drawStamp(PdfGraphics canvas, pw.Context ctx, pw.Font font,
+      String text, double pageW, double pageH) {
+    final f = font.getFont(ctx);
+    final unit = f.stringMetrics(text).advanceWidth;
+    if (unit <= 0) return;
+    // Run it corner to corner, so the size fits the diagonal rather than the
+    // width — that is what makes it read as a stamp and not a heading.
+    final diagonal = math.sqrt(pageW * pageW + pageH * pageH);
+    final size = (diagonal * STAMP_SPAN) / unit;
+    final w = unit * size;
+    final angle = math.atan2(pageH, pageW); // the page's own corner angle
+    canvas
+      ..saveContext()
+      ..setFillColor(PdfColors.grey)
+      ..setGraphicState(const PdfGraphicState(opacity: 0.18))
+      ..setTransform(Matrix4.identity()
+        ..translateByDouble(pageW / 2, pageH / 2, 0, 1)
+        ..rotateZ(angle)
+        ..translateByDouble(-w / 2, -size * 0.35, 0, 1))
+      ..drawString(f, size, text, 0, 0)
+      ..restoreContext();
   }
 
   static List<_Run> _runs(String text) {

@@ -312,6 +312,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get savePdfToFolder => 'Salvați PDF într-un dosar';
 
   @override
+  String get lockPdfTitle => 'Save PDF with a password';
+
+  @override
+  String get lockPdfHint =>
+      'The PDF will need this password to open. Keep it safe — it cannot be recovered from the file.';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get pdfSavedLocked => 'Saved. The PDF now needs the password to open.';
+
+  @override
   String get exportAsImages => 'Exportați ca JPEG / PNG';
 
   @override
@@ -601,6 +614,23 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get searchablePdf => 'PDF cu căutare';
+
+  @override
+  String get numberPages => 'Number the pages';
+
+  @override
+  String get numberPagesHint =>
+      'Puts 1 / 3 at the foot of every exported page.';
+
+  @override
+  String get stampText => 'Stamp on every page';
+
+  @override
+  String get stampHint =>
+      'Words printed faintly across each exported page — COPY, your company name, FOR BANK USE ONLY. Leave it empty for no stamp.';
+
+  @override
+  String get stampNone => 'None';
 
   @override
   String get searchablePdfHint =>

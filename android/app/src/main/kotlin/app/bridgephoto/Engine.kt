@@ -39,6 +39,9 @@ import com.googlecode.tesseract.android.TessBaseAPI
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
 import com.tom_roush.pdfbox.multipdf.PDFMergerUtility
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
+import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
@@ -129,6 +132,14 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<String>("script") ?: "latin",
                     call.argument<Int>("maxDim") ?: 4096
                 )
+            }
+            "encryptPdf" -> bg(result) {
+                encryptPdf(
+                    call.argument<String>("input")!!,
+                    call.argument<String>("output")!!,
+                    call.argument<String>("password") ?: ""
+                )
+                true
             }
             "redact" -> bg(result) {
                 redact(
@@ -639,6 +650,39 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // --------------------------------------------------------------- image
+
+    // ---------------------------------------------------------- pdf lock
+
+    /**
+     * Writes an encrypted copy of a PDF. The reader must type [password] to
+     * open it at all — AES-256, which is what a bank or a lawyer expects.
+     *
+     * Ten of the scanner and PDF apps we looked at charge for this. It costs
+     * us nothing: PDFBox is already in the app for merging.
+     *
+     * Printing and copying stay allowed. Locking a document people cannot
+     * then print is a nuisance dressed as security, and the owner password is
+     * set to the same one, so nobody is locked out of their own file.
+     */
+    private fun encryptPdf(input: String, output: String, password: String) {
+        if (password.isEmpty()) throw IllegalArgumentException("A password is needed.")
+        PDDocument.load(File(input)).use { doc ->
+            val allowed = AccessPermission().apply {
+                setCanPrint(true)
+                setCanExtractContent(true)
+                setCanModify(false)
+                setCanModifyAnnotations(false)
+            }
+            val policy = StandardProtectionPolicy(password, password, allowed)
+            policy.encryptionKeyLength = 256
+            doc.protect(policy)
+            val tmp = File(output + ".tmp")
+            doc.save(tmp)
+            val target = File(output)
+            if (target.exists()) target.delete()
+            if (!tmp.renameTo(target)) throw IllegalStateException("Cannot write the PDF.")
+        }
+    }
 
     // ----------------------------------------------------------- redact
 
