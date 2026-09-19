@@ -142,6 +142,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onChanged: (v) => setState(() => Prefs.pdfOcr = v),
         ),
         SwitchListTile(
+          title: Text(l.autoName),
+          subtitle: Text(l.autoNameHint),
+          value: Prefs.autoName,
+          onChanged: (v) => setState(() => Prefs.autoName = v),
+        ),
+        SwitchListTile(
           title: Text(l.numberPages),
           subtitle: Text(l.numberPagesHint),
           value: Prefs.pdfPageNumbers,

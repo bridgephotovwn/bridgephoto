@@ -1156,6 +1156,18 @@ abstract class AppLocalizations {
   /// **'Searchable PDF'**
   String get searchablePdf;
 
+  /// No description provided for @autoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name scans from the page'**
+  String get autoName;
+
+  /// No description provided for @autoNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reads the date, the kind of document and its number off the page — 2026-09-19 Invoice 4471. Only names a scan still called \"Scan …\"; a name you chose is never changed.'**
+  String get autoNameHint;
+
   /// No description provided for @numberPages.
   ///
   /// In en, this message translates to:

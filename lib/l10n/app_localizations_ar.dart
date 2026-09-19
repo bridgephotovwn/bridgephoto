@@ -627,6 +627,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchablePdf => 'PDF قابل للبحث';
 
   @override
+  String get autoName => 'تسمية المسح من الصفحة';
+
+  @override
+  String get autoNameHint =>
+      'يقرأ التاريخ ونوع المستند ورقمه من الصفحة. لا يغير اسماً اخترته أنت.';
+
+  @override
   String get numberPages => 'ترقيم الصفحات';
 
   @override

@@ -611,6 +611,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get searchablePdf => 'Haettava PDF';
 
   @override
+  String get autoName => 'Name scans from the page';
+
+  @override
+  String get autoNameHint =>
+      'Reads the date, the kind of document and its number off the page — 2026-09-19 Invoice 4471. Only names a scan still called \"Scan …\"; a name you chose is never changed.';
+
+  @override
   String get numberPages => 'Number the pages';
 
   @override

@@ -211,6 +211,8 @@
   "usLetter": "US Letter",
   "fitScan": "Same shape as the scan",
   "searchablePdf": "Searchable PDF",
+  "autoName": "Name scans from the page",
+  "autoNameHint": "Reads the date, the kind of document and its number off the page — 2026-09-19 Invoice 4471. Only names a scan still called \"Scan …\"; a name you chose is never changed.",
   "numberPages": "Number the pages",
   "numberPagesHint": "Puts 1 / 3 at the foot of every exported page.",
   "stampText": "Stamp on every page",

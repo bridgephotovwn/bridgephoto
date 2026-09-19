@@ -45,6 +45,11 @@ class Prefs {
   static String get pdfStamp => _p.getString('pdf_stamp') ?? '';
   static set pdfStamp(String v) => _p.setString('pdf_stamp', v);
 
+  /// Name a new scan from what is written on it. Only ever touches a
+  /// document still called "Scan ..." — a name you chose is never overwritten.
+  static bool get autoName => _p.getBool('auto_name') ?? true;
+  static set autoName(bool v) => _p.setBool('auto_name', v);
+
   static bool get pdfOcr => _p.getBool('pdf_ocr') ?? true;
   static set pdfOcr(bool v) => _p.setBool('pdf_ocr', v);
 

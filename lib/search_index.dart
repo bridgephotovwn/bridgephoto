@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'auto_name.dart';
 import 'ocr.dart';
+import 'prefs.dart';
 import 'store.dart';
 
 /// Full-text search over the recognised text of every page. The text comes
@@ -62,9 +64,33 @@ class SearchIndex {
           }
         }
         await load([d]);
+        await _nameFromContent(d);
       } finally {
         _indexing.remove(d.id);
       }
+    }
+  }
+
+  /// Names a scan from what is written on it, once its text is known.
+  ///
+  /// Only a document still carrying its plain "Scan ..." name is touched:
+  /// people asked for this, but they asked for a name they control, so a
+  /// name the user chose is never overwritten. A page that says nothing
+  /// useful keeps the plain name rather than getting a confident wrong one.
+  static Future<void> _nameFromContent(Doc d) async {
+    if (!Prefs.autoName) return;
+    if (d.pages.isEmpty) return;
+    if (!d.name.startsWith('Scan ')) return;
+    try {
+      final r = await Ocr.page(d, d.pages.first);
+      final name = AutoName.from(r,
+          scannedAt: DateTime.fromMillisecondsSinceEpoch(d.created));
+      if (name == null || name == d.name) return;
+      d.name = name;
+      await DocStore.save(d);
+      version.value++;
+    } catch (_) {
+      // Naming is a courtesy, never a reason to fail a scan.
     }
   }
 

@@ -168,6 +168,8 @@
   "usLetter": "US Letter",
   "fitScan": "بنفس شكل المسح",
   "searchablePdf": "PDF قابل للبحث",
+  "autoName": "تسمية المسح من الصفحة",
+  "autoNameHint": "يقرأ التاريخ ونوع المستند ورقمه من الصفحة. لا يغير اسماً اخترته أنت.",
   "numberPages": "ترقيم الصفحات",
   "numberPagesHint": "يضع 1 / 3 أسفل كل صفحة مُصدَّرة.",
   "stampText": "ختم على كل صفحة",
