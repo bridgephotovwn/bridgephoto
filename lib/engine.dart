@@ -157,6 +157,32 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
+  /// Splits a photograph of an open book into its two pages, cutting at the
+  /// fold. Returns where it cut as a fraction across the page (0.5 when it
+  /// could not find a fold and used the middle).
+  static Future<double> splitSpread(
+      String input, String outLeft, String outRight, {int quality = 92}) async {
+    final m = await _ch.invokeMapMethod<String, dynamic>('splitSpread', {
+      'input': input,
+      'outLeft': outLeft,
+      'outRight': outRight,
+      'quality': quality,
+    });
+    return ((m?['at'] as num?) ?? 0.5).toDouble();
+  }
+
+  /// Paints solid black over parts of a page and rewrites the file, so what
+  /// was underneath is GONE. Rectangles are in the page's own pixels. The
+  /// caller must also deal with the recognised text and the kept original —
+  /// this only handles the picture.
+  static Future<void> redact(String page, List<Map<String, double>> rects,
+          {int quality = 92}) =>
+      _ch.invokeMethod('redact', {
+        'page': page,
+        'rects': rects,
+        'quality': quality,
+      });
+
   /// Lays several pages onto one white A4 sheet, stacked and kept in
   /// proportion. The front and back of an ID card on a single sheet is what
   /// this is for — the copy every office asks for, and a paid feature in

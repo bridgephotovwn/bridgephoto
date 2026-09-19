@@ -79,6 +79,19 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         const val SHEET_H = 3508
         const val SHEET_MARGIN = 0.05f
         const val SHEET_GAP = 0.04f
+        /** The fold is looked for in the middle 40% and nowhere else. */
+        const val GUTTER_SEARCH = 0.40f
+        /**
+         * A fold must be darker than the columns to EACH side of it by this
+         * much. Comparing against the whole-page average does not work: a
+         * block of text is broad and dim, so a page with no fold at all gets
+         * cut in the wrong place. A fold is narrow and dark.
+         */
+        const val GUTTER_MIN_DROP = 8f
+        /** How far to each side the shoulders are measured, as a fraction. */
+        const val GUTTER_SHOULDER = 0.06f
+        const val GUTTER_SAMPLE_W = 800
+        const val GUTTER_SAMPLE_H = 200
         val NL: String = System.lineSeparator()
     }
 
@@ -115,6 +128,22 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<String>("path")!!,
                     call.argument<String>("script") ?: "latin",
                     call.argument<Int>("maxDim") ?: 4096
+                )
+            }
+            "redact" -> bg(result) {
+                redact(
+                    call.argument<String>("page")!!,
+                    call.argument<List<Map<String, Any>>>("rects") ?: emptyList(),
+                    call.argument<Int>("quality") ?: 92
+                )
+                true
+            }
+            "splitSpread" -> bg(result) {
+                splitSpread(
+                    call.argument<String>("input")!!,
+                    call.argument<String>("outLeft")!!,
+                    call.argument<String>("outRight")!!,
+                    call.argument<Int>("quality") ?: 92
                 )
             }
             "composeSheet" -> bg(result) {
@@ -610,6 +639,155 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // --------------------------------------------------------------- image
+
+    // ----------------------------------------------------------- redact
+
+    /**
+     * Paints solid black over parts of a page and rewrites the file.
+     *
+     * This is the whole point: most apps draw a black box on TOP of a PDF and
+     * leave the words underneath, where anyone can select and read them. That
+     * is not redaction, it is a decoration over a leak. Here the pixels
+     * themselves are replaced and the page is re-encoded, so what was under
+     * the box is gone from the file. The caller is responsible for the other
+     * two copies — the recognised text and the kept original.
+     *
+     * Rectangles are in the page's own pixels.
+     */
+    private fun redact(page: String, rects: List<Map<String, Any>>, quality: Int) {
+        if (rects.isEmpty()) throw IllegalArgumentException("Nothing to cover.")
+        val bmp = BitmapFactory.decodeFile(page, BitmapFactory.Options().apply { inMutable = true })
+            ?: throw IllegalArgumentException("Cannot decode the page.")
+        try {
+            val canvas = android.graphics.Canvas(bmp)
+            val paint = android.graphics.Paint().apply {
+                color = Color.BLACK
+                style = android.graphics.Paint.Style.FILL
+                isAntiAlias = false // a soft edge would leave readable pixels
+            }
+            for (r in rects) {
+                val x = (r["x"] as? Number)?.toFloat() ?: continue
+                val y = (r["y"] as? Number)?.toFloat() ?: continue
+                val w = (r["w"] as? Number)?.toFloat() ?: continue
+                val h = (r["h"] as? Number)?.toFloat() ?: continue
+                if (w <= 0 || h <= 0) continue
+                canvas.drawRect(x, y, x + w, y + h, paint)
+            }
+            writeImage(bmp, page, quality)
+        } finally {
+            bmp.recycle()
+        }
+    }
+
+    // --------------------------------------------------------- book mode
+
+    /**
+     * Splits a photograph of an open book into its two pages.
+     *
+     * The fold between the pages is the darkest vertical line near the middle:
+     * the paper curves away there and the light never reaches it. So measure
+     * the brightness of every column, smooth it, and take the darkest column
+     * in the middle third. If nothing in there is meaningfully darker than the
+     * paper, there is no fold to find and we cut down the exact middle rather
+     * than inventing one.
+     *
+     * Writes the left page to [outLeft] and the right to [outRight]; the
+     * caller decides which comes first, because an Arabic book reads the other
+     * way round. Returns where it cut, as a fraction across the page, so the
+     * user can be told when the guess was not the middle.
+     */
+    private fun splitSpread(
+        input: String,
+        outLeft: String,
+        outRight: String,
+        quality: Int
+    ): Map<String, Any> {
+        val full = BitmapFactory.decodeFile(input)
+            ?: throw IllegalArgumentException("Cannot decode the image.")
+        try {
+            if (full.width < 2 || full.height < 2) {
+                throw IllegalArgumentException("This picture is too small to split.")
+            }
+            val at = gutterOf(full)
+            val cut = (full.width * at).toInt().coerceIn(1, full.width - 1)
+            val left = Bitmap.createBitmap(full, 0, 0, cut, full.height)
+            try {
+                writeImage(left, outLeft, quality)
+            } finally {
+                if (left !== full) left.recycle()
+            }
+            val right = Bitmap.createBitmap(full, cut, 0, full.width - cut, full.height)
+            try {
+                writeImage(right, outRight, quality)
+            } finally {
+                if (right !== full) right.recycle()
+            }
+            return mapOf("at" to at)
+        } finally {
+            full.recycle()
+        }
+    }
+
+    /** Where the fold is, as a fraction across the page. 0.5 when unsure. */
+    private fun gutterOf(bmp: Bitmap): Float {
+        // A narrow strip down the middle of the page is all we need, and
+        // reading a small copy keeps this quick on a cheap phone.
+        val w = min(bmp.width, GUTTER_SAMPLE_W)
+        val h = min(bmp.height, GUTTER_SAMPLE_H)
+        val small = Bitmap.createScaledBitmap(bmp, w, h, true)
+        try {
+            val px = IntArray(w * h)
+            small.getPixels(px, 0, w, 0, 0, w, h)
+            val column = FloatArray(w)
+            for (x in 0 until w) {
+                var sum = 0f
+                for (y in 0 until h) {
+                    val c = px[y * w + x]
+                    // Rough luminance is plenty: we are looking for a shadow,
+                    // not measuring colour.
+                    sum += ((c shr 16 and 0xFF) * 3 + (c shr 8 and 0xFF) * 6 + (c and 0xFF)) / 10f
+                }
+                column[x] = sum / h
+            }
+            // Just enough smoothing to kill single-column speckle. Anything
+            // wider erases the fold itself — a 16 px fold does not survive a
+            // 33 px window, and a shallow one then goes missing entirely.
+            val smooth = FloatArray(w)
+            val r = max(1, w / 200)
+            for (x in 0 until w) {
+                var sum = 0f
+                var n = 0
+                for (i in max(0, x - r)..min(w - 1, x + r)) {
+                    sum += column[i]
+                    n++
+                }
+                smooth[x] = sum / n
+            }
+            val from = (w * (0.5f - GUTTER_SEARCH / 2)).toInt()
+            val to = (w * (0.5f + GUTTER_SEARCH / 2)).toInt()
+            var bestX = w / 2
+            var best = Float.MAX_VALUE
+            for (x in from until to) {
+                if (smooth[x] < best) {
+                    best = smooth[x]
+                    bestX = x
+                }
+            }
+            // Is it a narrow dark LINE, or just a dim area? Compare against
+            // the columns a little way to each side.
+            val d = max(2, (w * GUTTER_SHOULDER).toInt())
+            val left = smooth[max(0, bestX - d)]
+            val right = smooth[min(w - 1, bestX + d)]
+            val drop = min(left, right) - best
+            // No fold worth the name: cut down the middle rather than inventing one.
+            if (drop < GUTTER_MIN_DROP) return 0.5f
+            return bestX / w.toFloat()
+        } catch (_: Throwable) {
+            return 0.5f
+        } finally {
+            if (small !== bmp) small.recycle()
+        }
+    }
 
     // --------------------------------------------------------- one sheet
 

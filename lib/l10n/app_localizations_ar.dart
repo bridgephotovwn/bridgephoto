@@ -399,6 +399,71 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rotateRight => 'تدوير لليمين';
 
   @override
+  String get splitBookTitle => 'تقسيم صفحة الكتاب';
+
+  @override
+  String get splitBookHint =>
+      'صورة واحدة لكتاب مفتوح تصبح صفحتين، مقسومتين عند الطي. أي جانب يأتي أولاً؟';
+
+  @override
+  String get leftPageFirst => 'اليسار أولاً';
+
+  @override
+  String get rightPageFirst => 'اليمين أولاً';
+
+  @override
+  String get splitAtTheFold => 'تم التقسيم عند الطي';
+
+  @override
+  String get splitInTheMiddle => 'لم يُعثر على طي — تم التقسيم من المنتصف';
+
+  @override
+  String couldNotSplit(String error) {
+    return 'تعذر تقسيم الصفحة: $error';
+  }
+
+  @override
+  String get redactTitle => 'إخفاء نهائي';
+
+  @override
+  String get redactHint => 'اسحب فوق كل ما يجب ألا يُقرأ.';
+
+  @override
+  String redactCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مناطق مخفاة',
+      one: 'منطقة واحدة مخفاة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get redactApply => 'إخفاء نهائي';
+
+  @override
+  String get redactConfirmTitle => 'لا يمكن التراجع';
+
+  @override
+  String get redactConfirmBody =>
+      'تُزال الأجزاء المخفاة من الصورة نفسها، ويُحذف النص المستخرج، وتُحذف النسخة الأصلية. هذا ما يجعل المشاركة آمنة — ويعني أنه لا سبيل للعودة.';
+
+  @override
+  String get redacted => 'تم الإخفاء. ما كان تحته اختفى.';
+
+  @override
+  String couldNotRedact(String error) {
+    return 'تعذر الإخفاء: $error';
+  }
+
+  @override
+  String get undo => 'تراجع';
+
+  @override
+  String get clearAll => 'مسح الكل';
+
+  @override
   String get enhanceTitle => 'تنظيف الصفحة';
 
   @override
@@ -722,9 +787,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get clear => 'محو';
-
-  @override
-  String get undo => 'تراجع';
 
   @override
   String get save => 'حفظ';

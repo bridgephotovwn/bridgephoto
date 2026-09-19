@@ -10,6 +10,7 @@ import '../ocr.dart';
 import '../signatures.dart';
 import '../store.dart';
 import 'contact_screen.dart';
+import 'redact_screen.dart';
 import 'sign_place_screen.dart';
 
 /// One page, full screen, with rotate / sign / share / copy text / delete.
@@ -62,6 +63,67 @@ class _PageScreenState extends State<PageScreen> {
       _zoomed = false;
     } catch (e) {
       if (mounted) context.snack(context.l10n.couldNotRotate(_msg(e)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Covers parts of the page for good. The screen does the work; here we
+  /// only reload, because the page on disk has changed underneath us.
+  Future<void> _redact() async {
+    final done = await Navigator.of(context).push<bool>(MaterialPageRoute(
+        builder: (_) => RedactScreen(doc: d, page: page)));
+    if (done == true && mounted) {
+      _tc(_index).value = Matrix4.identity();
+      setState(() => _zoomed = false);
+    }
+  }
+
+  /// Splits a photograph of an open book into its two pages, cutting at the
+  /// fold. The order matters: an Arabic or Urdu book reads the other way
+  /// round, so the user says which side comes first rather than us guessing.
+  Future<void> _splitBook() async {
+    final l = context.l10n;
+    final rightFirst = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.splitBookTitle),
+        content: Text(l.splitBookHint),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l.rightPageFirst)),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l.leftPageFirst)),
+        ],
+      ),
+    );
+    if (rightFirst == null || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      final p = page;
+      final leftName = DocStore.newPageName();
+      final rightName = DocStore.newPageName();
+      final at = await Engine.splitSpread(
+          d.pageFile(p).path, d.pageFile(leftName).path, d.pageFile(rightName).path);
+      final i = d.pages.indexOf(p);
+      await DocStore.removePage(d, p); // takes the file, its text and its original
+      d.pages.insertAll(
+          i.clamp(0, d.pages.length), rightFirst ? [rightName, leftName] : [leftName, rightName]);
+      await DocStore.save(d);
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
+      _index = i.clamp(0, d.pages.length - 1);
+      _pc.jumpToPage(_index);
+      if (mounted) {
+        // Say so when the fold was not in the middle: that is the app telling
+        // the user it actually looked, rather than cutting down the centre.
+        context.snack((at - 0.5).abs() < 0.01 ? l.splitInTheMiddle : l.splitAtTheFold);
+      }
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotSplit(_msg(e)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -314,6 +376,10 @@ class _PageScreenState extends State<PageScreen> {
                 case 'contact':
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (_) => ContactScreen(doc: d, page: page)));
+                case 'book':
+                  _splitBook();
+                case 'redact':
+                  _redact();
                 case 'delete':
                   _delete();
               }
@@ -322,6 +388,8 @@ class _PageScreenState extends State<PageScreen> {
               PopupMenuItem(value: 'left', child: ListTile(leading: const Icon(Icons.rotate_left), title: Text(l.rotateLeft))),
               PopupMenuItem(value: 'text', child: ListTile(leading: const Icon(Icons.text_fields), title: Text(l.copyText))),
               PopupMenuItem(value: 'contact', child: ListTile(leading: const Icon(Icons.person_add_alt_1_outlined), title: Text(l.saveAsContact))),
+              PopupMenuItem(value: 'book', child: ListTile(leading: const Icon(Icons.auto_stories_outlined), title: Text(l.splitBookTitle))),
+              PopupMenuItem(value: 'redact', child: ListTile(leading: const Icon(Icons.visibility_off_outlined), title: Text(l.redactTitle))),
               const PopupMenuDivider(),
               PopupMenuItem(value: 'delete', child: ListTile(leading: const Icon(Icons.delete_outline), title: Text(l.deletePage))),
             ],

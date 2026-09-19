@@ -649,7 +649,7 @@ abstract class AppLocalizations {
   /// No description provided for @oneSheetHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap the pages in the order you want them — front, then back. They go on one printable sheet, and the pages you picked are kept.'**
+  /// **'An ID card, a licence, a passport and its visa — tap the front, then the back. They go on one printable sheet, and the pages you picked are kept.'**
   String get oneSheetHint;
 
   /// No description provided for @makeTheSheet.
@@ -759,6 +759,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rotate right'**
   String get rotateRight;
+
+  /// No description provided for @splitBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Split this book page'**
+  String get splitBookTitle;
+
+  /// No description provided for @splitBookHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One photograph of an open book becomes two pages, cut at the fold. Which side should come first?'**
+  String get splitBookHint;
+
+  /// No description provided for @leftPageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Left first'**
+  String get leftPageFirst;
+
+  /// No description provided for @rightPageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Right first'**
+  String get rightPageFirst;
+
+  /// No description provided for @splitAtTheFold.
+  ///
+  /// In en, this message translates to:
+  /// **'Split at the fold'**
+  String get splitAtTheFold;
+
+  /// No description provided for @splitInTheMiddle.
+  ///
+  /// In en, this message translates to:
+  /// **'No fold found — split down the middle'**
+  String get splitInTheMiddle;
+
+  /// No description provided for @couldNotSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not split the page: {error}'**
+  String couldNotSplit(String error);
+
+  /// No description provided for @redactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover for good'**
+  String get redactTitle;
+
+  /// No description provided for @redactHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag across anything that must not be readable.'**
+  String get redactHint;
+
+  /// No description provided for @redactCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 area covered} other{{count} areas covered}}'**
+  String redactCount(int count);
+
+  /// No description provided for @redactApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover for good'**
+  String get redactApply;
+
+  /// No description provided for @redactConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone'**
+  String get redactConfirmTitle;
+
+  /// No description provided for @redactConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The covered parts are removed from the picture itself, the recognised text is thrown away, and the original scan of this page is deleted. That is what makes it safe to share — and it means there is no way back.'**
+  String get redactConfirmBody;
+
+  /// No description provided for @redacted.
+  ///
+  /// In en, this message translates to:
+  /// **'Covered. What was underneath is gone.'**
+  String get redacted;
+
+  /// No description provided for @couldNotRedact.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cover the page: {error}'**
+  String couldNotRedact(String error);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAll;
 
   /// No description provided for @enhanceTitle.
   ///
@@ -1353,12 +1455,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get clear;
-
-  /// No description provided for @undo.
-  ///
-  /// In en, this message translates to:
-  /// **'Undo'**
-  String get undo;
 
   /// No description provided for @save.
   ///

@@ -87,6 +87,20 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
                            outDir: args["outDir"] as? String ?? "",
                            maxDim: args["maxDim"] as? Int ?? 2200)
       }
+    case "splitSpread":
+      bg(result) {
+        try self.splitSpread(input: args["input"] as? String ?? "",
+                             outLeft: args["outLeft"] as? String ?? "",
+                             outRight: args["outRight"] as? String ?? "",
+                             quality: args["quality"] as? Int ?? 92)
+      }
+    case "redact":
+      bg(result) {
+        try self.redact(page: args["page"] as? String ?? "",
+                        rects: args["rects"] as? [[String: Any]] ?? [],
+                        quality: args["quality"] as? Int ?? 92)
+        return true
+      }
     case "composeSheet":
       bg(result) {
         try self.composeSheet(inputs: args["inputs"] as? [String] ?? [],
@@ -314,6 +328,95 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     return UIGraphicsImageRenderer(size: img.size, format: fmt).image { _ in
       img.draw(in: CGRect(origin: .zero, size: img.size))
     }
+  }
+
+  /// Splits a photograph of an open book into its two pages at the fold.
+  /// The fold is the darkest column near the middle - the paper curves away
+  /// there and the light never reaches it. Nothing dark enough means no fold,
+  /// and then we cut down the exact middle rather than inventing one.
+  private func splitSpread(input: String, outLeft: String, outRight: String,
+                           quality: Int) throws -> [String: Any] {
+    guard let ui = UIImage(contentsOfFile: input) else { throw EngineError("Cannot read the image.") }
+    let img = Engine.normalized(ui)
+    guard let cg = img.cgImage, cg.width > 1, cg.height > 1 else {
+      throw EngineError("This picture is too small to split.")
+    }
+    let at = Self.gutter(of: cg)
+    let cut = min(max(Int(CGFloat(cg.width) * at), 1), cg.width - 1)
+    guard let left = cg.cropping(to: CGRect(x: 0, y: 0, width: cut, height: cg.height)),
+          let right = cg.cropping(to: CGRect(x: cut, y: 0, width: cg.width - cut, height: cg.height)) else {
+      throw EngineError("Cannot split the page.")
+    }
+    let q = CGFloat(min(max(quality, 1), 100)) / 100
+    guard let dl = UIImage(cgImage: left).jpegData(compressionQuality: q),
+          let dr = UIImage(cgImage: right).jpegData(compressionQuality: q) else {
+      throw EngineError("Cannot encode the pages.")
+    }
+    try dl.write(to: URL(fileURLWithPath: outLeft), options: .atomic)
+    try dr.write(to: URL(fileURLWithPath: outRight), options: .atomic)
+    return ["at": Double(at)]
+  }
+
+  /// Where the fold is, as a fraction across the page. 0.5 when unsure.
+  private static func gutter(of cg: CGImage) -> CGFloat {
+    let w = min(cg.width, 800), h = min(cg.height, 200)
+    var grey = [UInt8](repeating: 0, count: w * h)
+    guard let ctx = CGContext(data: &grey, width: w, height: h, bitsPerComponent: 8,
+                              bytesPerRow: w, space: CGColorSpaceCreateDeviceGray(),
+                              bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return 0.5 }
+    ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+
+    var column = [Double](repeating: 0, count: w)
+    for x in 0..<w {
+      var sum = 0.0
+      for y in 0..<h { sum += Double(grey[y * w + x]) }
+      column[x] = sum / Double(h)
+    }
+    // Just enough smoothing to kill single-column speckle. Anything wider
+    // erases the fold itself, and a shallow fold then goes missing.
+    let r = max(1, w / 200)
+    var smooth = [Double](repeating: 0, count: w)
+    for x in 0..<w {
+      let lo = max(0, x - r), hi = min(w - 1, x + r)
+      smooth[x] = column[lo...hi].reduce(0, +) / Double(hi - lo + 1)
+    }
+    let from = Int(Double(w) * 0.30), to = Int(Double(w) * 0.70)
+    var bestX = w / 2, best = Double.greatestFiniteMagnitude
+    for x in from..<to where smooth[x] < best { best = smooth[x]; bestX = x }
+    // A fold is a narrow dark LINE, not a dim area: compare it against the
+    // columns a little way to each side. Comparing against the page average
+    // cuts a foldless page in the wrong place, because text is broad and dim.
+    let d = max(2, Int(Double(w) * 0.06))
+    let drop = min(smooth[max(0, bestX - d)], smooth[min(w - 1, bestX + d)]) - best
+    if drop < 8 { return 0.5 }
+    return CGFloat(bestX) / CGFloat(w)
+  }
+
+  /// Paints solid black over parts of a page and rewrites the file. The pixels
+  /// themselves go - unlike the black box every other app draws on top of a
+  /// PDF, which leaves the words selectable underneath.
+  private func redact(page: String, rects: [[String: Any]], quality: Int) throws {
+    guard !rects.isEmpty else { throw EngineError("Nothing to cover.") }
+    guard let ui = UIImage(contentsOfFile: page) else { throw EngineError("Cannot read the page.") }
+    let img = Engine.normalized(ui)
+    let fmt = UIGraphicsImageRendererFormat.default()
+    fmt.scale = 1
+    fmt.opaque = true
+    let out = UIGraphicsImageRenderer(size: img.size, format: fmt).image { ctx in
+      img.draw(in: CGRect(origin: .zero, size: img.size))
+      UIColor.black.setFill()
+      for r in rects {
+        guard let x = (r["x"] as? NSNumber)?.doubleValue,
+              let y = (r["y"] as? NSNumber)?.doubleValue,
+              let w = (r["w"] as? NSNumber)?.doubleValue,
+              let h = (r["h"] as? NSNumber)?.doubleValue, w > 0, h > 0 else { continue }
+        ctx.fill(CGRect(x: x, y: y, width: w, height: h))
+      }
+    }
+    guard let d = out.jpegData(compressionQuality: CGFloat(min(max(quality, 1), 100)) / 100) else {
+      throw EngineError("Cannot encode the page.")
+    }
+    try d.write(to: URL(fileURLWithPath: page), options: .atomic)
   }
 
   /// Lays several pages onto ONE white A4 sheet, stacked down the page and

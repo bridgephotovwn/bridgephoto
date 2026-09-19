@@ -314,7 +314,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get oneSheetHint =>
-      'Tap the pages in the order you want them — front, then back. They go on one printable sheet, and the pages you picked are kept.';
+      'An ID card, a licence, a passport and its visa — tap the front, then the back. They go on one printable sheet, and the pages you picked are kept.';
 
   @override
   String get makeTheSheet => 'Make the sheet';
@@ -381,6 +381,71 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get rotateRight => 'కుడికి తిప్పు';
+
+  @override
+  String get splitBookTitle => 'Split this book page';
+
+  @override
+  String get splitBookHint =>
+      'One photograph of an open book becomes two pages, cut at the fold. Which side should come first?';
+
+  @override
+  String get leftPageFirst => 'Left first';
+
+  @override
+  String get rightPageFirst => 'Right first';
+
+  @override
+  String get splitAtTheFold => 'Split at the fold';
+
+  @override
+  String get splitInTheMiddle => 'No fold found — split down the middle';
+
+  @override
+  String couldNotSplit(String error) {
+    return 'Could not split the page: $error';
+  }
+
+  @override
+  String get redactTitle => 'Cover for good';
+
+  @override
+  String get redactHint => 'Drag across anything that must not be readable.';
+
+  @override
+  String redactCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count areas covered',
+      one: '1 area covered',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get redactApply => 'Cover for good';
+
+  @override
+  String get redactConfirmTitle => 'This cannot be undone';
+
+  @override
+  String get redactConfirmBody =>
+      'The covered parts are removed from the picture itself, the recognised text is thrown away, and the original scan of this page is deleted. That is what makes it safe to share — and it means there is no way back.';
+
+  @override
+  String get redacted => 'Covered. What was underneath is gone.';
+
+  @override
+  String couldNotRedact(String error) {
+    return 'Could not cover the page: $error';
+  }
+
+  @override
+  String get undo => 'వెనక్కి';
+
+  @override
+  String get clearAll => 'Clear all';
 
   @override
   String get enhanceTitle => 'Clean up the page';
@@ -706,9 +771,6 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get clear => 'తుడిచివేయి';
-
-  @override
-  String get undo => 'వెనక్కి';
 
   @override
   String get save => 'సేవ్ చేయి';
