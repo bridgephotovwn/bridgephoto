@@ -2,10 +2,15 @@ import 'dart:convert';
 
 import 'engine.dart';
 import 'prefs.dart';
+import 'reading_order.dart';
 import 'store.dart';
 
 /// OCR with a per-page cache file next to the image.
 class Ocr {
+  /// Bumped whenever the reading order changes, so cached text is redone
+  /// instead of being served in the old order for ever.
+  static const _orderVersion = 1;
+
   static Future<OcrResult> page(Doc d, String p, {bool force = false}) async {
     final script = Prefs.ocrScriptForEngine;
     final quality = Prefs.ocrQuality;
@@ -13,17 +18,28 @@ class Ocr {
     if (!force && await f.exists()) {
       try {
         final j = jsonDecode(await f.readAsString()) as Map<String, dynamic>;
-        if (j['script'] == script && (j['quality'] ?? 'best') == quality) {
+        // `order` marks text that has been put into reading order. Pages
+        // recognised before that existed are read again rather than served
+        // in the jumbled order they were cached in.
+        if (j['script'] == script &&
+            (j['quality'] ?? 'best') == quality &&
+            j['order'] == _orderVersion) {
           return OcrResult.fromJson(j);
         }
       } catch (_) {
         // fall through and recognise again
       }
     }
-    final r = await Engine.ocr(d.pageFile(p).path, script, maxDim: Prefs.ocrMaxDim);
+    // Straight from recognition the lines run top to bottom, which turns two
+    // columns into nonsense. Put them in reading order ONCE, here, so the
+    // text screen, search, the PDF layer and the name all get the same
+    // sensible order without each of them having to think about it.
+    final r = ReadingOrder.sort(
+        await Engine.ocr(d.pageFile(p).path, script, maxDim: Prefs.ocrMaxDim));
     final j = r.toJson()
       ..['script'] = script
-      ..['quality'] = quality;
+      ..['quality'] = quality
+      ..['order'] = _orderVersion;
     await f.writeAsString(jsonEncode(j), flush: true);
     return r;
   }
