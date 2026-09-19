@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- THE PUBLIC APP HAS NO INTERNET, AND THAT IS THE POINT.
+         Google's ML Kit telemetry transport library adds INTERNET to the
+         merged manifest; strip it here so the app cannot make network calls
+         even by accident. ACCESS_NETWORK_STATE (also from that library) stays:
+         it only lets an app ask whether the phone is online and cannot move
+         data. A Gradle check reads the merged manifest and FAILS THE BUILD if
+         INTERNET ever survives, so this promise cannot be broken quietly. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+</manifest>

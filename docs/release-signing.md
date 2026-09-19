@@ -33,7 +33,7 @@ When the file is absent, release builds fall back to the debug key (fine for CI 
 
 ```bash
 cd F:\BridgePhoto
-flutter build appbundle --release
+flutter build appbundle --release --flavor free
 ```
 
 Output: `build/app/outputs/bundle/release/app-release.aab`. Upload it in the Play Console
@@ -44,7 +44,7 @@ Output: `build/app/outputs/bundle/release/app-release.aab`. Upload it in the Pla
 
 1. Raise `version:` in `pubspec.yaml`: `1.0.1+2`, `1.1.0+3`, … (the number after `+` is the versionCode and must always go up).
 2. Add the changes to `CHANGELOG.md`.
-3. `flutter build appbundle --release`, upload, roll out.
+3. `flutter build appbundle --release --flavor free`, upload, roll out.
 
 ## iOS
 

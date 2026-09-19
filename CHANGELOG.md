@@ -4,6 +4,7 @@
 
 - Arabic text recognition. Google's models cannot read Arabic, so an Arabic page is read by Tesseract instead, bundled in the app. Choose it under Settings > Text recognition > Language, or from the menu on the text screen. The page is read twice on that setting - Google for the Latin half, Tesseract for the Arabic - because UAE paperwork is nearly always bilingual, and the two readings are merged. Arabic also reaches the searchable PDF text layer.
 - The business card screen keeps the tick for sending the card photo to the contact (added late in 1.1.0).
+- Two editions are built from this codebase: the public BRIDGE PHOTO, which has no internet permission and never will, and a separate company edition with its own app id which is the only one allowed near the network. The public build now reads its own finished manifest and REFUSES TO BUILD if the internet permission is in it, so that promise cannot be broken by accident or by a library. Build with `--flavor free` (store) or `--flavor business`.
 
 ## 1.1.0 (2026-09-18)
 

@@ -18,7 +18,7 @@ Realistic timeline: account verification a few days, tester recruitment about a 
 - [ ] The privacy policy online: publish `docs/privacy-policy.html` on GitHub Pages (repository → Settings → Pages → deploy from the main branch, folder `/docs`). The address will look like `https://bridgephotovwn.github.io/bridgephoto/privacy-policy.html`. Open it on a phone to check it loads without a login. The same page serves the App Store listing.
 - [ ] The graphic assets: `docs/icon-512-play.png`, `docs/feature-graphic.png`, and at least two phone screenshots (see the shot list in `docs/play-listing.md`).
 - [ ] The listing text from `docs/play-listing.md`.
-- [ ] The release AAB (`.aab`, not `.apk`) from the app developer, built with `flutter build appbundle` and signed with an **upload key**. Ask the developer for the upload keystore file and its passwords (Flutter keeps them in `android/key.properties`, which must never be committed), and keep a copy in two safe places (for example an encrypted USB stick and a password manager). If the upload key is lost you can ask Google for an upload-key reset, but it costs days.
+- [ ] The release AAB (`.aab`, not `.apk`) from the app developer, built with `flutter build appbundle --flavor free` and signed with an **upload key**. Ask the developer for the upload keystore file and its passwords (Flutter keeps them in `android/key.properties`, which must never be committed), and keep a copy in two safe places (for example an encrypted USB stick and a password manager). If the upload key is lost you can ask Google for an upload-key reset, but it costs days.
 
 ---
 

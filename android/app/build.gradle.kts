@@ -59,6 +59,26 @@ android {
         }
     }
 
+    // Two editions from one codebase.
+    //   free     - the public BRIDGE PHOTO. No internet, ever. This is the app
+    //              that is on Google Play, so its id and name must not change.
+    //   business - the company edition, which sends scans to BRIDGE and is the
+    //              only one allowed near the network. Its own id, so it
+    //              installs beside the public app instead of replacing it.
+    // The permission itself lives in each edition's manifest, and the check
+    // below makes it impossible to ship the free app with internet.
+    flavorDimensions += "edition"
+    productFlavors {
+        create("free") {
+            dimension = "edition"
+        }
+        create("business") {
+            dimension = "edition"
+            applicationIdSuffix = ".business"
+            versionNameSuffix = "-business"
+        }
+    }
+
     signingConfigs {
         create("release") {
             if (keystorePropertiesFile.exists()) {
@@ -83,6 +103,49 @@ android {
             // Leave the property out for anything that goes to a store.
             (project.findProperty("idSuffix") as String?)?.let { applicationIdSuffix = it }
         }
+    }
+}
+
+// The promise the public app makes to the people using it is "this app cannot
+// send anything anywhere". A person can forget; a build cannot. Every free
+// build reads its own merged manifest and refuses to finish if INTERNET is in
+// it, whether it came from us or from a library we pulled in.
+androidComponents {
+    onVariants { variant ->
+        if (variant.flavorName != "free") return@onVariants
+        val name = variant.name.replaceFirstChar { it.uppercase() }
+        val verify = tasks.register<VerifyNoInternet>("verify${name}HasNoInternet") {
+            mergedManifest.set(
+                variant.artifacts.get(com.android.build.api.artifact.SingleArtifact.MERGED_MANIFEST)
+            )
+            report.set(layout.buildDirectory.file("reports/no-internet/$name.txt"))
+        }
+        tasks.matching { it.name == "assemble$name" || it.name == "bundle$name" }
+            .configureEach { dependsOn(verify) }
+    }
+}
+
+abstract class VerifyNoInternet : DefaultTask() {
+    @get:InputFile
+    abstract val mergedManifest: RegularFileProperty
+
+    @get:OutputFile
+    abstract val report: RegularFileProperty
+
+    @TaskAction
+    fun check() {
+        val file = mergedManifest.get().asFile
+        val text = file.readText()
+        if (text.contains("android.permission.INTERNET")) {
+            throw GradleException(
+                "The public BRIDGE PHOTO asks for INTERNET, which it must never do.\n" +
+                    "Something added it back - most likely a new library. Either keep it\n" +
+                    "out of the free edition, or strip it in\n" +
+                    "android/app/src/free/AndroidManifest.xml the way ML Kit's is stripped.\n" +
+                    "Manifest: $file"
+            )
+        }
+        report.get().asFile.writeText("no INTERNET permission in $file\n")
     }
 }
 

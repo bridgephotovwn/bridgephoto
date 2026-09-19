@@ -60,8 +60,9 @@ Requirements: Flutter (stable channel), JDK 17 and Android SDK 36 for Android. i
 git clone https://github.com/bridgephotovwn/bridgephoto.git
 cd bridgephoto
 flutter pub get
-flutter build apk           # debug/release APK for sideloading on a phone with Google Play services
-flutter build appbundle     # the .aab for Google Play (needs the maintainer's upload key; not in the repository)
+flutter build apk --flavor free           # APK for sideloading on a phone with Google Play services
+flutter build appbundle --flavor free     # the .aab for Google Play (needs the maintainer's upload key; not in the repository)
+flutter build apk --flavor business       # the company edition: its own app id, and the only one with internet
 ```
 
 iOS: `flutter build ipa` on a Mac with Xcode, or use the repository's GitHub Actions workflow, which builds and uploads the iOS app on a macOS runner (free for public repositories). The App Store Connect API key it needs lives in GitHub repository secrets, never in the repository; see [`docs/app-store-checklist.md`](docs/app-store-checklist.md).
