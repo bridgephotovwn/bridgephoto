@@ -157,6 +157,15 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
+  /// How much ink is on a page (0 to 1) and a fingerprint for comparing it
+  /// with other pages.
+  static Future<(double ink, int hash)> pageStats(String path) async {
+    final m = await _ch.invokeMapMethod<String, dynamic>('pageStats', {'path': path});
+    final ink = ((m?['ink'] as num?) ?? 1).toDouble();
+    final hash = int.tryParse((m?['hash'] as String?) ?? '0') ?? 0;
+    return (ink, hash);
+  }
+
   /// Re-encodes an image smaller: at most [maxDim] on its longest side, at
   /// JPEG [quality]. Returns the bytes written.
   static Future<int> compressImage(String input, String output,

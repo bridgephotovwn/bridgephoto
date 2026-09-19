@@ -346,6 +346,53 @@ class AppLocalizationsRu extends AppLocalizations {
   String get savePdfToFolder => 'Сохранить PDF в папку';
 
   @override
+  String get tidyPagesTitle => 'Find blank and repeated pages';
+
+  @override
+  String get checkingPages => 'Looking through the pages...';
+
+  @override
+  String get nothingToTidy => 'Nothing to remove - no blank or repeated pages';
+
+  @override
+  String tidyFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pages you may not want',
+      one: '1 page you may not want',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pageN(int n) {
+    return 'Page $n';
+  }
+
+  @override
+  String get pageIsBlank => 'Looks blank';
+
+  @override
+  String pageRepeats(int n) {
+    return 'Same as page $n';
+  }
+
+  @override
+  String get removeChosen => 'Remove the ticked pages';
+
+  @override
+  String pagesRemoved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pages removed',
+      one: '1 page removed',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get fitSizeTitle => 'Save PDF under a size limit';
 
   @override

@@ -8,6 +8,7 @@ import '../exporter.dart';
 import '../main.dart';
 import '../prefs.dart';
 import '../search_index.dart';
+import '../page_tidy.dart';
 import '../size_fit.dart';
 import '../store.dart';
 import '../widgets/reorder_grid.dart';
@@ -149,6 +150,92 @@ class _DocumentScreenState extends State<DocumentScreen> {
   /// us nothing.
   /// Saves the PDF under a size limit somebody else set — an exam portal, a
   /// visa site, a labour ministry. The scans themselves are never touched.
+  /// Offers up the pages nobody wants: the blank back of a sheet, and the
+  /// page that got photographed twice. It only ever REPORTS — every page
+  /// shown has a tick beside it and nothing goes without a yes.
+  Future<void> _tidyPages() async {
+    final l = context.l10n;
+    final d = _doc!;
+    _setBusy(l.checkingPages);
+    PageReport report;
+    try {
+      final facts = <PageFacts>[];
+      for (final p in d.pages) {
+        final (ink, hash) = await Engine.pageStats(d.pageFile(p).path);
+        facts.add(PageFacts(p, ink, hash));
+      }
+      report = PageTidy.inspect(facts);
+    } catch (e) {
+      if (mounted) context.snack(_msg(e));
+      return;
+    } finally {
+      _setBusy(null);
+    }
+    if (!mounted) return;
+    if (report.isEmpty) {
+      context.snack(l.nothingToTidy);
+      return;
+    }
+    final chosen = {...report.blanks, ...report.duplicates.keys};
+    final remove = await showModalBottomSheet<Set<String>>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => SafeArea(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(l.tidyFound(report.total),
+                  style: Theme.of(ctx).textTheme.titleMedium),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (final p in [...report.blanks, ...report.duplicates.keys])
+                    CheckboxListTile(
+                      value: chosen.contains(p),
+                      onChanged: (v) => setSheet(() =>
+                          v == true ? chosen.add(p) : chosen.remove(p)),
+                      secondary: SizedBox(
+                        width: 44,
+                        child: Image.file(d.pageFile(p), fit: BoxFit.cover, cacheWidth: 132),
+                      ),
+                      title: Text(l.pageN(d.pages.indexOf(p) + 1)),
+                      subtitle: Text(report.blanks.contains(p)
+                          ? l.pageIsBlank
+                          : l.pageRepeats(d.pages.indexOf(report.duplicates[p]!) + 1)),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(ctx, chosen),
+                  child: Text(l.removeChosen),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+    if (remove == null || remove.isEmpty || !mounted) return;
+    for (final p in remove) {
+      await DocStore.removePage(d, p);
+    }
+    await DocStore.save(d);
+    PaintingBinding.instance.imageCache.clear();
+    if (mounted) {
+      setState(() {});
+      context.snack(l.pagesRemoved(remove.length));
+    }
+  }
+
   Future<void> _savePdfUnderSize() async {
     final l = context.l10n;
     final target = await showModalBottomSheet<int>(
@@ -399,6 +486,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   _savePdfLocked();
                 case 'fit':
                   _savePdfUnderSize();
+                case 'tidy':
+                  _tidyPages();
                 case 'rename':
                   _rename();
                 case 'delete':
@@ -408,6 +497,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
             itemBuilder: (_) => [
               PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.savePdfToFolder))),
               PopupMenuItem(value: 'images', child: ListTile(leading: const Icon(Icons.image_outlined), title: Text(l.exportAsImages))),
+              if (d.pages.length >= 2)
+                PopupMenuItem(value: 'tidy', child: ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(l.tidyPagesTitle))),
               if (d.pages.length >= 2)
                 PopupMenuItem(value: 'sheet', child: ListTile(leading: const Icon(Icons.badge_outlined), title: Text(l.oneSheetTitle))),
               PopupMenuItem(value: 'fit', child: ListTile(leading: const Icon(Icons.compress), title: Text(l.fitSizeTitle))),

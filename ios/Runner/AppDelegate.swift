@@ -87,6 +87,8 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
                            outDir: args["outDir"] as? String ?? "",
                            maxDim: args["maxDim"] as? Int ?? 2200)
       }
+    case "pageStats":
+      bg(result) { try self.pageStats(path: args["path"] as? String ?? "") }
     case "compressImage":
       bg(result) {
         try self.compressImage(input: args["input"] as? String ?? "",
@@ -342,6 +344,41 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     return UIGraphicsImageRenderer(size: img.size, format: fmt).image { _ in
       img.draw(in: CGRect(origin: .zero, size: img.size))
     }
+  }
+
+  /// How much ink is on a page, and a fingerprint for comparing pages. The
+  /// fingerprint is a difference hash, which survives re-scanning and
+  /// exposure changes — which is what makes two photographs of the SAME page
+  /// look alike to it.
+  private func pageStats(path: String) throws -> [String: Any] {
+    guard let ui = UIImage(contentsOfFile: path), let cg = Engine.normalized(ui).cgImage else {
+      throw EngineError("Cannot read the page.")
+    }
+    func grey(_ w: Int, _ h: Int) -> [UInt8] {
+      var buf = [UInt8](repeating: 0, count: w * h)
+      if let ctx = CGContext(data: &buf, width: w, height: h, bitsPerComponent: 8,
+                             bytesPerRow: w, space: CGColorSpaceCreateDeviceGray(),
+                             bitmapInfo: CGImageAlphaInfo.none.rawValue) {
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+      }
+      return buf
+    }
+    let tiny = grey(9, 8)
+    var hash: UInt64 = 0
+    var bit = 0
+    for y in 0..<8 {
+      for x in 0..<8 {
+        if tiny[y * 9 + x] > tiny[y * 9 + x + 1] { hash |= (1 << UInt64(bit)) }
+        bit += 1
+      }
+    }
+    let w = min(cg.width, 400), h = min(cg.height, 560)
+    let lum = grey(w, h)
+    let sorted = lum.sorted()
+    let paper = Int(sorted[min(Int(Double(sorted.count) * 0.9), sorted.count - 1)])
+    let threshold = Int(Double(paper) * 0.72)
+    let dark = lum.reduce(0) { $0 + (Int($1) < threshold ? 1 : 0) }
+    return ["ink": Double(dark) / Double(lum.count), "hash": String(hash)]
   }
 
   /// Re-encodes an image smaller: scaled to at most `maxDim` on its longest

@@ -664,6 +664,60 @@ abstract class AppLocalizations {
   /// **'Save PDF to a folder'**
   String get savePdfToFolder;
 
+  /// No description provided for @tidyPagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find blank and repeated pages'**
+  String get tidyPagesTitle;
+
+  /// No description provided for @checkingPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking through the pages...'**
+  String get checkingPages;
+
+  /// No description provided for @nothingToTidy.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to remove - no blank or repeated pages'**
+  String get nothingToTidy;
+
+  /// No description provided for @tidyFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 page you may not want} other{{count} pages you may not want}}'**
+  String tidyFound(int count);
+
+  /// No description provided for @pageN.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {n}'**
+  String pageN(int n);
+
+  /// No description provided for @pageIsBlank.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks blank'**
+  String get pageIsBlank;
+
+  /// No description provided for @pageRepeats.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as page {n}'**
+  String pageRepeats(int n);
+
+  /// No description provided for @removeChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the ticked pages'**
+  String get removeChosen;
+
+  /// No description provided for @pagesRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 page removed} other{{count} pages removed}}'**
+  String pagesRemoved(int count);
+
   /// No description provided for @fitSizeTitle.
   ///
   /// In en, this message translates to:

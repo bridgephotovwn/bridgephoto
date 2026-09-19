@@ -133,6 +133,7 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<Int>("maxDim") ?: 4096
                 )
             }
+            "pageStats" -> bg(result) { pageStats(call.argument<String>("path")!!) }
             "compressImage" -> bg(result) {
                 compressImage(
                     call.argument<String>("input")!!,
@@ -658,6 +659,65 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // --------------------------------------------------------------- image
+
+    // ------------------------------------------------------- page stats
+
+    /**
+     * Two numbers that say what a page IS: how much ink is on it, and a
+     * fingerprint for comparing it with other pages.
+     *
+     * The fingerprint is a difference hash — shrink the page to 9x8 grey
+     * pixels and record, for each pair of neighbours, which is brighter. It
+     * survives re-scanning, exposure changes and small shifts, which is
+     * exactly what makes two photographs of the SAME page look alike to it.
+     */
+    private fun pageStats(path: String): Map<String, Any> {
+        val bmp = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = 4 })
+            ?: throw IllegalArgumentException("Cannot decode the page.")
+        try {
+            val small = Bitmap.createScaledBitmap(bmp, 9, 8, true)
+            val grey = IntArray(9 * 8)
+            val px = IntArray(9 * 8)
+            small.getPixels(px, 0, 9, 0, 0, 9, 8)
+            for (i in px.indices) {
+                val c = px[i]
+                grey[i] = ((c shr 16 and 0xFF) * 3 + (c shr 8 and 0xFF) * 6 + (c and 0xFF)) / 10
+            }
+            var hash = 0L
+            var bit = 0
+            for (y in 0 until 8) {
+                for (x in 0 until 8) {
+                    if (grey[y * 9 + x] > grey[y * 9 + x + 1]) hash = hash or (1L shl bit)
+                    bit++
+                }
+            }
+            if (small !== bmp) small.recycle()
+
+            // Ink: how much of the page is markedly darker than its paper.
+            // Measured against the page's own white point, so a grey scan or
+            // a cream page is not mistaken for a covered one.
+            val w = min(bmp.width, 400)
+            val h = min(bmp.height, 560)
+            val probe = Bitmap.createScaledBitmap(bmp, w, h, true)
+            val buf = IntArray(w * h)
+            probe.getPixels(buf, 0, w, 0, 0, w, h)
+            val lum = IntArray(buf.size)
+            for (i in buf.indices) {
+                val c = buf[i]
+                lum[i] = ((c shr 16 and 0xFF) * 3 + (c shr 8 and 0xFF) * 6 + (c and 0xFF)) / 10
+            }
+            val sorted = lum.clone()
+            sorted.sort()
+            val paper = sorted[(sorted.size * 0.9).toInt().coerceAtMost(sorted.size - 1)]
+            val threshold = (paper * 0.72).toInt()
+            var dark = 0
+            for (v in lum) if (v < threshold) dark++
+            if (probe !== bmp) probe.recycle()
+            return mapOf("ink" to dark.toDouble() / lum.size, "hash" to hash.toString())
+        } finally {
+            bmp.recycle()
+        }
+    }
 
     // --------------------------------------------------------- fit a size
 

@@ -354,6 +354,53 @@ class AppLocalizationsAr extends AppLocalizations {
   String get savePdfToFolder => 'حفظ PDF في مجلد';
 
   @override
+  String get tidyPagesTitle => 'البحث عن الصفحات الفارغة والمكررة';
+
+  @override
+  String get checkingPages => 'جارٍ فحص الصفحات...';
+
+  @override
+  String get nothingToTidy => 'لا شيء للحذف';
+
+  @override
+  String tidyFound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صفحات قد لا تريدها',
+      one: 'صفحة قد لا تريدها',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pageN(int n) {
+    return 'صفحة $n';
+  }
+
+  @override
+  String get pageIsBlank => 'تبدو فارغة';
+
+  @override
+  String pageRepeats(int n) {
+    return 'مثل الصفحة $n';
+  }
+
+  @override
+  String get removeChosen => 'حذف المحدد';
+
+  @override
+  String pagesRemoved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم حذف $count صفحات',
+      one: 'تم حذف صفحة',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get fitSizeTitle => 'حفظ PDF ضمن حد الحجم';
 
   @override
