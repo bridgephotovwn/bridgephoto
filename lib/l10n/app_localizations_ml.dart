@@ -640,6 +640,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get saveAsTxt => '.txt ആയി സേവ് ചെയ്യുക';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'വീണ്ടും വായിക്കുക';
 
   @override

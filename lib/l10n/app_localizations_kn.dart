@@ -640,6 +640,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get saveAsTxt => '.txt ಆಗಿ ಉಳಿಸಿ';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'ಮತ್ತೆ ಓದಿ';
 
   @override

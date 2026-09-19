@@ -640,6 +640,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveAsTxt => 'Guardar como .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Volver a leer';
 
   @override

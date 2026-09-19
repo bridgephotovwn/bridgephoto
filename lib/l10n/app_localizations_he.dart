@@ -644,6 +644,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get saveAsTxt => 'שמירה כ-‎.txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'קריאה מחדש';
 
   @override

@@ -637,6 +637,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get saveAsTxt => 'Simpan sebagai .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Baca lagi';
 
   @override

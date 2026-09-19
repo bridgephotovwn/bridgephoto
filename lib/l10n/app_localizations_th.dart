@@ -636,6 +636,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get saveAsTxt => 'บันทึกเป็น .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'อ่านอีกครั้ง';
 
   @override

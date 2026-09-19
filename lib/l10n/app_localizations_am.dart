@@ -639,6 +639,12 @@ class AppLocalizationsAm extends AppLocalizations {
   String get saveAsTxt => 'እንደ .txt አስቀምጥ';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'እንደገና አንብብ';
 
   @override

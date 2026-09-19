@@ -648,6 +648,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get saveAsTxt => 'Сохранить как .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Распознать снова';
 
   @override

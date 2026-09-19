@@ -636,6 +636,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get saveAsTxt => 'Lưu dưới dạng .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Đọc lại';
 
   @override

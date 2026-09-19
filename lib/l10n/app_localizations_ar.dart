@@ -656,6 +656,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveAsTxt => 'حفظ كملف ‎.txt';
 
   @override
+  String get saveAsWord => 'حفظ كملف Word';
+
+  @override
+  String get saveAsExcel => 'حفظ كجدول';
+
+  @override
   String get readAgain => 'إعادة القراءة';
 
   @override

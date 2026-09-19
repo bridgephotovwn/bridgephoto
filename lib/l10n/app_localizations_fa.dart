@@ -640,6 +640,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get saveAsTxt => 'ذخیره به‌صورت ‎.txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'خواندن دوباره';
 
   @override

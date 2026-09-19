@@ -642,6 +642,12 @@ class AppLocalizationsFil extends AppLocalizations {
   String get saveAsTxt => 'I-save bilang .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Basahin ulit';
 
   @override

@@ -640,6 +640,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get saveAsTxt => '.txt হিসেবে সেভ করুন';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'আবার পড়ুন';
 
   @override

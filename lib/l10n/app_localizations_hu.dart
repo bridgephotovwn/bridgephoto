@@ -641,6 +641,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get saveAsTxt => 'Mentés .txt formátumban';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Újraolvasás';
 
   @override

@@ -648,6 +648,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get saveAsTxt => 'Зберегти як .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Розпізнати знову';
 
   @override

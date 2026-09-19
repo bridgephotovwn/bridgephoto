@@ -640,6 +640,12 @@ class AppLocalizationsGu extends AppLocalizations {
   String get saveAsTxt => '.txt તરીકે સેવ કરો';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'ફરી વાંચો';
 
   @override

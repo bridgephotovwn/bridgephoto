@@ -640,6 +640,12 @@ class AppLocalizationsNb extends AppLocalizations {
   String get saveAsTxt => 'Lagre som .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Les på nytt';
 
   @override

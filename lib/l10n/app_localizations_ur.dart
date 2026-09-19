@@ -640,6 +640,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get saveAsTxt => '‎.txt کے طور پر محفوظ کریں';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'دوبارہ پڑھیں';
 
   @override

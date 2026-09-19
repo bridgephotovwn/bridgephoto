@@ -640,6 +640,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get saveAsTxt => '.txt గా సేవ్ చేయి';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'మళ్లీ చదువు';
 
   @override

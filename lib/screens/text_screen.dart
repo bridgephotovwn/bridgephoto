@@ -7,6 +7,7 @@ import '../engine.dart';
 import '../exporter.dart';
 import '../main.dart';
 import '../ocr.dart';
+import '../office_export.dart';
 import '../prefs.dart';
 import '../store.dart';
 
@@ -70,6 +71,33 @@ class _TextScreenState extends State<TextScreen> {
     if (p != null && mounted) context.snack(l.textSaved);
   }
 
+  /// The text as a Word document — one paragraph per line.
+  Future<void> _saveDocx() async {
+    final l = context.l10n;
+    final lines = _c.text.split('\n');
+    final p = await Exporter.saveBytes('${DocStore.safeName(widget.doc.name)}.docx',
+        OfficeExport.docx(lines),
+        ext: 'docx', title: l.saveDialogTitle);
+    if (p != null && mounted) context.snack(l.textSaved);
+  }
+
+  /// The text as a spreadsheet. A line is a row; runs of two or more spaces
+  /// are where the columns were, which is how a receipt or a table prints and
+  /// is close enough to be useful without pretending to understand the page.
+  Future<void> _saveXlsx() async {
+    final l = context.l10n;
+    final rows = [
+      for (final line in _c.text.split('\n'))
+        line.trim().isEmpty
+            ? <String>['']
+            : line.trimRight().split(RegExp(r'\s{2,}|\t')).map((c) => c.trim()).toList(),
+    ];
+    final p = await Exporter.saveBytes('${DocStore.safeName(widget.doc.name)}.xlsx',
+        OfficeExport.xlsx(rows),
+        ext: 'xlsx', title: l.saveDialogTitle);
+    if (p != null && mounted) context.snack(l.textSaved);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -97,6 +125,10 @@ class _TextScreenState extends State<TextScreen> {
           PopupMenuButton<String>(
             onSelected: (v) {
               switch (v) {
+                case 'docx':
+                  _saveDocx();
+                case 'xlsx':
+                  _saveXlsx();
                 case 'save':
                   _save();
                 case 'rerun':
@@ -122,6 +154,8 @@ class _TextScreenState extends State<TextScreen> {
               };
               return [
                 PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.saveAsTxt))),
+                PopupMenuItem(value: 'docx', child: ListTile(leading: const Icon(Icons.description_outlined), title: Text(l.saveAsWord))),
+                PopupMenuItem(value: 'xlsx', child: ListTile(leading: const Icon(Icons.table_chart_outlined), title: Text(l.saveAsExcel))),
                 PopupMenuItem(value: 'rerun', child: ListTile(leading: const Icon(Icons.refresh), title: Text(l.readAgain))),
                 if (Engine.isAndroid) const PopupMenuDivider(),
                 if (Engine.isAndroid)

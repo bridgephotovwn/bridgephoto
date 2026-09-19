@@ -640,6 +640,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get saveAsTxt => '.txt के रूप में सेव करें';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'फिर से पढ़ें';
 
   @override

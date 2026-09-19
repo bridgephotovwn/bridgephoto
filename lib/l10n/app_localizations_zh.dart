@@ -631,6 +631,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saveAsTxt => '保存为 .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => '重新识别';
 
   @override

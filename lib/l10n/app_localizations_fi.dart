@@ -640,6 +640,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get saveAsTxt => 'Tallenna .txt-tiedostona';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Lue uudelleen';
 
   @override

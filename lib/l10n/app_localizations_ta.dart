@@ -642,6 +642,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get saveAsTxt => '.txt ஆகச் சேமி';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'மீண்டும் படி';
 
   @override

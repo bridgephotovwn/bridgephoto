@@ -640,6 +640,12 @@ class AppLocalizationsDa extends AppLocalizations {
   String get saveAsTxt => 'Gem som .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Læs igen';
 
   @override

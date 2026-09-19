@@ -641,6 +641,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get saveAsTxt => 'Opslaan als .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Opnieuw lezen';
 
   @override

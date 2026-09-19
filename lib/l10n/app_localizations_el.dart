@@ -641,6 +641,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get saveAsTxt => 'Αποθήκευση ως .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Ανάγνωση ξανά';
 
   @override

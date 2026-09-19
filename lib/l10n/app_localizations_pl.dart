@@ -649,6 +649,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get saveAsTxt => 'Zapisz jako .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Odczytaj ponownie';
 
   @override

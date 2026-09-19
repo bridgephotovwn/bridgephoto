@@ -641,6 +641,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get saveAsTxt => '.txt ලෙස සුරකින්න';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'නැවත කියවන්න';
 
   @override

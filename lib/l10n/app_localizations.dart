@@ -1138,6 +1138,18 @@ abstract class AppLocalizations {
   /// **'Save as .txt'**
   String get saveAsTxt;
 
+  /// No description provided for @saveAsWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as Word'**
+  String get saveAsWord;
+
+  /// No description provided for @saveAsExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as a spreadsheet'**
+  String get saveAsExcel;
+
   /// No description provided for @readAgain.
   ///
   /// In en, this message translates to:

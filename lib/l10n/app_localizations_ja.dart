@@ -635,6 +635,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get saveAsTxt => '.txtとして保存';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => '再読み取り';
 
   @override

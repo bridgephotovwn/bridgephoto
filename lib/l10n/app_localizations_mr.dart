@@ -640,6 +640,12 @@ class AppLocalizationsMr extends AppLocalizations {
   String get saveAsTxt => '.txt म्हणून सेव्ह करा';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'पुन्हा वाचा';
 
   @override

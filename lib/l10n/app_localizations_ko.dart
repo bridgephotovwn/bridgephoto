@@ -635,6 +635,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get saveAsTxt => '.txt로 저장';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => '다시 인식';
 
   @override

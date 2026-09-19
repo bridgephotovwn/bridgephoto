@@ -164,6 +164,8 @@
   "copyAll": "نسخ الكل",
   "shareText": "مشاركة النص",
   "saveAsTxt": "حفظ كملف ‎.txt",
+  "saveAsWord": "حفظ كملف Word",
+  "saveAsExcel": "حفظ كجدول",
   "readAgain": "إعادة القراءة",
   "readAsLatin": "قراءة كإنجليزية / لاتينية",
   "readAsDevanagari": "قراءة كهندية / نيبالية",

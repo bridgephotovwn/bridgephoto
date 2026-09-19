@@ -215,6 +215,8 @@
   "copyAll": "Copy all",
   "shareText": "Share text",
   "saveAsTxt": "Save as .txt",
+  "saveAsWord": "Save as Word",
+  "saveAsExcel": "Save as a spreadsheet",
   "readAgain": "Read again",
   "readAsLatin": "Read as English / Latin",
   "readAsDevanagari": "Read as Hindi / Nepali",

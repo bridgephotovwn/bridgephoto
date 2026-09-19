@@ -641,6 +641,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get saveAsTxt => 'Hifadhi kama .txt';
 
   @override
+  String get saveAsWord => 'Save as Word';
+
+  @override
+  String get saveAsExcel => 'Save as a spreadsheet';
+
+  @override
   String get readAgain => 'Soma tena';
 
   @override
