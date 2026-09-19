@@ -640,6 +640,42 @@ abstract class AppLocalizations {
   /// **'Export as JPEG / PNG'**
   String get exportAsImages;
 
+  /// No description provided for @oneSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages on one sheet'**
+  String get oneSheetTitle;
+
+  /// No description provided for @oneSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the pages in the order you want them — front, then back. They go on one printable sheet, and the pages you picked are kept.'**
+  String get oneSheetHint;
+
+  /// No description provided for @makeTheSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Make the sheet'**
+  String get makeTheSheet;
+
+  /// No description provided for @makingSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Making the sheet…'**
+  String get makingSheet;
+
+  /// No description provided for @sheetAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Sheet added as the last page'**
+  String get sheetAdded;
+
+  /// No description provided for @couldNotMakeSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not make the sheet: {error}'**
+  String couldNotMakeSheet(String error);
+
   /// No description provided for @deleteDocument.
   ///
   /// In en, this message translates to:

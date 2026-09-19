@@ -326,6 +326,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exportAsImages => 'تصدير كـ JPEG / PNG';
 
   @override
+  String get oneSheetTitle => 'صفحات في ورقة واحدة';
+
+  @override
+  String get oneSheetHint =>
+      'اضغط على الوجه ثم الظهر. سيظهران في صفحة واحدة قابلة للطباعة، وتبقى الصفحات كما هي.';
+
+  @override
+  String get makeTheSheet => 'إنشاء الصفحة';
+
+  @override
+  String get makingSheet => 'جارٍ الإنشاء…';
+
+  @override
+  String get sheetAdded => 'تمت إضافة الصفحة في النهاية';
+
+  @override
+  String couldNotMakeSheet(String error) {
+    return 'تعذر إنشاء الصفحة: $error';
+  }
+
+  @override
   String get deleteDocument => 'حذف المستند';
 
   @override

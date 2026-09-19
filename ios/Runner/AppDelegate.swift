@@ -87,6 +87,13 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
                            outDir: args["outDir"] as? String ?? "",
                            maxDim: args["maxDim"] as? Int ?? 2200)
       }
+    case "composeSheet":
+      bg(result) {
+        try self.composeSheet(inputs: args["inputs"] as? [String] ?? [],
+                              output: args["output"] as? String ?? "",
+                              quality: args["quality"] as? Int ?? 92)
+        return true
+      }
     case "enhance":
       bg(result) {
         try self.enhance(input: args["input"] as? String ?? "",
@@ -307,6 +314,42 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     return UIGraphicsImageRenderer(size: img.size, format: fmt).image { _ in
       img.draw(in: CGRect(origin: .zero, size: img.size))
     }
+  }
+
+  /// Lays several pages onto ONE white A4 sheet, stacked down the page and
+  /// each kept in proportion. The front and back of an ID card on a single
+  /// sheet is what people want this for, and it is a paid feature everywhere
+  /// else. A4 at 300 dpi, because that is what a printer expects.
+  private func composeSheet(inputs: [String], output: String, quality: Int) throws {
+    guard !inputs.isEmpty else { throw EngineError("Nothing to place on the sheet.") }
+    let sheetW: CGFloat = 2480, sheetH: CGFloat = 3508
+    let margin = sheetW * 0.05, gap = sheetW * 0.04
+    let boxW = sheetW - 2 * margin
+    let boxH = (sheetH - 2 * margin - gap * CGFloat(inputs.count - 1)) / CGFloat(inputs.count)
+
+    let fmt = UIGraphicsImageRendererFormat.default()
+    fmt.scale = 1
+    fmt.opaque = true
+    let sheet = UIGraphicsImageRenderer(size: CGSize(width: sheetW, height: sheetH), format: fmt).image { ctx in
+      UIColor.white.setFill()
+      ctx.fill(CGRect(x: 0, y: 0, width: sheetW, height: sheetH))
+      var top = margin
+      for path in inputs {
+        if let ui = UIImage(contentsOfFile: path) {
+          let img = Engine.normalized(ui)
+          // Fit inside the slot without stretching: a stretched ID card is a
+          // rejected ID card.
+          let k = min(boxW / img.size.width, boxH / img.size.height)
+          let w = img.size.width * k, h = img.size.height * k
+          img.draw(in: CGRect(x: (sheetW - w) / 2, y: top + (boxH - h) / 2, width: w, height: h))
+        }
+        top += boxH + gap
+      }
+    }
+    guard let d = sheet.jpegData(compressionQuality: CGFloat(min(max(quality, 1), 100)) / 100) else {
+      throw EngineError("Cannot encode the sheet.")
+    }
+    try d.write(to: URL(fileURLWithPath: output), options: .atomic)
   }
 
   /// Cleans up a page: flattens the shadow and uneven light a phone camera

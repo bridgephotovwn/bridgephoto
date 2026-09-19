@@ -109,6 +109,40 @@ class _DocumentScreenState extends State<DocumentScreen> {
     }
   }
 
+  /// Puts several pages on one printable sheet: two sides of a document, a
+  /// passport page and its visa, two receipts. NOT pitched as an Emirates ID
+  /// tool — UAE PASS gives residents an official copy of their own ID for
+  /// nothing, and we will not pretend to beat the government at that. This is
+  /// for everything else, and for the documents that are not yours.
+  /// The pages chosen are kept; the sheet is added at the end.
+  Future<void> _oneSheet() async {
+    final l = context.l10n;
+    final d = _doc!;
+    final chosen = await showModalBottomSheet<List<String>>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (ctx) => _SheetPicker(doc: d),
+    );
+    if (chosen == null || chosen.length < 2 || !mounted) return;
+    _setBusy(l.makingSheet);
+    try {
+      final name = DocStore.newPageName();
+      await Engine.composeSheet(
+          [for (final p in chosen) d.pageFile(p).path], d.pageFile(name).path);
+      d.pages.add(name);
+      await DocStore.save(d);
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
+      if (mounted) context.snack(l.sheetAdded);
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotMakeSheet(_msg(e)));
+    } finally {
+      _setBusy(null);
+      if (mounted) setState(() {});
+    }
+  }
+
   Future<void> _savePdf() async {
     final l = context.l10n;
     try {
@@ -273,6 +307,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   _savePdf();
                 case 'images':
                   _exportImages();
+                case 'sheet':
+                  _oneSheet();
                 case 'rename':
                   _rename();
                 case 'delete':
@@ -282,6 +318,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
             itemBuilder: (_) => [
               PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.savePdfToFolder))),
               PopupMenuItem(value: 'images', child: ListTile(leading: const Icon(Icons.image_outlined), title: Text(l.exportAsImages))),
+              if (d.pages.length >= 2)
+                PopupMenuItem(value: 'sheet', child: ListTile(leading: const Icon(Icons.badge_outlined), title: Text(l.oneSheetTitle))),
               PopupMenuItem(value: 'rename', child: ListTile(leading: const Icon(Icons.edit_outlined), title: Text(l.rename))),
               const PopupMenuDivider(),
               PopupMenuItem(value: 'delete', child: ListTile(leading: const Icon(Icons.delete_outline), title: Text(l.deleteDocument))),
@@ -364,6 +402,98 @@ class _PageCell extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
               decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.65), borderRadius: BorderRadius.circular(8)),
               child: Text('$number', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+/// Picks the pages that go on one sheet, in the order they are tapped —
+/// front first, then back, which is the order an office expects to see them.
+class _SheetPicker extends StatefulWidget {
+  final Doc doc;
+  const _SheetPicker({required this.doc});
+
+  @override
+  State<_SheetPicker> createState() => _SheetPickerState();
+}
+
+class _SheetPickerState extends State<_SheetPicker> {
+  final _order = <String>[];
+
+  void _toggle(String p) => setState(() {
+        if (!_order.remove(p)) _order.add(p);
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final cs = Theme.of(context).colorScheme;
+    final d = widget.doc;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(l.oneSheetTitle, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(l.oneSheetHint,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: cs.onSurfaceVariant)),
+          const SizedBox(height: 12),
+          Flexible(
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 120,
+                childAspectRatio: 0.75,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+              ),
+              itemCount: d.pages.length,
+              itemBuilder: (_, i) {
+                final p = d.pages[i];
+                final pick = _order.indexOf(p);
+                return InkWell(
+                  onTap: () => _toggle(p),
+                  child: Stack(fit: StackFit.expand, children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(d.pageFile(p),
+                          key: ValueKey('$p#${d.modified}'),
+                          fit: BoxFit.cover,
+                          cacheWidth: 240),
+                    ),
+                    if (pick >= 0)
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: cs.primary, width: 3),
+                          color: cs.primary.withValues(alpha: 0.18),
+                        ),
+                        alignment: Alignment.center,
+                        child: CircleAvatar(
+                          radius: 14,
+                          backgroundColor: cs.primary,
+                          child: Text('${pick + 1}',
+                              style: TextStyle(color: cs.onPrimary, fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                  ]),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _order.length < 2
+                  ? null
+                  : () => Navigator.of(context).pop(List<String>.from(_order)),
+              icon: const Icon(Icons.badge_outlined),
+              label: Text(l.makeTheSheet),
             ),
           ),
         ]),

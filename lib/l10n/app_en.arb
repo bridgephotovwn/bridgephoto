@@ -101,6 +101,15 @@
   "sharePdf": "Share PDF",
   "savePdfToFolder": "Save PDF to a folder",
   "exportAsImages": "Export as JPEG / PNG",
+  "oneSheetTitle": "Pages on one sheet",
+  "oneSheetHint": "Tap the pages in the order you want them — front, then back. They go on one printable sheet, and the pages you picked are kept.",
+  "makeTheSheet": "Make the sheet",
+  "makingSheet": "Making the sheet…",
+  "sheetAdded": "Sheet added as the last page",
+  "couldNotMakeSheet": "Could not make the sheet: {error}",
+  "@couldNotMakeSheet": {
+    "placeholders": { "error": { "type": "String" } }
+  },
   "deleteDocument": "Delete document",
   "noPages": "No pages. Tap Add pages.",
   "addPages": "Add pages",

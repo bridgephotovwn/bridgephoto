@@ -74,6 +74,11 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         const val SKEW_MIN_DEGREES = 0.25f
         /** Beyond this it is not a crooked page, it is a bad reading. */
         const val SKEW_MAX_DEGREES = 15f
+        /** One sheet = A4 at 300 dpi, which is what a printer expects. */
+        const val SHEET_W = 2480
+        const val SHEET_H = 3508
+        const val SHEET_MARGIN = 0.05f
+        const val SHEET_GAP = 0.04f
         val NL: String = System.lineSeparator()
     }
 
@@ -111,6 +116,14 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<String>("script") ?: "latin",
                     call.argument<Int>("maxDim") ?: 4096
                 )
+            }
+            "composeSheet" -> bg(result) {
+                composeSheet(
+                    call.argument<List<String>>("inputs")!!,
+                    call.argument<String>("output")!!,
+                    call.argument<Int>("quality") ?: 92
+                )
+                true
             }
             "enhance" -> bg(result) {
                 enhance(
@@ -597,6 +610,54 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // --------------------------------------------------------------- image
+
+    // --------------------------------------------------------- one sheet
+
+    /**
+     * Lays several page images onto ONE white A4 sheet, stacked down the page
+     * and each kept in proportion. The front and back of an ID card on a
+     * single sheet is what people actually want this for, and it is the copy
+     * every UAE office asks for. CamScanner and the rest charge for it.
+     *
+     * Works for any number of pictures, so it also does two receipts, or a
+     * passport page and a visa, on one sheet.
+     */
+    private fun composeSheet(inputs: List<String>, output: String, quality: Int) {
+        if (inputs.isEmpty()) throw IllegalArgumentException("Nothing to place on the sheet.")
+        val sheet = Bitmap.createBitmap(SHEET_W, SHEET_H, Bitmap.Config.ARGB_8888)
+        try {
+            val canvas = android.graphics.Canvas(sheet)
+            canvas.drawColor(Color.WHITE)
+            val paint = android.graphics.Paint(
+                android.graphics.Paint.FILTER_BITMAP_FLAG or android.graphics.Paint.ANTI_ALIAS_FLAG
+            )
+            val margin = SHEET_W * SHEET_MARGIN
+            val gap = SHEET_W * SHEET_GAP
+            val boxW = SHEET_W - 2 * margin
+            val boxH = (SHEET_H - 2 * margin - gap * (inputs.size - 1)) / inputs.size
+            var top = margin
+            for (path in inputs) {
+                val bmp = BitmapFactory.decodeFile(path)
+                    ?: throw IllegalArgumentException("Cannot decode one of the pages.")
+                try {
+                    // Fit inside its slot without stretching: a stretched ID
+                    // card is a rejected ID card.
+                    val k = minOf(boxW / bmp.width, boxH / bmp.height)
+                    val w = bmp.width * k
+                    val h = bmp.height * k
+                    val left = (SHEET_W - w) / 2f
+                    val dst = android.graphics.RectF(left, top + (boxH - h) / 2f, left + w, top + (boxH + h) / 2f)
+                    canvas.drawBitmap(bmp, null, dst, paint)
+                } finally {
+                    bmp.recycle()
+                }
+                top += boxH + gap
+            }
+            writeImage(sheet, output, quality)
+        } finally {
+            sheet.recycle()
+        }
+    }
 
     // ------------------------------------------------------------- enhance
 

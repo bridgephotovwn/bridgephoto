@@ -310,6 +310,27 @@ class AppLocalizationsHu extends AppLocalizations {
   String get exportAsImages => 'Exportálás JPEG / PNG formátumban';
 
   @override
+  String get oneSheetTitle => 'Pages on one sheet';
+
+  @override
+  String get oneSheetHint =>
+      'Tap the pages in the order you want them — front, then back. They go on one printable sheet, and the pages you picked are kept.';
+
+  @override
+  String get makeTheSheet => 'Make the sheet';
+
+  @override
+  String get makingSheet => 'Making the sheet…';
+
+  @override
+  String get sheetAdded => 'Sheet added as the last page';
+
+  @override
+  String couldNotMakeSheet(String error) {
+    return 'Could not make the sheet: $error';
+  }
+
+  @override
   String get deleteDocument => 'Dokumentum törlése';
 
   @override

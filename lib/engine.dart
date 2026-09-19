@@ -157,6 +157,18 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
+  /// Lays several pages onto one white A4 sheet, stacked and kept in
+  /// proportion. The front and back of an ID card on a single sheet is what
+  /// this is for — the copy every office asks for, and a paid feature in
+  /// every other scanner.
+  static Future<void> composeSheet(List<String> inputs, String output,
+          {int quality = 92}) =>
+      _ch.invokeMethod('composeSheet', {
+        'inputs': inputs,
+        'output': output,
+        'quality': quality,
+      });
+
   /// Cleans up a page: takes out the shadow and uneven light a phone camera
   /// leaves on paper, evens the contrast, and optionally straightens a page
   /// photographed crooked. [mode] is auto (keeps colour), grey, bw or none.
