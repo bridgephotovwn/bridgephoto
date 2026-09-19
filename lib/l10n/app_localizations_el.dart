@@ -426,6 +426,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get readAsDevanagari => 'Ανάγνωση ως χίντι / νεπαλικά';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Στο Android, το μοντέλο κειμένου κατεβαίνει μία φορά από τις υπηρεσίες Google Play. Αν είναι η πρώτη χρήση, περιμένετε ένα λεπτό και δοκιμάστε ξανά.';
 
@@ -510,6 +513,9 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Χίντι, νεπαλικά, μαράθι (+ λατινικά)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Κινεζικά (+ λατινικά)';

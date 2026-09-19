@@ -426,6 +426,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get readAsDevanagari => 'Hintçe / Nepalce olarak oku';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Android\'de metin modeli Google Play hizmetleri tarafından bir kez indirilir. İlk kullanımsa bir dakika bekleyip tekrar deneyin.';
 
@@ -508,6 +511,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Hintçe, Nepalce, Marathi (+ Latin)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Çince (+ Latin)';

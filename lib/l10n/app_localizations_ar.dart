@@ -441,6 +441,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get readAsDevanagari => 'قراءة كهندية / نيبالية';
 
   @override
+  String get readAsArabic => 'قراءة كالعربية';
+
+  @override
   String get ocrModelHint =>
       'على Android تنزّل خدمات Google Play نموذج النص مرة واحدة. إذا كان هذا أول استخدام، انتظر دقيقة ثم أعد المحاولة.';
 
@@ -525,6 +528,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scriptDevanagari => 'الهندية والنيبالية والماراثية (+ اللاتينية)';
 
   @override
+  String get scriptArabic => 'العربية (+ اللاتينية)';
+
+  @override
   String get scriptChinese => 'الصينية (+ اللاتينية)';
 
   @override
@@ -602,7 +608,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveToContacts => 'حفظ في جهات الاتصال';
 
   @override
-  String get includeCardPhoto => 'Add the card photo';
+  String get includeCardPhoto => 'إضافة صورة البطاقة';
 
   @override
   String get contactReviewTitle => 'بطاقة عمل';

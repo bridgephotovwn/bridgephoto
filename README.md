@@ -27,7 +27,7 @@ The app speaks 46 languages and follows the phone's language automatically (righ
 | Feature | Android | iOS |
 |---|---|---|
 | Scanner | Google ML Kit Document Scanner: autofocus, automatic capture, edge detection, corner adjustment, colour / greyscale / black-and-white filters, stain and finger removal, multi-page, import from gallery | Apple VisionKit document camera: autofocus, automatic capture, edge detection, perspective correction, colour / greyscale / black-and-white |
-| Text recognition (OCR), on the device | Google ML Kit Text Recognition: Latin (English and other Latin-script languages), Devanagari (Hindi, Nepali, Marathi), Chinese, Japanese and Korean. Arabic is not in 1.0. | Apple Vision: the languages your iOS version supports; English on every version. Hindi and Nepali OCR are Android-only in 1.0. |
+| Text recognition (OCR), on the device | Google ML Kit Text Recognition: Latin (English and other Latin-script languages), Devanagari (Hindi, Nepali, Marathi), Chinese, Japanese and Korean. Arabic is read by Tesseract, which is bundled in the app because Google has no Arabic model; on that setting the page is read by both and the two readings are merged, so a bilingual page comes out whole. | Apple Vision: the languages your iOS version supports; English on every version. Hindi, Nepali and Arabic OCR are Android-only. |
 | Searchable PDF (invisible OCR text layer, so the PDF can be searched and text copied) | Yes | Yes |
 | Copy or share the recognised text | Yes | Yes |
 | Document list with rename, search, delete | Yes | Yes |
@@ -48,7 +48,7 @@ Free scanner apps without ads have become rare. Microsoft Lens, the best-known o
 
 One Flutter codebase with a small native engine per platform:
 
-- **Android:** Google ML Kit Document Scanner and ML Kit Text Recognition (Latin + Devanagari) through Google Play services; PDF merge and import with PDFBox-Android.
+- **Android:** Google ML Kit Document Scanner and ML Kit Text Recognition (Latin, Devanagari, Chinese, Japanese, Korean) through Google Play services; Tesseract (Apache-2.0, `android/app/libs`, with the `ara` language pack in `assets/tessdata`) for Arabic; PDF merge and import with PDFBox-Android. Nothing here reaches the network - the app holds no INTERNET permission.
 - **iOS:** Apple VisionKit (`VNDocumentCameraViewController`) for the document camera and the Vision framework for on-device OCR; PDF merge and import with Apple PDFKit.
 - **Both:** PDF creation in Dart (`pdf` package).
 

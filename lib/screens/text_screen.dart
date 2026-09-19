@@ -103,6 +103,7 @@ class _TextScreenState extends State<TextScreen> {
                   _run(force: true);
                 case 'latin':
                 case 'devanagari':
+                case 'arabic':
                 case 'chinese':
                 case 'japanese':
                 case 'korean':
@@ -114,6 +115,7 @@ class _TextScreenState extends State<TextScreen> {
               final scripts = {
                 'latin': l.readAsLatin,
                 'devanagari': l.readAsDevanagari,
+                'arabic': l.readAsArabic,
                 'chinese': l.readAsChinese,
                 'japanese': l.readAsJapanese,
                 'korean': l.readAsKorean,

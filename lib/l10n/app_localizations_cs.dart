@@ -429,6 +429,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get readAsDevanagari => 'Číst jako hindštinu / nepálštinu';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'V systému Android stahují textový model jednorázově Služby Google Play. Pokud jde o první použití, počkejte minutu a zkuste to znovu.';
 
@@ -512,6 +515,9 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get scriptDevanagari =>
       'Hindština, nepálština, maráthština (+ latinka)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Čínština (+ latinka)';

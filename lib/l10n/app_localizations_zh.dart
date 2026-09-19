@@ -416,6 +416,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get readAsDevanagari => '按印地语 / 尼泊尔语识别';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       '在 Android 上，文字模型由 Google Play 服务下载一次。如果是首次使用，请稍等一分钟后重试。';
 
@@ -495,6 +498,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scriptDevanagari => '印地语、尼泊尔语、马拉地语（+ 拉丁文）';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => '中文（+ 拉丁文）';

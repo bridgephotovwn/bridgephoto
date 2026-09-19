@@ -430,6 +430,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get readAsDevanagari => 'Citiți ca hindi / nepaleză';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Pe Android, modelul de text este descărcat o singură dată de serviciile Google Play. Dacă este prima utilizare, așteptați un minut și încercați din nou.';
 
@@ -513,6 +516,9 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Hindi, nepaleză, marathi (+ latină)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Chineză (+ latină)';

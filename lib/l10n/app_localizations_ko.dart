@@ -420,6 +420,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get readAsDevanagari => '힌디어 / 네팔어로 인식';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Android에서는 Google Play 서비스가 텍스트 모델을 한 번 다운로드합니다. 처음 사용하는 경우 1분 정도 기다린 후 다시 시도하세요.';
 
@@ -500,6 +503,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scriptDevanagari => '힌디어, 네팔어, 마라티어 (+ 라틴 문자)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => '중국어 (+ 라틴 문자)';

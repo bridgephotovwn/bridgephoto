@@ -427,6 +427,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get readAsDevanagari => 'இந்தி / நேபாளி ஆகப் படி';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Android இல் உரை மாதிரியை Google Play சேவைகள் ஒருமுறை பதிவிறக்கும். இது முதல் பயன்பாடு எனில், ஒரு நிமிடம் காத்திருந்து மீண்டும் முயற்சிக்கவும்.';
 
@@ -510,6 +513,9 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'இந்தி, நேபாளி, மராத்தி (+ லத்தீன்)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'சீனம் (+ லத்தீன்)';

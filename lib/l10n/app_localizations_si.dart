@@ -426,6 +426,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get readAsDevanagari => 'හින්දි / නේපාලි ලෙස කියවන්න';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Android හි පෙළ ආකෘතිය Google Play සේවා විසින් එක් වරක් බාගත කෙරේ. මෙය පළමු භාවිතය නම්, විනාඩියක් රැඳී සිට නැවත උත්සාහ කරන්න.';
 
@@ -508,6 +511,9 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'හින්දි, නේපාලි, මරාති (+ ලතින්)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'චීන (+ ලතින්)';

@@ -424,6 +424,9 @@ class AppLocalizationsAm extends AppLocalizations {
   String get readAsDevanagari => 'እንደ ሂንዲ / ኔፓሊ አንብብ';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'በAndroid ላይ የጽሑፍ ሞዴሉ በGoogle Play አገልግሎቶች አንድ ጊዜ ይወርዳል። ይህ የመጀመሪያ አጠቃቀም ከሆነ፣ አንድ ደቂቃ ጠብቀው እንደገና ይሞክሩ።';
 
@@ -504,6 +507,9 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'ሂንዲ፣ ኔፓሊ፣ ማራቲ (+ ላቲን)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'ቻይንኛ (+ ላቲን)';

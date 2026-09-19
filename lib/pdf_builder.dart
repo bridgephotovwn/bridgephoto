@@ -13,6 +13,7 @@ import 'store.dart';
 /// they are), plus an invisible OCR text layer so the PDF is searchable.
 class PdfBuilder {
   static Uint8List? _notoBytes;
+  static Uint8List? _arabicBytes;
 
   static Future<Uint8List> build(Doc d,
       {void Function(int done, int total)? onProgress}) async {
@@ -27,6 +28,7 @@ class PdfBuilder {
 
     final latin = pw.Font.helvetica();
     pw.Font? noto; // loaded only when a page has non-Latin text
+    pw.Font? arabic; // and only when a page actually has Arabic on it
 
     for (var i = 0; i < d.pages.length; i++) {
       final p = d.pages[i];
@@ -45,13 +47,18 @@ class PdfBuilder {
           ocr = null; // OCR unavailable (model not downloaded yet): image-only page
         }
       }
-      if (ocr != null && noto == null && _needsNoto(ocr)) {
-        noto = await _loadNoto();
+      if (ocr != null) {
+        final scripts = _scriptsIn(ocr);
+        if (noto == null && scripts.contains(_Script.other)) noto = await _loadNoto();
+        if (arabic == null && scripts.contains(_Script.arabic)) {
+          arabic = await _loadArabic();
+        }
       }
 
       final lay = _layout(sizeMode, iw, ih);
       final text = ocr;
       final notoFont = noto;
+      final arabicFont = arabic;
 
       doc.addPage(pw.Page(
         pageFormat: PdfPageFormat(lay.pw, lay.ph),
@@ -62,7 +69,7 @@ class PdfBuilder {
             canvas.drawImage(image.resolve(ctx, PdfPoint(lay.w, lay.h)),
                 lay.x, lay.y, lay.w, lay.h);
             if (text != null) {
-              _drawTextLayer(canvas, ctx, text, lay, latin, notoFont);
+              _drawTextLayer(canvas, ctx, text, lay, latin, notoFont, arabicFont);
             }
           },
         ),
@@ -75,11 +82,17 @@ class PdfBuilder {
   // ---- text layer
 
   static void _drawTextLayer(PdfGraphics canvas, pw.Context ctx, OcrResult ocr,
-      _Layout lay, pw.Font latin, pw.Font? noto) {
+      _Layout lay, pw.Font latin, pw.Font? noto, pw.Font? arabic) {
     if (ocr.w <= 0 || ocr.h <= 0) return;
     final s = lay.w / ocr.w; // PDF points per image pixel
     final latinFont = latin.getFont(ctx);
     final notoFont = noto?.getFont(ctx);
+    final arabicFont = arabic?.getFont(ctx);
+    PdfFont? fontFor(_Script k) => switch (k) {
+          _Script.latin => latinFont,
+          _Script.arabic => arabicFont,
+          _Script.other => notoFont,
+        };
     for (final ln in ocr.lines) {
       final txt = ln.text.trim();
       if (txt.isEmpty) continue;
@@ -90,12 +103,13 @@ class PdfBuilder {
       final x0 = lay.x + ln.l * s;
       final y0 = lay.y + lay.h - ln.b * s + boxH * 0.15; // baseline
 
-      // Split into runs: Latin-1 goes to Helvetica, the rest to Noto.
+      // Split into runs: Latin-1 goes to Helvetica, Arabic to Noto Arabic,
+      // everything else to Noto Devanagari.
       final runs = _runs(txt);
       final widths = <double>[];
       var total = 0.0;
       for (final r in runs) {
-        final f = r.latin ? latinFont : notoFont;
+        final f = fontFor(r.script);
         if (f == null) {
           widths.add(0);
           continue;
@@ -109,7 +123,7 @@ class PdfBuilder {
       var cx = x0;
       for (var i = 0; i < runs.length; i++) {
         final r = runs[i];
-        final f = r.latin ? latinFont : notoFont;
+        final f = fontFor(r.script);
         if (f == null || widths[i] <= 0) continue;
         canvas.drawString(f, fontSize, r.text, cx, y0,
             mode: PdfTextRenderingMode.invisible, scale: scale);
@@ -121,32 +135,65 @@ class PdfBuilder {
   static List<_Run> _runs(String text) {
     final out = <_Run>[];
     final buf = StringBuffer();
-    bool? cur;
+    _Script? cur;
     for (final cp in text.runes) {
-      final isLatin = cp <= 0xFF;
-      if (cur != null && isLatin != cur) {
+      final k = _scriptOf(cp);
+      if (cur != null && k != cur) {
         out.add(_Run(buf.toString(), cur));
         buf.clear();
       }
-      cur = isLatin;
+      cur = k;
       buf.writeCharCode(cp);
     }
     if (buf.isNotEmpty && cur != null) out.add(_Run(buf.toString(), cur));
     return out;
   }
 
-  static bool _needsNoto(OcrResult r) =>
-      r.lines.any((l) => l.text.runes.any((c) => c > 0xFF));
+  static _Script _scriptOf(int cp) {
+    if (cp <= 0xFF) return _Script.latin;
+    // Arabic, Arabic Supplement, Extended-A and the presentation forms.
+    if ((cp >= 0x0600 && cp <= 0x06FF) ||
+        (cp >= 0x0750 && cp <= 0x077F) ||
+        (cp >= 0x08A0 && cp <= 0x08FF) ||
+        (cp >= 0xFB50 && cp <= 0xFDFF) ||
+        (cp >= 0xFE70 && cp <= 0xFEFF)) {
+      return _Script.arabic;
+    }
+    return _Script.other;
+  }
+
+  /// Which fonts this page will need, so none is loaded for nothing.
+  static Set<_Script> _scriptsIn(OcrResult r) {
+    final out = <_Script>{};
+    for (final l in r.lines) {
+      for (final c in l.text.runes) {
+        out.add(_scriptOf(c));
+        if (out.length == _Script.values.length) return out;
+      }
+    }
+    return out;
+  }
 
   static Future<pw.Font?> _loadNoto() async {
+    _notoBytes = await _fontBytes(
+        'assets/fonts/NotoSansDevanagari-Regular.ttf', _notoBytes);
+    return _notoBytes == null ? null : pw.Font.ttf(ByteData.sublistView(_notoBytes!));
+  }
+
+  static Future<pw.Font?> _loadArabic() async {
+    _arabicBytes =
+        await _fontBytes('assets/fonts/NotoSansArabic-Regular.ttf', _arabicBytes);
+    return _arabicBytes == null
+        ? null
+        : pw.Font.ttf(ByteData.sublistView(_arabicBytes!));
+  }
+
+  static Future<Uint8List?> _fontBytes(String asset, Uint8List? cached) async {
+    if (cached != null) return cached;
     try {
-      _notoBytes ??= (await rootBundle
-              .load('assets/fonts/NotoSansDevanagari-Regular.ttf'))
-          .buffer
-          .asUint8List();
-      return pw.Font.ttf(ByteData.sublistView(_notoBytes!));
+      return (await rootBundle.load(asset)).buffer.asUint8List();
     } catch (_) {
-      return null;
+      return null; // the page just loses its text layer, the image is still there
     }
   }
 
@@ -184,8 +231,11 @@ class _Layout {
   const _Layout(this.pw, this.ph, this.x, this.y, this.w, this.h);
 }
 
+/// Which font a stretch of text needs in the PDF.
+enum _Script { latin, arabic, other }
+
 class _Run {
   final String text;
-  final bool latin;
-  const _Run(this.text, this.latin);
+  final _Script script;
+  const _Run(this.text, this.script);
 }

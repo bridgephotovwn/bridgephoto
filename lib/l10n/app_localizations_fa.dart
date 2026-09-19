@@ -425,6 +425,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get readAsDevanagari => 'خواندن به‌صورت هندی / نپالی';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'در Android مدل متن یک بار توسط خدمات Google Play دانلود می‌شود. اگر اولین استفاده است، یک دقیقه صبر کنید و دوباره تلاش کنید.';
 
@@ -507,6 +510,9 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'هندی، نپالی، مراتی (+ لاتین)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'چینی (+ لاتین)';

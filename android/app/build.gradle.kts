@@ -37,6 +37,26 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+    }
+
+    // --target-platform only trims Flutter's own library; the Tesseract .so
+    // files would still ship for every CPU (about 20 MB of them). When a build
+    // asks for ONE platform, drop the other CPUs at packaging time, which is
+    // the one place nothing else can undo. An app bundle passes no platform,
+    // so Play still gets every CPU and hands each phone only its own.
+    packaging {
+        val wanted = when (project.findProperty("target-platform") as String?) {
+            "android-arm64" -> "arm64-v8a"
+            "android-arm" -> "armeabi-v7a"
+            "android-x64" -> "x86_64"
+            else -> null
+        }
+        if (wanted != null) {
+            for (abi in listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")) {
+                if (abi != wanted) jniLibs.excludes.add("lib/$abi/**")
+            }
+        }
     }
 
     signingConfigs {
@@ -87,4 +107,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.1")
     // PDF merge (Apache-2.0)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+    // Arabic text recognition. Google's ML Kit has no Arabic model, so Arabic
+    // pages are read by Tesseract instead (Apache-2.0, entirely on device).
+    // The .aar is kept in the repository rather than fetched from JitPack so a
+    // release build never depends on someone else's build server staying up.
+    implementation(files("libs/tesseract4android-4.9.0.aar"))
 }

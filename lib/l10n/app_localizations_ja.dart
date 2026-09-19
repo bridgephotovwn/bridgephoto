@@ -420,6 +420,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get readAsDevanagari => 'ヒンディー語 / ネパール語として読み取る';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Androidでは、テキストモデルはGoogle Play開発者サービスによって一度だけダウンロードされます。初めて使用する場合は、1分ほど待ってからもう一度お試しください。';
 
@@ -499,6 +502,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'ヒンディー語、ネパール語、マラーティー語（+ ラテン文字）';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => '中国語（+ ラテン文字）';

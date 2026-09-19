@@ -429,6 +429,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get readAsDevanagari => 'קריאה כהינדי / נפאלית';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'ב-Android מודל הטקסט מורד פעם אחת על ידי שירותי Google Play. אם זהו השימוש הראשון, המתינו דקה ונסו שוב.';
 
@@ -510,6 +513,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'הינדי, נפאלית, מראטהי (+ לטינית)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'סינית (+ לטינית)';

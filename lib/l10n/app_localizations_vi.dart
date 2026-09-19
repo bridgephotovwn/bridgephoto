@@ -421,6 +421,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get readAsDevanagari => 'Đọc dưới dạng tiếng Hindi / Nepal';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Trên Android, mô hình văn bản được Dịch vụ Google Play tải xuống một lần. Nếu đây là lần đầu sử dụng, hãy đợi một phút rồi thử lại.';
 
@@ -503,6 +506,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Tiếng Hindi, Nepal, Marathi (+ Latinh)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Tiếng Trung (+ Latinh)';

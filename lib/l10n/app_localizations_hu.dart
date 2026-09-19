@@ -426,6 +426,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get readAsDevanagari => 'Olvasás hindiként / nepáliként';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Androidon a szövegmodellt a Google Play-szolgáltatások egyszer töltik le. Ha ez az első használat, várjon egy percet, és próbálja újra.';
 
@@ -509,6 +512,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Hindi, nepáli, maráthi (+ latin)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Kínai (+ latin)';

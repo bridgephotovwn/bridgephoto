@@ -425,6 +425,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get readAsDevanagari => 'हिंदी / नेपाली के रूप में पढ़ें';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Android पर टेक्स्ट मॉडल Google Play सेवाएँ एक बार डाउनलोड करती हैं। अगर यह पहला उपयोग है, तो एक मिनट रुकें और फिर से कोशिश करें।';
 
@@ -508,6 +511,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'हिंदी, नेपाली, मराठी (+ लैटिन)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'चीनी (+ लैटिन)';

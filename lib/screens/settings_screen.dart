@@ -61,6 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final scripts = [
       ('latin', l.scriptLatin),
       ('devanagari', l.scriptDevanagari),
+      ('arabic', l.scriptArabic),
       ('chinese', l.scriptChinese),
       ('japanese', l.scriptJapanese),
       ('korean', l.scriptKorean),

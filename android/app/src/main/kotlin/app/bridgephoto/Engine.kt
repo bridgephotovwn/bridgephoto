@@ -27,6 +27,7 @@ import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
 import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.googlecode.tesseract.android.TessBaseAPI
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
 import com.tom_roush.pdfbox.multipdf.PDFMergerUtility
@@ -40,7 +41,9 @@ import kotlin.math.min
 /**
  * The native engine behind the "bridgephoto/engine" channel.
  *  - scan:          Google ML Kit document scanner (Play services, on device)
- *  - ocr:           Google ML Kit text recognition (Latin / Devanagari, on device)
+ *  - ocr:           Google ML Kit text recognition (Latin / Devanagari / CJK)
+ *                   plus Tesseract for Arabic, which ML Kit cannot read.
+ *                   Everything runs on the device.
  *  - mergePdf:      PDFBox-Android, lossless
  *  - renderPdf:     android.graphics.pdf.PdfRenderer -> JPEG pages
  *  - transform:     rotate / re-encode an image
@@ -55,6 +58,10 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         const val REQ_SCAN = 7101
         /** A contact photo travels inside the intent, which crosses a 1 MB Binder call. */
         const val PHOTO_LIMIT = 400_000
+        /** The Tesseract language pack shipped in assets/tessdata. */
+        const val TESS_LANG = "ara"
+        /** Below this, Tesseract is guessing; a wrong word is worse than none. */
+        const val TESS_MIN_CONFIDENCE = 45f
         val NL: String = System.lineSeparator()
     }
 
@@ -377,14 +384,38 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             ?: throw IllegalArgumentException("Cannot decode the image.")
         val sx = ow.toDouble() / bmp.width
         val sy = oh.toDouble() / bmp.height
-        // Every non-Latin recogniser also reads Latin text.
-        val recognizer: TextRecognizer = when (script) {
-            "devanagari" -> TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
-            "chinese" -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
-            "japanese" -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
-            "korean" -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-            else -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        try {
+            // Arabic is the one script Google does not have a model for, so it
+            // is read by Tesseract. ML Kit still reads the Latin half of the
+            // page, which is better than Tesseract at it and costs nothing
+            // extra: UAE paperwork is nearly always bilingual.
+            val lines = if (script == "arabic") {
+                val latin = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                merge(mlkit(latin, bmp, sx, sy), tesseractArabic(bmp, sx, sy))
+            } else {
+                // Every non-Latin recogniser also reads Latin text.
+                val recognizer: TextRecognizer = when (script) {
+                    "devanagari" -> TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
+                    "chinese" -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+                    "japanese" -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+                    "korean" -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+                    else -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                }
+                mlkit(recognizer, bmp, sx, sy)
+            }
+            return mapOf("w" to ow, "h" to oh, "lines" to lines)
+        } finally {
+            bmp.recycle()
         }
+    }
+
+    /** One ML Kit pass, boxes scaled back to the original image's pixels. */
+    private fun mlkit(
+        recognizer: TextRecognizer,
+        bmp: Bitmap,
+        sx: Double,
+        sy: Double
+    ): MutableList<Map<String, Any>> {
         try {
             val text = Tasks.await(recognizer.process(InputImage.fromBitmap(bmp, 0)))
             val lines = ArrayList<Map<String, Any>>()
@@ -402,11 +433,111 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     )
                 }
             }
-            return mapOf("w" to ow, "h" to oh, "lines" to lines)
+            return lines
         } finally {
             recognizer.close()
-            bmp.recycle()
         }
+    }
+
+    // --------------------------------------------------------- arabic (tesseract)
+
+    /**
+     * Copies the Arabic language data out of the APK the first time it is
+     * needed and returns the folder Tesseract expects (the PARENT of tessdata).
+     */
+    private fun tessDir(): File {
+        val dir = File(activity.filesDir, "tess")
+        val data = File(dir, "tessdata")
+        if (!data.exists()) data.mkdirs()
+        val out = File(data, "$TESS_LANG.traineddata")
+        if (!out.exists() || out.length() == 0L) {
+            val tmp = File(data, "$TESS_LANG.part")
+            activity.assets.open("tessdata/$TESS_LANG.traineddata").use { ins ->
+                FileOutputStream(tmp).use { o -> ins.copyTo(o) }
+            }
+            // Rename last: a half-written file must never look like a good one.
+            if (!tmp.renameTo(out)) {
+                tmp.delete()
+                throw IllegalStateException("Could not unpack the Arabic language data.")
+            }
+        }
+        return dir
+    }
+
+    /** Text lines Tesseract found, boxes scaled back to the original pixels. */
+    private fun tesseractArabic(bmp: Bitmap, sx: Double, sy: Double): List<Map<String, Any>> {
+        val api = TessBaseAPI()
+        if (!api.init(tessDir().absolutePath, TESS_LANG)) {
+            api.recycle()
+            throw IllegalStateException("Arabic text recognition could not start.")
+        }
+        val out = ArrayList<Map<String, Any>>()
+        try {
+            api.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO
+            api.setImage(bmp)
+            api.getUTF8Text() // runs the recognition the iterator then walks
+            val level = TessBaseAPI.PageIteratorLevel.RIL_TEXTLINE
+            val it = api.resultIterator ?: return out
+            try {
+                it.begin()
+                do {
+                    val t = it.getUTF8Text(level)?.trim() ?: continue
+                    // Keep only what ML Kit cannot read. A Latin line found
+                    // here would be a worse reading of one we already have.
+                    if (t.isEmpty() || !hasArabic(t)) continue
+                    if (it.confidence(level) < TESS_MIN_CONFIDENCE) continue
+                    val r = it.getBoundingRect(level) ?: continue
+                    out.add(
+                        mapOf(
+                            "text" to t,
+                            "l" to (r.left * sx).toInt(),
+                            "t" to (r.top * sy).toInt(),
+                            "r" to (r.right * sx).toInt(),
+                            "b" to (r.bottom * sy).toInt()
+                        )
+                    )
+                } while (it.next(level))
+            } finally {
+                it.delete()
+            }
+        } finally {
+            api.recycle()
+        }
+        return out
+    }
+
+    /**
+     * Puts the two readings together: every ML Kit line, plus each Arabic line
+     * that does not sit on top of one (the same words read twice help nobody).
+     * Sorted down the page so the text and the PDF layer read in order.
+     */
+    private fun merge(
+        latin: MutableList<Map<String, Any>>,
+        arabic: List<Map<String, Any>>
+    ): List<Map<String, Any>> {
+        for (a in arabic) {
+            if (latin.none { overlap(it, a) > 0.5 }) latin.add(a)
+        }
+        latin.sortWith(compareBy({ it["t"] as Int }, { it["l"] as Int }))
+        return latin
+    }
+
+    /** How much of [b]'s box lies inside [a]'s, 0..1. */
+    private fun overlap(a: Map<String, Any>, b: Map<String, Any>): Double {
+        val w = min(a["r"] as Int, b["r"] as Int) - max(a["l"] as Int, b["l"] as Int)
+        val h = min(a["b"] as Int, b["b"] as Int) - max(a["t"] as Int, b["t"] as Int)
+        if (w <= 0 || h <= 0) return 0.0
+        val area = ((b["r"] as Int) - (b["l"] as Int)).toLong() *
+            ((b["b"] as Int) - (b["t"] as Int)).toLong()
+        if (area <= 0) return 0.0
+        return w.toLong() * h.toLong() / area.toDouble()
+    }
+
+    private fun hasArabic(s: String): Boolean = s.any { c ->
+        val v = c.code
+        // Arabic, Arabic Supplement, Extended-A and the presentation forms.
+        (v in 0x0600..0x06FF) || (v in 0x0750..0x077F) ||
+            (v in 0x08A0..0x08FF) || (v in 0xFB50..0xFDFF) || (v in 0xFE70..0xFEFF)
     }
 
     // ----------------------------------------------------------------- pdf

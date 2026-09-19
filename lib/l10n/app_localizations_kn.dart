@@ -425,6 +425,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get readAsDevanagari => 'ಹಿಂದಿ / ನೇಪಾಳಿ ಆಗಿ ಓದಿ';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Android ನಲ್ಲಿ ಪಠ್ಯ ಮಾದರಿಯನ್ನು Google Play ಸೇವೆಗಳು ಒಮ್ಮೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡುತ್ತವೆ. ಇದು ಮೊದಲ ಬಳಕೆಯಾದರೆ, ಒಂದು ನಿಮಿಷ ಕಾದು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
@@ -508,6 +511,9 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'ಹಿಂದಿ, ನೇಪಾಳಿ, ಮರಾಠಿ (+ ಲ್ಯಾಟಿನ್)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'ಚೀನೀ (+ ಲ್ಯಾಟಿನ್)';

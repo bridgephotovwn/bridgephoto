@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 (unreleased)
+
+- Arabic text recognition. Google's models cannot read Arabic, so an Arabic page is read by Tesseract instead, bundled in the app. Choose it under Settings > Text recognition > Language, or from the menu on the text screen. The page is read twice on that setting - Google for the Latin half, Tesseract for the Arabic - because UAE paperwork is nearly always bilingual, and the two readings are merged. Arabic also reaches the searchable PDF text layer.
+- The business card screen keeps the tick for sending the card photo to the contact (added late in 1.1.0).
+
 ## 1.1.0 (2026-09-18)
 
 - Business cards: scan a card, review the fields, and hand it to the phone's Contacts app already filled in (name, company, title, numbers, email, website, address, card photo). No contacts permission.

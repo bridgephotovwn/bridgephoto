@@ -838,6 +838,12 @@ abstract class AppLocalizations {
   /// **'Read as Hindi / Nepali'**
   String get readAsDevanagari;
 
+  /// No description provided for @readAsArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Read as Arabic'**
+  String get readAsArabic;
+
   /// No description provided for @ocrModelHint.
   ///
   /// In en, this message translates to:
@@ -993,6 +999,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hindi, Nepali, Marathi (+ Latin)'**
   String get scriptDevanagari;
+
+  /// No description provided for @scriptArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic (+ Latin)'**
+  String get scriptArabic;
 
   /// No description provided for @scriptChinese.
   ///

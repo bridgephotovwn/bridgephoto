@@ -426,6 +426,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get readAsDevanagari => 'Soma kama Kihindi / Kinepali';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'Kwenye Android, muundo wa maandishi hupakuliwa mara moja na huduma za Google Play. Ikiwa haya ni matumizi ya kwanza, subiri dakika moja kisha ujaribu tena.';
 
@@ -510,6 +513,9 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Kihindi, Kinepali, Kimarathi (+ Kilatini)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Kichina (+ Kilatini)';

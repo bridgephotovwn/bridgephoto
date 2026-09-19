@@ -433,6 +433,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get readAsDevanagari => 'Розпізнати як гінді / непальську';
 
   @override
+  String get readAsArabic => 'Read as Arabic';
+
+  @override
   String get ocrModelHint =>
       'На Android модель розпізнавання тексту один раз завантажують сервіси Google Play. Якщо це перший запуск, зачекайте хвилину та повторіть спробу.';
 
@@ -515,6 +518,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get scriptDevanagari => 'Гінді, непальська, маратхі (+ латиниця)';
+
+  @override
+  String get scriptArabic => 'Arabic (+ Latin)';
 
   @override
   String get scriptChinese => 'Китайська (+ латиниця)';

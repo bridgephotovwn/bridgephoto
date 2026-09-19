@@ -128,7 +128,9 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
-  /// On-device text recognition. [script] is latin, devanagari or auto.
+  /// On-device text recognition. [script] is latin, devanagari, arabic,
+  /// chinese, japanese or korean. Arabic is read by Tesseract because
+  /// Google has no Arabic model; the others are ML Kit.
   /// [maxDim] caps the longest image side handed to the engine (Android);
   /// smaller is faster, larger reads small print better.
   static Future<OcrResult> ocr(String path, String script, {int maxDim = 4096}) async {
