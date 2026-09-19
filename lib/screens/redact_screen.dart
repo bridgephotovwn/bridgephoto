@@ -18,7 +18,16 @@ import '../store.dart';
 class RedactScreen extends StatefulWidget {
   final Doc doc;
   final String page;
-  const RedactScreen({super.key, required this.doc, required this.page});
+  /// Boxes proposed by the app — where it thinks an ID number is. They arrive
+  /// already drawn so the person can see exactly what would go, and move or
+  /// clear them before anything happens.
+  final List<Rect> proposed;
+  const RedactScreen({
+    super.key,
+    required this.doc,
+    required this.page,
+    this.proposed = const [],
+  });
 
   @override
   State<RedactScreen> createState() => _RedactScreenState();
@@ -36,6 +45,7 @@ class _RedactScreenState extends State<RedactScreen> {
   @override
   void initState() {
     super.initState();
+    _boxes.addAll(widget.proposed);
     // The page is decoded anyway to show it; read its real size from the same
     // decode rather than reading the file twice.
     _stream = _provider.resolve(ImageConfiguration.empty);

@@ -526,6 +526,23 @@ class AppLocalizationsIt extends AppLocalizations {
   String get redactTitle => 'Cover for good';
 
   @override
+  String get hideIdTitle => 'Hide an ID number';
+
+  @override
+  String get noIdNumbersFound => 'No ID number found on this page';
+
+  @override
+  String idNumbersFound(int count, String masked) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Found $count — the first would read $masked',
+      one: 'Found one — it would read $masked',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get redactHint => 'Drag across anything that must not be readable.';
 
   @override

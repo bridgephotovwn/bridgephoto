@@ -539,6 +539,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get redactTitle => 'إخفاء نهائي';
 
   @override
+  String get hideIdTitle => 'إخفاء رقم الهوية';
+
+  @override
+  String get noIdNumbersFound => 'لم يُعثر على رقم هوية';
+
+  @override
+  String idNumbersFound(int count, String masked) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'وُجد $count — الأول سيظهر $masked',
+      one: 'وُجد رقم — سيظهر $masked',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get redactHint => 'اسحب فوق كل ما يجب ألا يُقرأ.';
 
   @override

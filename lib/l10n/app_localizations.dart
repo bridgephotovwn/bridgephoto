@@ -946,6 +946,24 @@ abstract class AppLocalizations {
   /// **'Cover for good'**
   String get redactTitle;
 
+  /// No description provided for @hideIdTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide an ID number'**
+  String get hideIdTitle;
+
+  /// No description provided for @noIdNumbersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No ID number found on this page'**
+  String get noIdNumbersFound;
+
+  /// No description provided for @idNumbersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Found one — it would read {masked}} other{Found {count} — the first would read {masked}}}'**
+  String idNumbersFound(int count, String masked);
+
   /// No description provided for @redactHint.
   ///
   /// In en, this message translates to:

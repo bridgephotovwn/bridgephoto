@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../engine.dart';
+import '../id_numbers.dart';
 import '../exporter.dart';
 import '../main.dart';
 import '../ocr.dart';
@@ -65,6 +66,48 @@ class _PageScreenState extends State<PageScreen> {
       if (mounted) context.snack(context.l10n.couldNotRotate(_msg(e)));
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Finds ID numbers on the page and offers to cover them.
+  ///
+  /// India's own advice is not to hand out a plain photocopy of an Aadhaar
+  /// card; the official masked version hides the first eight digits. The
+  /// number is confirmed by its check digit before anything is proposed, so
+  /// an invoice reference is not mistaken for one — and even then the app
+  /// only DRAWS the box. A person looks at the page and decides.
+  Future<void> _hideIdNumbers() async {
+    final l = context.l10n;
+    setState(() => _busy = true);
+    List<IdFound> found;
+    try {
+      found = IdNumbers.find(await Ocr.page(d, page));
+    } catch (e) {
+      if (mounted) context.snack(_msg(e));
+      return;
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted) return;
+    if (found.isEmpty) {
+      context.snack(l.noIdNumbersFound);
+      return;
+    }
+    context.snack(l.idNumbersFound(found.length, found.first.masked));
+    final done = await Navigator.of(context).push<bool>(MaterialPageRoute(
+      builder: (_) => RedactScreen(
+        doc: d,
+        page: page,
+        proposed: [
+          for (final f in found)
+            Rect.fromLTRB(f.left.toDouble(), f.top.toDouble(),
+                f.right.toDouble(), f.bottom.toDouble()),
+        ],
+      ),
+    ));
+    if (done == true && mounted) {
+      _tc(_index).value = Matrix4.identity();
+      setState(() => _zoomed = false);
     }
   }
 
@@ -380,6 +423,8 @@ class _PageScreenState extends State<PageScreen> {
                   _splitBook();
                 case 'redact':
                   _redact();
+                case 'hideid':
+                  _hideIdNumbers();
                 case 'delete':
                   _delete();
               }
@@ -390,6 +435,7 @@ class _PageScreenState extends State<PageScreen> {
               PopupMenuItem(value: 'contact', child: ListTile(leading: const Icon(Icons.person_add_alt_1_outlined), title: Text(l.saveAsContact))),
               PopupMenuItem(value: 'book', child: ListTile(leading: const Icon(Icons.auto_stories_outlined), title: Text(l.splitBookTitle))),
               PopupMenuItem(value: 'redact', child: ListTile(leading: const Icon(Icons.visibility_off_outlined), title: Text(l.redactTitle))),
+              PopupMenuItem(value: 'hideid', child: ListTile(leading: const Icon(Icons.badge_outlined), title: Text(l.hideIdTitle))),
               const PopupMenuDivider(),
               PopupMenuItem(value: 'delete', child: ListTile(leading: const Icon(Icons.delete_outline), title: Text(l.deletePage))),
             ],
