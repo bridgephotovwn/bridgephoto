@@ -363,6 +363,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rotateRight => 'Nach rechts drehen';
 
   @override
+  String get enhanceTitle => 'Clean up the page';
+
+  @override
+  String get enhanceAuto => 'Auto — even out the light';
+
+  @override
+  String get enhanceGrey => 'Greyscale';
+
+  @override
+  String get enhanceBw => 'Black and white — text only';
+
+  @override
+  String get enhanceOriginal => 'Original scan';
+
+  @override
+  String straightenedBy(String degrees) {
+    return 'Straightened by $degrees°';
+  }
+
+  @override
+  String couldNotEnhance(String error) {
+    return 'Could not clean up the page: $error';
+  }
+
+  @override
   String get sign => 'Unterschreiben';
 
   @override

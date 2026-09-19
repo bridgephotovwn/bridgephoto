@@ -121,6 +121,19 @@
   "@pageNOfTotal": { "placeholders": { "n": { "type": "int" }, "total": { "type": "int" } } },
   "rotateLeft": "Rotate left",
   "rotateRight": "Rotate right",
+  "enhanceTitle": "Clean up the page",
+  "enhanceAuto": "Auto — even out the light",
+  "enhanceGrey": "Greyscale",
+  "enhanceBw": "Black and white — text only",
+  "enhanceOriginal": "Original scan",
+  "straightenedBy": "Straightened by {degrees}°",
+  "@straightenedBy": {
+    "placeholders": { "degrees": { "type": "String" } }
+  },
+  "couldNotEnhance": "Could not clean up the page: {error}",
+  "@couldNotEnhance": {
+    "placeholders": { "error": { "type": "String" } }
+  },
   "sign": "Sign",
   "copyText": "Copy text",
   "shareImage": "Share image",

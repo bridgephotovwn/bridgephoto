@@ -16,6 +16,9 @@ class Doc {
   Directory get dir => Directory('${DocStore.root.path}/$id');
   File pageFile(String p) => File('${dir.path}/$p');
   File ocrFile(String p) => File('${dir.path}/$p.ocr.json');
+  /// The page exactly as it was scanned, kept the first time it is
+  /// enhanced so "Original" can always put it back.
+  File originalFile(String p) => File('${dir.path}/$p.orig');
   File? get cover => pages.isEmpty ? null : pageFile(pages.first);
 
   Map<String, dynamic> toJson() => {
@@ -121,7 +124,7 @@ class DocStore {
 
   static Future<void> removePage(Doc d, String p) async {
     d.pages.remove(p);
-    for (final f in [d.pageFile(p), d.ocrFile(p)]) {
+    for (final f in [d.pageFile(p), d.ocrFile(p), d.originalFile(p)]) {
       if (await f.exists()) await f.delete();
     }
   }

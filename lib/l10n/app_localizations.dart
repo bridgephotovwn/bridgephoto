@@ -724,6 +724,48 @@ abstract class AppLocalizations {
   /// **'Rotate right'**
   String get rotateRight;
 
+  /// No description provided for @enhanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean up the page'**
+  String get enhanceTitle;
+
+  /// No description provided for @enhanceAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto — even out the light'**
+  String get enhanceAuto;
+
+  /// No description provided for @enhanceGrey.
+  ///
+  /// In en, this message translates to:
+  /// **'Greyscale'**
+  String get enhanceGrey;
+
+  /// No description provided for @enhanceBw.
+  ///
+  /// In en, this message translates to:
+  /// **'Black and white — text only'**
+  String get enhanceBw;
+
+  /// No description provided for @enhanceOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original scan'**
+  String get enhanceOriginal;
+
+  /// No description provided for @straightenedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Straightened by {degrees}°'**
+  String straightenedBy(String degrees);
+
+  /// No description provided for @couldNotEnhance.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not clean up the page: {error}'**
+  String couldNotEnhance(String error);
+
   /// No description provided for @sign.
   ///
   /// In en, this message translates to:

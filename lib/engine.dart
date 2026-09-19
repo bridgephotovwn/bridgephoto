@@ -157,6 +157,26 @@ class Engine {
     return (r ?? const []).cast<String>();
   }
 
+  /// Cleans up a page: takes out the shadow and uneven light a phone camera
+  /// leaves on paper, evens the contrast, and optionally straightens a page
+  /// photographed crooked. [mode] is auto (keeps colour), grey, bw or none.
+  /// [input] and [output] may be the same file.
+  ///
+  /// Returns the angle it straightened by, in degrees; 0 when it left the page
+  /// alone. Google's own scanner does this only inside its camera screen, so
+  /// this is what a photo from the gallery or a page out of a PDF gets.
+  static Future<double> enhance(String input, String output,
+      {String mode = 'auto', bool straighten = false, int quality = 92}) async {
+    final m = await _ch.invokeMapMethod<String, dynamic>('enhance', {
+      'input': input,
+      'output': output,
+      'mode': mode,
+      'straighten': straighten,
+      'quality': quality,
+    });
+    return ((m?['angle'] as num?) ?? 0).toDouble();
+  }
+
   /// Rotates and/or re-encodes an image. [format] is jpg or png.
   /// [input] and [output] may be the same file.
   static Future<void> transform(String input, String output,

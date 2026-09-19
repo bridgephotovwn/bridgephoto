@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import CoreImage
 import Vision
 import VisionKit
 import PDFKit
@@ -85,6 +86,13 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
         try self.renderPdf(input: args["input"] as? String ?? "",
                            outDir: args["outDir"] as? String ?? "",
                            maxDim: args["maxDim"] as? Int ?? 2200)
+      }
+    case "enhance":
+      bg(result) {
+        try self.enhance(input: args["input"] as? String ?? "",
+                         output: args["output"] as? String ?? "",
+                         mode: args["mode"] as? String ?? "auto",
+                         quality: args["quality"] as? Int ?? 92)
       }
     case "transform":
       bg(result) {
@@ -299,6 +307,54 @@ class Engine: NSObject, VNDocumentCameraViewControllerDelegate, CNContactViewCon
     return UIGraphicsImageRenderer(size: img.size, format: fmt).image { _ in
       img.draw(in: CGRect(origin: .zero, size: img.size))
     }
+  }
+
+  /// Cleans up a page: flattens the shadow and uneven light a phone camera
+  /// leaves on paper, then evens the contrast. Core Image does here what
+  /// Leptonica does on Android - divide the page by a heavily blurred copy of
+  /// itself, which is what "remove the shadow" actually means.
+  ///
+  /// Straightening is Android-only for now: iOS has no cheap skew measure, and
+  /// guessing an angle is worse than leaving the page as it was. The angle
+  /// returned is always 0 here, and the caller says nothing about it.
+  private func enhance(input: String, output: String, mode: String, quality: Int) throws -> [String: Any] {
+    guard let ui = UIImage(contentsOfFile: input) else { throw EngineError("Cannot read the image.") }
+    let src = Engine.normalized(ui)
+    guard mode != "none" else { return ["angle": 0.0] }
+    guard let cg = src.cgImage else { throw EngineError("Cannot read the page.") }
+    var image = CIImage(cgImage: cg)
+
+    // The blur has to be wide enough to hold no detail at all - only the
+    // lighting. A twentieth of the page is about right at any size.
+    let radius = max(8.0, Double(min(cg.width, cg.height)) / 20.0)
+    if let blur = CIFilter(name: "CIGaussianBlur",
+                           parameters: [kCIInputImageKey: image.clampedToExtent(),
+                                        kCIInputRadiusKey: radius])?.outputImage?
+        .cropped(to: image.extent),
+       let divided = CIFilter(name: "CIDivideBlendMode",
+                              parameters: [kCIInputImageKey: blur,
+                                           kCIInputBackgroundImageKey: image])?.outputImage {
+      image = divided
+    }
+    let grey = mode != "auto"
+    if let controls = CIFilter(name: "CIColorControls",
+                               parameters: [kCIInputImageKey: image,
+                                            kCIInputSaturationKey: grey ? 0.0 : 1.0,
+                                            kCIInputContrastKey: mode == "bw" ? 3.0 : 1.12,
+                                            kCIInputBrightnessKey: 0.0])?.outputImage {
+      image = controls
+    }
+
+    let ctx = CIContext(options: [.useSoftwareRenderer: false])
+    guard let out = ctx.createCGImage(image, from: image.extent) else {
+      throw EngineError("Cannot write the page.")
+    }
+    let result = UIImage(cgImage: out)
+    guard let d = result.jpegData(compressionQuality: CGFloat(min(max(quality, 1), 100)) / 100) else {
+      throw EngineError("Cannot encode the image.")
+    }
+    try d.write(to: URL(fileURLWithPath: output), options: .atomic)
+    return ["angle": 0.0]
   }
 
   private func transform(input: String, output: String, rotate: Int, format: String, quality: Int) throws {

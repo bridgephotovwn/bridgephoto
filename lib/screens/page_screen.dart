@@ -67,6 +67,67 @@ class _PageScreenState extends State<PageScreen> {
     }
   }
 
+  /// Cleans up the page. The scan as it came off the camera is kept the first
+  /// time, so [l.enhanceOriginal] can always put it back.
+  Future<void> _enhance(String mode) async {
+    final l = context.l10n;
+    setState(() => _busy = true);
+    try {
+      final f = d.pageFile(page);
+      final original = d.originalFile(page);
+      if (mode == 'none') {
+        if (!await original.exists()) return; // nothing was ever changed
+        await original.copy(f.path);
+      } else {
+        if (!await original.exists()) await f.copy(original.path);
+        // Always work from the untouched scan: enhancing twice over darkens
+        // the page a little more each time.
+        final angle = await Engine.enhance(original.path, f.path,
+            mode: mode, straighten: true);
+        if (mounted && angle.abs() >= 0.25) {
+          context.snack(l.straightenedBy(angle.abs().toStringAsFixed(1)));
+        }
+      }
+      await Ocr.invalidate(d, page);
+      await DocStore.save(d); // bumps `modified`, which keys every thumbnail
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotEnhance(_msg(e)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _pickEnhance() async {
+    final l = context.l10n;
+    final modes = <(String, String, IconData)>[
+      ('auto', l.enhanceAuto, Icons.auto_fix_high),
+      ('grey', l.enhanceGrey, Icons.gradient),
+      ('bw', l.enhanceBw, Icons.filter_b_and_w),
+      ('none', l.enhanceOriginal, Icons.undo),
+    ];
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            child: Text(l.enhanceTitle,
+                style: Theme.of(ctx).textTheme.titleMedium),
+          ),
+          for (final (value, label, icon) in modes)
+            ListTile(
+              leading: Icon(icon),
+              title: Text(label),
+              onTap: () => Navigator.of(ctx).pop(value),
+            ),
+        ]),
+      ),
+    );
+    if (picked != null) await _enhance(picked);
+  }
+
   Future<void> _share() async {
     setState(() => _busy = true);
     try {
@@ -238,6 +299,7 @@ class _PageScreenState extends State<PageScreen> {
         foregroundColor: Colors.white,
         title: Text(l.pageNOfTotal(_index + 1, d.pages.length)),
         actions: [
+          IconButton(tooltip: l.enhanceTitle, icon: const Icon(Icons.auto_fix_high), onPressed: _busy ? null : _pickEnhance),
           IconButton(tooltip: l.rotateRight, icon: const Icon(Icons.rotate_right), onPressed: _busy ? null : () => _rotate(90)),
           IconButton(tooltip: l.sign, icon: const Icon(Icons.draw_outlined), onPressed: _busy ? null : _sign),
           IconButton(tooltip: l.shareImage, icon: const Icon(Icons.share), onPressed: _busy ? null : _share),

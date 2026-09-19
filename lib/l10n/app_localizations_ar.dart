@@ -378,6 +378,31 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rotateRight => 'تدوير لليمين';
 
   @override
+  String get enhanceTitle => 'تنظيف الصفحة';
+
+  @override
+  String get enhanceAuto => 'تلقائي — موازنة الإضاءة';
+
+  @override
+  String get enhanceGrey => 'تدرج رمادي';
+
+  @override
+  String get enhanceBw => 'أبيض وأسود — للنص فقط';
+
+  @override
+  String get enhanceOriginal => 'المسح الأصلي';
+
+  @override
+  String straightenedBy(String degrees) {
+    return 'تم التقويم بمقدار $degrees°';
+  }
+
+  @override
+  String couldNotEnhance(String error) {
+    return 'تعذر تنظيف الصفحة: $error';
+  }
+
+  @override
   String get sign => 'توقيع';
 
   @override

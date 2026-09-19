@@ -27,6 +27,14 @@ import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
 import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.googlecode.leptonica.android.AdaptiveMap
+import com.googlecode.leptonica.android.Binarize
+import com.googlecode.leptonica.android.Convert
+import com.googlecode.leptonica.android.Enhance
+import com.googlecode.leptonica.android.Pix
+import com.googlecode.leptonica.android.ReadFile
+import com.googlecode.leptonica.android.Skew
+import com.googlecode.leptonica.android.WriteFile
 import com.googlecode.tesseract.android.TessBaseAPI
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
@@ -62,6 +70,10 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         const val TESS_LANG = "ara"
         /** Below this, Tesseract is guessing; a wrong word is worse than none. */
         const val TESS_MIN_CONFIDENCE = 45f
+        /** Straightening by less than this is invisible and costs a resample. */
+        const val SKEW_MIN_DEGREES = 0.25f
+        /** Beyond this it is not a crooked page, it is a bad reading. */
+        const val SKEW_MAX_DEGREES = 15f
         val NL: String = System.lineSeparator()
     }
 
@@ -98,6 +110,15 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<String>("path")!!,
                     call.argument<String>("script") ?: "latin",
                     call.argument<Int>("maxDim") ?: 4096
+                )
+            }
+            "enhance" -> bg(result) {
+                enhance(
+                    call.argument<String>("input")!!,
+                    call.argument<String>("output")!!,
+                    call.argument<String>("mode") ?: "auto",
+                    call.argument<Boolean>("straighten") ?: false,
+                    call.argument<Int>("quality") ?: 92
                 )
             }
             "mergePdf" -> bg(result) {
@@ -576,6 +597,130 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
     }
 
     // --------------------------------------------------------------- image
+
+    // ------------------------------------------------------------- enhance
+
+    /**
+     * Cleans up a page: takes out the shadow and the uneven light a phone
+     * camera leaves on paper, evens the contrast, and can straighten a page
+     * that was photographed crooked.
+     *
+     * This is Leptonica, which already travels inside the Tesseract library we
+     * carry for Arabic, so it costs the app nothing. It matters because
+     * Google's scanner does its own cleaning ONLY inside Google's camera
+     * screen - a photo from the gallery or a page out of a PDF gets nothing.
+     *
+     * [mode] is auto (keeps the colour), grey, or bw (text only).
+     * Returns the angle it straightened by, so the caller can say so.
+     */
+    private fun enhance(
+        input: String,
+        output: String,
+        mode: String,
+        straighten: Boolean,
+        quality: Int
+    ): Map<String, Any> {
+        var bmp = BitmapFactory.decodeFile(input)
+            ?: throw IllegalArgumentException("Cannot decode the image.")
+        var angle = 0f
+        val open = ArrayList<Pix>() // everything here is freed in the finally
+        try {
+            if (straighten) {
+                angle = skewOf(bmp, open)
+                if (kotlin.math.abs(angle) > SKEW_MIN_DEGREES) {
+                    // Rotate the COLOUR bitmap ourselves rather than letting
+                    // Leptonica rotate a reduced copy: the page keeps its pixels.
+                    val m = Matrix().apply { postRotate(-angle) }
+                    val r = Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, m, true)
+                    if (r !== bmp) {
+                        bmp.recycle()
+                        bmp = r
+                    }
+                } else {
+                    angle = 0f
+                }
+            }
+
+            if (mode != "none") {
+                val src = ReadFile.readBitmap(bmp) ?: throw IllegalStateException("Cannot read the page.")
+                open.add(src)
+                var pix: Pix = src
+                // Each step is allowed to fail. Leptonica rejects some depths
+                // outright, and a page that comes back only half improved is
+                // far better than one that throws in the user's face.
+                fun step(name: String, op: (Pix) -> Pix?): Pix {
+                    val next = try {
+                        op(pix)
+                    } catch (e: Throwable) {
+                        CrashLog.append(activity, "enhance $mode: $name skipped: $e")
+                        null
+                    }
+                    if (next == null || next === pix) return pix
+                    open.add(next)
+                    return next
+                }
+                if (mode == "auto") {
+                    // Colour kept: flatten the lighting, then a gentle sharpen.
+                    pix = step("backgroundNorm") { AdaptiveMap.backgroundNormMorph(it) }
+                    pix = step("unsharp") { Enhance.unsharpMasking(it, 3, 0.3f) }
+                } else {
+                    // Grey and black-and-white both start from one grey plane,
+                    // which is also the only depth contrast norm accepts.
+                    pix = step("toGrey") { Convert.convertTo8(it) }
+                    pix = step("backgroundNorm") { AdaptiveMap.backgroundNormMorph(it) }
+                    pix = step("contrastNorm") { AdaptiveMap.pixContrastNorm(it) }
+                    if (mode == "bw") {
+                        pix = step("sauvola") { Binarize.sauvolaBinarizeTiled(it) }
+                    } else {
+                        pix = step("unsharp") { Enhance.unsharpMasking(it, 3, 0.3f) }
+                    }
+                }
+                val out = WriteFile.writeBitmap(pix) ?: throw IllegalStateException("Cannot write the page.")
+                bmp.recycle()
+                bmp = out
+            }
+
+            writeImage(bmp, output, quality)
+            return mapOf("angle" to angle)
+        } finally {
+            for (p in open) {
+                try {
+                    p.recycle()
+                } catch (_: Throwable) {
+                    // already gone; a leak here would be worse than a no-op
+                }
+            }
+            if (!bmp.isRecycled) bmp.recycle()
+        }
+    }
+
+    /** Degrees the text on this page runs off horizontal, 0 when unsure. */
+    private fun skewOf(bmp: Bitmap, open: ArrayList<Pix>): Float {
+        return try {
+            val src = ReadFile.readBitmap(bmp) ?: return 0f
+            open.add(src)
+            val grey = Convert.convertTo8(src) ?: return 0f
+            open.add(grey)
+            // Finding skew needs a black-and-white page: it measures the lines
+            // of text, not the picture.
+            val bw = Binarize.otsuAdaptiveThreshold(grey) ?: return 0f
+            open.add(bw)
+            val a = Skew.findSkew(bw)
+            if (a.isNaN() || kotlin.math.abs(a) > SKEW_MAX_DEGREES) 0f else a
+        } catch (_: Throwable) {
+            0f // a page we cannot measure is a page we leave alone
+        }
+    }
+
+    private fun writeImage(bmp: Bitmap, output: String, quality: Int) {
+        val target = File(output)
+        val tmp = File(output + ".tmp")
+        FileOutputStream(tmp).use {
+            bmp.compress(Bitmap.CompressFormat.JPEG, quality.coerceIn(1, 100), it)
+        }
+        if (target.exists()) target.delete()
+        if (!tmp.renameTo(target)) throw IllegalStateException("Cannot write the image.")
+    }
 
     private fun transform(input: String, output: String, rotate: Int, format: String, quality: Int) {
         var bmp = BitmapFactory.decodeFile(input) ?: throw IllegalArgumentException("Cannot decode the image.")
