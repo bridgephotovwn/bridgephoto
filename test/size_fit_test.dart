@@ -45,24 +45,44 @@ void main() {
   group('the steps themselves', () {
     test('every step is smaller and no better than the one before', () {
       for (var i = 1; i < SizeFit.steps.length; i++) {
-        final (dimA, qA) = SizeFit.steps[i - 1];
-        final (dimB, qB) = SizeFit.steps[i];
-        expect(dimB, lessThan(dimA), reason: 'step $i is not smaller');
+        final (dimA, qA, greyA) = SizeFit.steps[i - 1];
+        final (dimB, qB, greyB) = SizeFit.steps[i];
+        expect(dimB, lessThanOrEqualTo(dimA), reason: 'step $i grew');
         expect(qB, lessThanOrEqualTo(qA), reason: 'step $i is not lower quality');
+        // Colour, once given up, is never handed back.
+        expect(greyB || !greyA, isTrue, reason: 'step $i regained colour');
       }
     });
 
     test('resolution is given up before quality is ruined', () {
       // The first steps should still be readable: a page slightly reduced
       // reads fine, a page full of JPEG mush does not.
-      final (_, q) = SizeFit.steps[2];
+      final (_, q, _) = SizeFit.steps[2];
       expect(q, greaterThanOrEqualTo(70));
     });
 
     test('the last step really is small enough to be a last resort', () {
-      final (dim, q) = SizeFit.steps.last;
+      final (dim, q, grey) = SizeFit.steps.last;
       expect(dim, lessThanOrEqualTo(600));
       expect(q, lessThanOrEqualTo(40));
+      expect(grey, isTrue);
+    });
+  });
+
+  group('the colour lever', () {
+    test('colour survives the first steps, so a photo is not ruined early', () {
+      expect(SizeFit.steps[0].$3, isFalse);
+      expect(SizeFit.steps[1].$3, isFalse);
+    });
+
+    test('colour is dropped BEFORE the page gets small', () {
+      // Users chasing a limit already do this by hand: "make it black and
+      // white to start with, colours take space".
+      final firstGrey = SizeFit.steps.indexWhere((s) => s.$3);
+      expect(firstGrey, greaterThan(0));
+      final (dimAtGrey, _, _) = SizeFit.steps[firstGrey];
+      expect(dimAtGrey, greaterThanOrEqualTo(1700),
+          reason: 'colour should go while the page is still large');
     });
   });
 

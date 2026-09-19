@@ -169,12 +169,13 @@ class Engine {
   /// Re-encodes an image smaller: at most [maxDim] on its longest side, at
   /// JPEG [quality]. Returns the bytes written.
   static Future<int> compressImage(String input, String output,
-          {int maxDim = 2400, int quality = 80}) async =>
+          {int maxDim = 2400, int quality = 80, bool grey = false}) async =>
       await _ch.invokeMethod<int>('compressImage', {
         'input': input,
         'output': output,
         'maxDim': maxDim,
         'quality': quality,
+        'grey': grey,
       }) ??
       0;
 

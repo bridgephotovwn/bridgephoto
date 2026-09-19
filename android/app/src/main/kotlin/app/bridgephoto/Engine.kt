@@ -139,7 +139,8 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     call.argument<String>("input")!!,
                     call.argument<String>("output")!!,
                     call.argument<Int>("maxDim") ?: 2400,
-                    call.argument<Int>("quality") ?: 80
+                    call.argument<Int>("quality") ?: 80,
+                    call.argument<Boolean>("grey") ?: false
                 )
             }
             "encryptPdf" -> bg(result) {
@@ -728,7 +729,13 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
      * The caller drives the search for a size, because only it knows what the
      * target is and whether a whole PDF or a single picture has to fit.
      */
-    private fun compressImage(input: String, output: String, maxDim: Int, quality: Int): Int {
+    private fun compressImage(
+        input: String,
+        output: String,
+        maxDim: Int,
+        quality: Int,
+        grey: Boolean
+    ): Int {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(input, bounds)
         val ow = bounds.outWidth
@@ -751,6 +758,20 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     bmp.recycle()
                     bmp = scaled
                 }
+            }
+            if (grey) {
+                // Colour is expensive and a document rarely needs it. Users
+                // chasing a portal's kilobyte limit already do this by hand
+                // and say so: "make it black and white to start with".
+                val mono = Bitmap.createBitmap(bmp.width, bmp.height, Bitmap.Config.ARGB_8888)
+                val canvas = android.graphics.Canvas(mono)
+                val paint = android.graphics.Paint()
+                paint.colorFilter = android.graphics.ColorMatrixColorFilter(
+                    android.graphics.ColorMatrix().apply { setSaturation(0f) }
+                )
+                canvas.drawBitmap(bmp, 0f, 0f, paint)
+                bmp.recycle()
+                bmp = mono
             }
             writeImage(bmp, output, quality)
             return File(output).length().toInt()

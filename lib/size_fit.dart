@@ -15,18 +15,26 @@
 class SizeFit {
   const SizeFit._();
 
-  /// One attempt: how big the longest side may be, and at what JPEG quality.
-  static const steps = <(int maxDim, int quality)>[
-    (3000, 88),
-    (2400, 82),
-    (2000, 78),
-    (1700, 72),
-    (1400, 68),
-    (1200, 62),
-    (1000, 55),
-    (850, 48),
-    (700, 40),
-    (560, 32),
+  /// One attempt: how big the longest side may be, at what JPEG quality, and
+  /// whether to drop the colour.
+  ///
+  /// Colour goes before the picture gets small, because a document almost
+  /// never needs it and dropping it saves a great deal. People chasing a
+  /// portal's limit already do this by hand and say so out loud — "make it
+  /// black and white to start with, colours take space" — so it belongs in
+  /// the middle of the ladder, not at the bottom.
+  static const steps = <(int maxDim, int quality, bool grey)>[
+    (3000, 88, false),
+    (2400, 82, false),
+    (2000, 78, false),
+    (2000, 74, true),
+    (1700, 72, true),
+    (1400, 68, true),
+    (1200, 62, true),
+    (1000, 55, true),
+    (850, 48, true),
+    (700, 40, true),
+    (560, 32, true),
   ];
 
   /// Common limits, smallest first. The wording belongs to the UI; these are

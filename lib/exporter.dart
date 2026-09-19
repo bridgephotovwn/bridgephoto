@@ -76,12 +76,12 @@ class Exporter {
     final from = SizeFit.startFor(bytes.length, maxBytes);
     for (var i = from; i < SizeFit.steps.length; i++) {
       onAttempt?.call(i - from + 1, SizeFit.steps.length - from);
-      final (maxDim, quality) = SizeFit.steps[i];
+      final (maxDim, quality, grey) = SizeFit.steps[i];
       final replacements = <String, String>{};
       for (final p in d.pages) {
         final out = '${dir.path}/$p';
         await Engine.compressImage(d.pageFile(p).path, out,
-            maxDim: maxDim, quality: quality);
+            maxDim: maxDim, quality: quality, grey: grey);
         replacements[p] = out;
       }
       bytes = await PdfBuilder.build(d, pagesFrom: replacements);
