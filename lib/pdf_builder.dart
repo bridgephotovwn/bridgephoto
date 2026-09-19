@@ -139,7 +139,17 @@ class PdfBuilder {
         final r = runs[i];
         final f = fontFor(r.script);
         if (f == null || widths[i] <= 0) continue;
-        canvas.drawString(f, fontSize, r.text, cx, y0,
+        // Arabic must be written back to front here. The text layer is
+        // INVISIBLE, so how it looks is irrelevant — the only thing that
+        // matters is the order it comes out in when someone searches or
+        // copies. Drawn in reading order it lays out right-to-left and every
+        // simple extractor then reads the line backwards, which is the same
+        // fault that has made Tesseract's own Arabic PDFs unsearchable since
+        // 2016. Verified both ways in test/arabic_pdf_text_test.dart.
+        final out = r.script == _Script.arabic
+            ? String.fromCharCodes(r.text.runes.toList().reversed)
+            : r.text;
+        canvas.drawString(f, fontSize, out, cx, y0,
             mode: PdfTextRenderingMode.invisible, scale: scale);
         cx += widths[i] * scale;
       }
