@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- The one folder the app hands out: a cache directory holding the copy of a
-     page the user is sending somewhere (the card photo for "set as contact
-     photo"). Nothing else in the app is reachable through this provider. -->
-<paths>
-    <cache-path name="share" path="share/" />
-</paths>

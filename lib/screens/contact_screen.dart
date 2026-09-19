@@ -26,7 +26,9 @@ class _ContactScreenState extends State<ContactScreen> {
   };
   bool _reading = true;
   bool _saving = false;
-  bool _saved = false;
+  /// The card picture goes with the contact unless the user turns it off,
+  /// which is there for phones that are short of space.
+  bool _withPhoto = true;
   String? _error;
 
   @override
@@ -79,30 +81,15 @@ class _ContactScreenState extends State<ContactScreen> {
     setState(() => _saving = true);
     try {
       final fields = {for (final e in _c.entries) e.key: e.value.text.trim()};
-      await Engine.addContact(fields, photo: widget.doc.pageFile(widget.page).path);
-      if (mounted) {
-        context.snack(l.contactOpened);
-        setState(() => _saved = true);
-      }
+      await Engine.addContact(fields,
+          photo: _withPhoto ? widget.doc.pageFile(widget.page).path : null);
+      if (mounted) context.snack(l.contactOpened);
     } catch (e) {
       if (mounted) {
         context.snack(l.couldNotOpenContacts(e is PlatformException ? (e.message ?? e.code) : '$e'));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  /// Some phones drop the picture that travels with the new-contact form.
-  /// This hands the card to the phone's own "set as contact photo" chooser.
-  Future<void> _photoToContact() async {
-    final l = context.l10n;
-    try {
-      await Engine.attachPhoto(widget.doc.pageFile(widget.page).path);
-    } catch (e) {
-      if (mounted) {
-        context.snack(l.couldNotOpenContacts(e is PlatformException ? (e.message ?? e.code) : '$e'));
-      }
     }
   }
 
@@ -152,6 +139,14 @@ class _ContactScreenState extends State<ContactScreen> {
                 ),
               ]),
             ),
+            CheckboxListTile(
+              value: _withPhoto,
+              onChanged: (v) => setState(() => _withPhoto = v ?? true),
+              title: Text(l.includeCardPhoto),
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+              contentPadding: const EdgeInsets.only(left: 8, right: 16),
+            ),
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -177,30 +172,14 @@ class _ContactScreenState extends State<ContactScreen> {
           top: false,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: _reading || _saving ? null : _save,
-                  icon: const Icon(Icons.person_add_alt_1),
-                  label: Text(l.saveToContacts),
-                ),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _reading || _saving ? null : _save,
+                icon: const Icon(Icons.person_add_alt_1),
+                label: Text(l.saveToContacts),
               ),
-              // Offered once the contact has been handed over: some phones
-              // ignore the picture that travels with it.
-              if (_saved && Engine.isAndroid)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _photoToContact,
-                      icon: const Icon(Icons.add_a_photo_outlined),
-                      label: Text(l.photoToContact),
-                    ),
-                  ),
-                ),
-            ]),
+            ),
           ),
         ),
       ]),

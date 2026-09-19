@@ -586,7 +586,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get saveToContacts => 'संपर्कांमध्ये सेव्ह करा';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => 'बिझनेस कार्ड';

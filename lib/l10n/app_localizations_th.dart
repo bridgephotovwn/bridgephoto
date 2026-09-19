@@ -582,7 +582,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get saveToContacts => 'บันทึกลงรายชื่อติดต่อ';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => 'นามบัตร';

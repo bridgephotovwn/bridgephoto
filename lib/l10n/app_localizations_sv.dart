@@ -586,7 +586,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get saveToContacts => 'Spara i Kontakter';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => 'Visitkort';

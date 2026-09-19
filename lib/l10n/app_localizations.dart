@@ -1138,11 +1138,11 @@ abstract class AppLocalizations {
   /// **'Save to Contacts'**
   String get saveToContacts;
 
-  /// Second button on the business-card screen. Some phones ignore the picture sent with the new contact, so this opens the phone's own set-as-contact-photo chooser.
+  /// Tick box on the business-card screen. On by default: the picture of the card goes to the contact. Someone short of space can turn it off.
   ///
   /// In en, this message translates to:
-  /// **'Put the card photo on the contact'**
-  String get photoToContact;
+  /// **'Add the card photo'**
+  String get includeCardPhoto;
 
   /// No description provided for @contactReviewTitle.
   ///

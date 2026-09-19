@@ -58,6 +58,10 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // Try a build next to the installed app instead of replacing it:
+            //   flutter build apk --release -PidSuffix=.test
+            // Leave the property out for anything that goes to a store.
+            (project.findProperty("idSuffix") as String?)?.let { applicationIdSuffix = it }
         }
     }
 }

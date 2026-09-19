@@ -592,7 +592,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get saveToContacts => 'Salvați în Contacte';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => 'Carte de vizită';

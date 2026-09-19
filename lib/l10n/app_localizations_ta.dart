@@ -590,7 +590,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get saveToContacts => 'தொடர்புகளில் சேமி';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => 'வணிக அட்டை';

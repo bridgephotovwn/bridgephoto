@@ -583,7 +583,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get saveToContacts => 'Simpan ke Kontak';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => 'Kartu nama';

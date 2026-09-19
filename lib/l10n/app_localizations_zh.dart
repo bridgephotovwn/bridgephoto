@@ -574,7 +574,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saveToContacts => '保存到通讯录';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => '名片';

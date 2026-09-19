@@ -578,7 +578,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get saveToContacts => '連絡先に保存';
 
   @override
-  String get photoToContact => 'Put the card photo on the contact';
+  String get includeCardPhoto => 'Add the card photo';
 
   @override
   String get contactReviewTitle => '名刺';

@@ -134,13 +134,6 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 main.post { activity.startActivity(intent) }
                 true
             }
-            "attachPhoto" -> bg(result) {
-                val intent = attachPhotoIntent(call.argument<String>("path")!!)
-                main.post {
-                    activity.startActivity(Intent.createChooser(intent, "Set as contact photo"))
-                }
-                true
-            }
             "saveToGallery" -> bg(result) {
                 saveToGallery(
                     call.argument<String>("path")!!,
@@ -578,27 +571,6 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             bytes?.takeIf { it.size <= PHOTO_LIMIT }
         } catch (e: Throwable) {
             null
-        }
-    }
-
-    /**
-     * Hands the card image to the phone's own "set as contact photo" flow.
-     * Contact editors on some phones ignore a photo sent with the new-contact
-     * intent, so this is the way that always works: the user picks the contact
-     * and the Contacts app writes the picture itself. Still no permission.
-     */
-    private fun attachPhotoIntent(path: String): Intent {
-        val src = File(path)
-        val dir = File(activity.cacheDir, "share").apply { mkdirs() }
-        val copy = File(dir, "card-photo.jpg")
-        src.inputStream().use { input -> copy.outputStream().use { input.copyTo(it) } }
-        val uri = androidx.core.content.FileProvider.getUriForFile(
-            activity, activity.packageName + ".fileprovider", copy
-        )
-        return Intent(Intent.ACTION_ATTACH_DATA).apply {
-            setDataAndType(uri, "image/jpeg")
-            putExtra("mimeType", "image/jpeg")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }
 
