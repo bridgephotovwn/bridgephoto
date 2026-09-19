@@ -150,6 +150,78 @@ class _DocumentScreenState extends State<DocumentScreen> {
   /// us nothing.
   /// Saves the PDF under a size limit somebody else set — an exam portal, a
   /// visa site, a labour ministry. The scans themselves are never touched.
+  /// Splits one long scan into separate documents wherever a blank sheet was
+  /// used as a divider — the way a desk scanner has worked for thirty years.
+  /// The first group stays in this document; the rest become new ones.
+  Future<void> _splitAtBlanks() async {
+    final l = context.l10n;
+    final d = _doc!;
+    _setBusy(l.checkingPages);
+    List<List<String>> groups;
+    try {
+      final facts = <PageFacts>[];
+      for (final p in d.pages) {
+        final (ink, hash) = await Engine.pageStats(d.pageFile(p).path);
+        facts.add(PageFacts(p, ink, hash));
+      }
+      groups = PageTidy.splitAtBlanks(facts);
+    } catch (e) {
+      if (mounted) context.snack(_msg(e));
+      return;
+    } finally {
+      _setBusy(null);
+    }
+    if (!mounted) return;
+    if (groups.length < 2) {
+      context.snack(l.noDividersFound);
+      return;
+    }
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.splitDocumentTitle),
+        content: Text(l.splitDocumentBody(groups.length)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.ok)),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    _setBusy(l.splittingDocument);
+    try {
+      // Everything not in the first group leaves: later groups move into new
+      // documents, and the blank dividers go entirely.
+      final keep = groups.first.toSet();
+      for (var i = 1; i < groups.length; i++) {
+        final fresh = await DocStore.create('${d.name} (${i + 1})');
+        for (final p in groups[i]) {
+          await DocStore.addPageFile(fresh, d.pageFile(p).path);
+          // The text already read for this page follows it, so the new
+          // document is searchable without recognising anything again.
+          final ocr = d.ocrFile(p);
+          if (await ocr.exists()) {
+            await ocr.copy(fresh.ocrFile(fresh.pages.last).path);
+          }
+        }
+        fresh.folder = d.folder;
+        await DocStore.save(fresh);
+      }
+      for (final p in [...d.pages]) {
+        if (!keep.contains(p)) await DocStore.removePage(d, p);
+      }
+      await DocStore.save(d);
+      if (mounted) {
+        setState(() {});
+        context.snack(l.splitDone(groups.length));
+      }
+    } catch (e) {
+      if (mounted) context.snack(_msg(e));
+    } finally {
+      _setBusy(null);
+    }
+  }
+
   /// Offers up the pages nobody wants: the blank back of a sheet, and the
   /// page that got photographed twice. It only ever REPORTS — every page
   /// shown has a tick beside it and nothing goes without a yes.
@@ -488,6 +560,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   _savePdfUnderSize();
                 case 'tidy':
                   _tidyPages();
+                case 'split':
+                  _splitAtBlanks();
                 case 'rename':
                   _rename();
                 case 'delete':
@@ -497,6 +571,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
             itemBuilder: (_) => [
               PopupMenuItem(value: 'save', child: ListTile(leading: const Icon(Icons.save_alt), title: Text(l.savePdfToFolder))),
               PopupMenuItem(value: 'images', child: ListTile(leading: const Icon(Icons.image_outlined), title: Text(l.exportAsImages))),
+              if (d.pages.length >= 3)
+                PopupMenuItem(value: 'split', child: ListTile(leading: const Icon(Icons.call_split), title: Text(l.splitDocumentTitle))),
               if (d.pages.length >= 2)
                 PopupMenuItem(value: 'tidy', child: ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(l.tidyPagesTitle))),
               if (d.pages.length >= 2)

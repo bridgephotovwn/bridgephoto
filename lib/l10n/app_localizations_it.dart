@@ -344,6 +344,25 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tidyPagesTitle => 'Find blank and repeated pages';
 
   @override
+  String get splitDocumentTitle => 'Split at blank pages';
+
+  @override
+  String get noDividersFound => 'No blank dividers found - nothing to split';
+
+  @override
+  String splitDocumentBody(int count) {
+    return 'This will become $count separate documents. The blank pages used as dividers are removed.';
+  }
+
+  @override
+  String get splittingDocument => 'Splitting...';
+
+  @override
+  String splitDone(int count) {
+    return 'Split into $count documents';
+  }
+
+  @override
   String get checkingPages => 'Looking through the pages...';
 
   @override

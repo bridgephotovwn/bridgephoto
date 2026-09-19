@@ -12,6 +12,7 @@ int near(int hash, int flipped) {
 }
 
 void main() {
+  _splitTests();
   const a = 0x0F1E2D3C4B5A6978;
   const b = 0x7788990011223344;
 
@@ -98,5 +99,58 @@ void main() {
   test('no pages at all is not a crash', () {
     final r = PageTidy.inspect(const []);
     expect(r.isEmpty, isTrue);
+  });
+}
+
+void _splitTests() {
+  const a = 0x0F1E2D3C4B5A6978;
+  group('splitting a batch at blank dividers', () {
+    PageFacts ink(String p) => PageFacts(p, 0.03, a);
+    PageFacts blank(String p) => PageFacts(p, 0.0002, a);
+
+    test('a blank sheet between two papers makes two documents', () {
+      final g = PageTidy.splitAtBlanks([
+        ink('p1'), ink('p2'), blank('sep'), ink('p3'),
+      ]);
+      expect(g, [
+        ['p1', 'p2'],
+        ['p3'],
+      ]);
+    });
+
+    test('the blank sheets themselves are not kept', () {
+      final g = PageTidy.splitAtBlanks([ink('p1'), blank('sep'), ink('p2')]);
+      expect(g.expand((x) => x), isNot(contains('sep')));
+    });
+
+    test('two blanks in a row do not make an empty document', () {
+      final g = PageTidy.splitAtBlanks([
+        ink('p1'), blank('s1'), blank('s2'), ink('p2'),
+      ]);
+      expect(g, [
+        ['p1'],
+        ['p2'],
+      ]);
+    });
+
+    test('a blank at the start or the end is just ignored', () {
+      final g = PageTidy.splitAtBlanks([
+        blank('s0'), ink('p1'), ink('p2'), blank('s1'),
+      ]);
+      expect(g, [
+        ['p1', 'p2'],
+      ]);
+    });
+
+    test('no blanks at all means one document, unchanged', () {
+      final g = PageTidy.splitAtBlanks([ink('p1'), ink('p2'), ink('p3')]);
+      expect(g, [
+        ['p1', 'p2', 'p3'],
+      ]);
+    });
+
+    test('nothing but blanks yields nothing, not an empty document', () {
+      expect(PageTidy.splitAtBlanks([blank('s1'), blank('s2')]), isEmpty);
+    });
   });
 }

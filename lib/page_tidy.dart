@@ -47,6 +47,32 @@ class PageTidy {
     return PageReport(blanks: blanks, duplicates: duplicates);
   }
 
+  /// Groups pages into separate documents, cut wherever a blank page was
+  /// used as a divider.
+  ///
+  /// This is how every desk scanner has worked for thirty years: put a blank
+  /// sheet between papers, feed the lot through once, get separate files. No
+  /// phone app does it, so people photograph one document, save it, and start
+  /// again — twenty times.
+  ///
+  /// The blank sheets themselves are not returned; they were punctuation, not
+  /// content. A run with nothing in it disappears, so two blanks in a row do
+  /// not produce an empty document.
+  static List<List<String>> splitAtBlanks(List<PageFacts> pages) {
+    final groups = <List<String>>[];
+    var current = <String>[];
+    for (final p in pages) {
+      if (p.ink < blankInk) {
+        if (current.isNotEmpty) groups.add(current);
+        current = <String>[];
+      } else {
+        current.add(p.page);
+      }
+    }
+    if (current.isNotEmpty) groups.add(current);
+    return groups;
+  }
+
   /// How many bits differ between two fingerprints.
   static int _distance(int a, int b) {
     var x = a ^ b;

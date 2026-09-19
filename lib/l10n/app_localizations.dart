@@ -670,6 +670,36 @@ abstract class AppLocalizations {
   /// **'Find blank and repeated pages'**
   String get tidyPagesTitle;
 
+  /// No description provided for @splitDocumentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Split at blank pages'**
+  String get splitDocumentTitle;
+
+  /// No description provided for @noDividersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No blank dividers found - nothing to split'**
+  String get noDividersFound;
+
+  /// No description provided for @splitDocumentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will become {count} separate documents. The blank pages used as dividers are removed.'**
+  String splitDocumentBody(int count);
+
+  /// No description provided for @splittingDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Splitting...'**
+  String get splittingDocument;
+
+  /// No description provided for @splitDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Split into {count} documents'**
+  String splitDone(int count);
+
   /// No description provided for @checkingPages.
   ///
   /// In en, this message translates to:

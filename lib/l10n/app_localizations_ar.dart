@@ -357,6 +357,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tidyPagesTitle => 'البحث عن الصفحات الفارغة والمكررة';
 
   @override
+  String get splitDocumentTitle => 'تقسيم عند الصفحات الفارغة';
+
+  @override
+  String get noDividersFound => 'لا توجد فواصل فارغة';
+
+  @override
+  String splitDocumentBody(int count) {
+    return 'ستصبح $count مستندات منفصلة. ستُحذف الصفحات الفاصلة.';
+  }
+
+  @override
+  String get splittingDocument => 'جارٍ التقسيم...';
+
+  @override
+  String splitDone(int count) {
+    return 'تم التقسيم إلى $count مستندات';
+  }
+
+  @override
   String get checkingPages => 'جارٍ فحص الصفحات...';
 
   @override
