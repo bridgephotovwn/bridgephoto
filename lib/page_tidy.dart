@@ -24,6 +24,32 @@ class PageTidy {
   /// or two similar forms merge. Four is the usual working figure.
   static const sameDistance = 4;
 
+  /// How far apart two pages' ink may be and still be called the same page,
+  /// as a share of the larger.
+  ///
+  /// The fingerprint alone is not enough to condemn a page. It reads the
+  /// page as sixty-four light-and-dark comparisons, and documents are mostly
+  /// white, so pages that share nothing but their whiteness can land close
+  /// together. How much of the page is covered is a different measurement
+  /// taken a different way, and two pages that disagree about that are not
+  /// the same page whatever their fingerprints say. On the phone this alone
+  /// separated an invoice from an ID card and a two-up sheet, all three of
+  /// which the fingerprint had lumped together.
+  ///
+  /// A quarter is loose on purpose. Two photographs of one page really do
+  /// differ a little — exposure moves, the crop shifts — and the job of this
+  /// number is only to throw out pages that are plainly different.
+  static const inkAgreement = 0.25;
+
+  /// Whether two pages are the same page: alike to look at AND carrying the
+  /// same amount of ink.
+  static bool same(PageFacts a, PageFacts b) {
+    if (_distance(a.hash, b.hash) > sameDistance) return false;
+    final larger = a.ink > b.ink ? a.ink : b.ink;
+    if (larger <= 0) return true; // two empty pages really are alike
+    return (a.ink - b.ink).abs() / larger <= inkAgreement;
+  }
+
   /// What was found. Nothing is removed here — this is a report.
   static PageReport inspect(List<PageFacts> pages) {
     final blanks = <String>[];
@@ -37,7 +63,7 @@ class PageTidy {
     final kept = <PageFacts>[];
     for (final p in pages) {
       if (blanks.contains(p.page)) continue;
-      final match = kept.where((k) => _distance(k.hash, p.hash) <= sameDistance);
+      final match = kept.where((k) => same(k, p));
       if (match.isNotEmpty) {
         duplicates[p.page] = match.first.page;
       } else {

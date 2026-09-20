@@ -717,32 +717,24 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
      * pixels and record, for each pair of neighbours, which is brighter. It
      * survives re-scanning, exposure changes and small shifts, which is
      * exactly what makes two photographs of the SAME page look alike to it.
+     *
+     * The shrinking is done HERE, by averaging, and not by asking Android to
+     * scale a whole page down to nine pixels across. createScaledBitmap with
+     * filtering reads a couple of neighbouring pixels; over a reduction of
+     * sixty times that is not an average, it is a handful of samples taken
+     * almost at random. On a document — white paper with writing on part of
+     * it — every one of those samples lands on white, so every page produces
+     * the same fingerprint and every page looks like a copy of the first.
+     * That is not theory: on the phone it reported an invoice, an ID card and
+     * a two-up sheet as all being the same page, with the boxes pre-ticked to
+     * delete them.
      */
     private fun pageStats(path: String): Map<String, Any> {
         val bmp = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = 4 })
             ?: throw IllegalArgumentException("Cannot decode the page.")
         try {
-            val small = Bitmap.createScaledBitmap(bmp, 9, 8, true)
-            val grey = IntArray(9 * 8)
-            val px = IntArray(9 * 8)
-            small.getPixels(px, 0, 9, 0, 0, 9, 8)
-            for (i in px.indices) {
-                val c = px[i]
-                grey[i] = ((c shr 16 and 0xFF) * 3 + (c shr 8 and 0xFF) * 6 + (c and 0xFF)) / 10
-            }
-            var hash = 0L
-            var bit = 0
-            for (y in 0 until 8) {
-                for (x in 0 until 8) {
-                    if (grey[y * 9 + x] > grey[y * 9 + x + 1]) hash = hash or (1L shl bit)
-                    bit++
-                }
-            }
-            if (small !== bmp) small.recycle()
-
-            // Ink: how much of the page is markedly darker than its paper.
-            // Measured against the page's own white point, so a grey scan or
-            // a cream page is not mistaken for a covered one.
+            // One reduction, used for both measurements. Shrinking this far is
+            // gentle enough for Android's filter to behave.
             val w = min(bmp.width, 400)
             val h = min(bmp.height, 560)
             val probe = Bitmap.createScaledBitmap(bmp, w, h, true)
@@ -753,13 +745,46 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 val c = buf[i]
                 lum[i] = ((c shr 16 and 0xFF) * 3 + (c shr 8 and 0xFF) * 6 + (c and 0xFF)) / 10
             }
+            if (probe !== bmp) probe.recycle()
+
+            // The 9x8 grid, each cell the true average of the page under it.
+            val grey = IntArray(9 * 8)
+            for (gy in 0 until 8) {
+                val y0 = gy * h / 8
+                val y1 = max(y0 + 1, (gy + 1) * h / 8)
+                for (gx in 0 until 9) {
+                    val x0 = gx * w / 9
+                    val x1 = max(x0 + 1, (gx + 1) * w / 9)
+                    var sum = 0L
+                    var n = 0
+                    for (y in y0 until y1) {
+                        val row = y * w
+                        for (x in x0 until x1) {
+                            sum += lum[row + x]
+                            n++
+                        }
+                    }
+                    grey[gy * 9 + gx] = (sum / max(1, n)).toInt()
+                }
+            }
+            var hash = 0L
+            var bit = 0
+            for (y in 0 until 8) {
+                for (x in 0 until 8) {
+                    if (grey[y * 9 + x] > grey[y * 9 + x + 1]) hash = hash or (1L shl bit)
+                    bit++
+                }
+            }
+
+            // Ink: how much of the page is markedly darker than its paper.
+            // Measured against the page's own white point, so a grey scan or
+            // a cream page is not mistaken for a covered one.
             val sorted = lum.clone()
             sorted.sort()
             val paper = sorted[(sorted.size * 0.9).toInt().coerceAtMost(sorted.size - 1)]
             val threshold = (paper * 0.72).toInt()
             var dark = 0
             for (v in lum) if (v < threshold) dark++
-            if (probe !== bmp) probe.recycle()
             return mapOf("ink" to dark.toDouble() / lum.size, "hash" to hash.toString())
         } finally {
             bmp.recycle()

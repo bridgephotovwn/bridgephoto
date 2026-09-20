@@ -153,4 +153,51 @@ void _splitTests() {
       expect(PageTidy.splitAtBlanks([blank('s1'), blank('s2')]), isEmpty);
     });
   });
+
+  group('pages measured off a real phone', () {
+    // These are the actual figures the engine reported for a nine-page test
+    // document on a Galaxy S24. Page 6 is a genuine re-scan of page 1; the
+    // rest are plainly different documents. Before the fingerprint was fixed
+    // the app offered to delete pages 2, 5 and 9 as copies of page 1, every
+    // box pre-ticked, so these numbers are kept as a guard.
+    const invoice   = PageFacts('p1', 0.01700, 0x0000000101014145);
+    const columns   = PageFacts('p2', 0.04042, 0x0000000009030b03);
+    const blankPage = PageFacts('p4', 0.00000, 0x0000000000000000);
+    const idCard    = PageFacts('p5', 0.00912, 0x0000000000010101);
+    const rescan    = PageFacts('p6', 0.01700, 0x0000000101014145);
+    const twoUp     = PageFacts('p9', 0.00608, 0x0004060604000606);
+
+    test('the re-scan of page 1 is recognised as the same page', () {
+      expect(PageTidy.same(invoice, rescan), isTrue);
+    });
+
+    test('an ID card is not an invoice, however alike they look', () {
+      // Their fingerprints sit five bits apart - close enough that a small
+      // change to the threshold would merge them. The ink settles it.
+      expect(PageTidy.same(invoice, idCard), isFalse);
+    });
+
+    test('a two-up sheet is not an invoice', () {
+      expect(PageTidy.same(invoice, twoUp), isFalse);
+    });
+
+    test('a page of columns is not an invoice', () {
+      expect(PageTidy.same(invoice, columns), isFalse);
+    });
+
+    test('the whole document gives up exactly one blank and one copy', () {
+      final r = PageTidy.inspect(
+          [invoice, columns, blankPage, idCard, rescan, twoUp]);
+      expect(r.blanks, ['p4']);
+      expect(r.duplicates, {'p6': 'p1'});
+      expect(r.total, 2, reason: 'anything more is a page someone loses');
+    });
+
+    test('ink alone cannot condemn a page either', () {
+      // Same coverage, nothing else alike: two different forms filled in to
+      // the same extent must not be merged.
+      const other = PageFacts('px', 0.01700, 0x7fffffffffffffff);
+      expect(PageTidy.same(invoice, other), isFalse);
+    });
+  });
 }
