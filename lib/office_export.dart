@@ -19,10 +19,32 @@ class OfficeExport {
   const OfficeExport._();
 
   /// A Word document: one paragraph per line of text.
-  static Uint8List docx(List<String> paragraphs) {
+  /// [headings] marks which paragraphs are headings, by level: 0 is ordinary
+  /// text, 1 the biggest heading, 2 the next. [language] is the document's
+  /// language tag, such as "en" or "ar".
+  ///
+  /// Both exist for the same reason. A blind reader gets far more out of a
+  /// Word file than a PDF — of the people who use a screen reader every day,
+  /// 68.9% call Word the most accessible document format and only 12.9% say
+  /// that of PDF — so this, not the PDF, is the accessible output, and it is
+  /// worth making properly. Headings are what let somebody jump through a
+  /// document instead of listening to all of it, and the language tag is what
+  /// stops an Arabic page being read aloud in an English voice.
+  static Uint8List docx(
+    List<String> paragraphs, {
+    List<int>? headings,
+    String language = 'en',
+  }) {
     final body = StringBuffer();
-    for (final p in paragraphs) {
-      body.write('<w:p><w:r><w:t xml:space="preserve">${_xml(p)}</w:t></w:r></w:p>');
+    for (var i = 0; i < paragraphs.length; i++) {
+      final level = (headings != null && i < headings.length) ? headings[i] : 0;
+      final style = level > 0
+          ? '<w:pPr><w:pStyle w:val="Heading$level"/>'
+              '<w:outlineLvl w:val="${level - 1}"/></w:pPr>'
+          : '';
+      body.write('<w:p>$style<w:r>'
+          '<w:rPr><w:lang w:val="${_xml(language)}"/></w:rPr>'
+          '<w:t xml:space="preserve">${_xml(paragraphs[i])}</w:t></w:r></w:p>');
     }
     // Word insists on a section at the end of the body; without it the file
     // opens but every page is the wrong size.
@@ -35,15 +57,41 @@ class OfficeExport {
           '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
           '<Default Extension="xml" ContentType="application/xml"/>'
           '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+          '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
           '</Types>',
       '_rels/.rels': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
           '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
           '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'
           '</Relationships>',
+      'word/_rels/document.xml.rels': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+          '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+          '</Relationships>',
+      // Without a styles part the heading names resolve to nothing, Word shows
+      // them as ordinary text, and the outline a blind reader navigates by is
+      // silently absent — the file opens perfectly and the feature is gone.
+      'word/styles.xml': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+          '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+          '${_headingStyles()}</w:styles>',
       'word/document.xml': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
           '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
           '<w:body>$body</w:body></w:document>',
     });
+  }
+
+  /// Heading styles, three deep. Sizes are in half-points, as Word counts.
+  static String _headingStyles() {
+    final b = StringBuffer();
+    const sizes = [32, 26, 24];
+    for (var i = 1; i <= 3; i++) {
+      b.write('<w:style w:type="paragraph" w:styleId="Heading$i">'
+          '<w:name w:val="heading $i"/><w:basedOn w:val="Normal"/>'
+          '<w:pPr><w:outlineLvl w:val="${i - 1}"/></w:pPr>'
+          '<w:rPr><w:b/><w:sz w:val="${sizes[i - 1]}"/></w:rPr></w:style>');
+    }
+    b.write('<w:style w:type="paragraph" w:default="1" w:styleId="Normal">'
+        '<w:name w:val="Normal"/></w:style>');
+    return b.toString();
   }
 
   /// A spreadsheet: one row per list, one cell per entry.
