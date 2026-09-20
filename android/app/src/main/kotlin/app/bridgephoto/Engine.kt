@@ -123,6 +123,27 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
          */
         const val BG_PAPER = 240
         const val BG_PAPER_BEFORE_STRETCH = 200
+
+        /**
+         * Half the window Sauvola judges each pixel in, as a share of the
+         * page's long side.
+         *
+         * Sauvola decides ink by comparing a pixel with its neighbours, so
+         * inside a large solid dark area — a black invoice header bar, a
+         * logo, a filled table head — the window sees nothing but black,
+         * finds no contrast, and calls the middle of it paper. The bar comes
+         * out as a hollow outline. Leptonica's window is 17 pixels across and
+         * a header bar is nearer 50.
+         *
+         * The usual reason to keep the window small is uneven lighting, which
+         * a wide window straddles. That does not apply here: the light is
+         * flattened and the contrast stretched before this runs, so the page
+         * reaching Sauvola is already even and the window can be generous.
+         */
+        const val SAUVOLA_WINDOW_SHARE = 0.03f
+        const val SAUVOLA_WINDOW_MIN = 8
+        const val SAUVOLA_WINDOW_MAX = 80
+        const val SAUVOLA_FACTOR = 0.35f
         /** One sheet = A4 at 300 dpi, which is what a printer expects. */
         const val SHEET_W = 2480
         const val SHEET_H = 3508
@@ -1165,7 +1186,12 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     }
                     pix = step("contrastNorm") { AdaptiveMap.pixContrastNorm(it) }
                     if (mode == "bw") {
-                        pix = step("sauvola") { Binarize.sauvolaBinarizeTiled(it) }
+                        val window = Math.round(
+                            kotlin.math.max(bmp.width, bmp.height) * SAUVOLA_WINDOW_SHARE
+                        ).coerceIn(SAUVOLA_WINDOW_MIN, SAUVOLA_WINDOW_MAX)
+                        pix = step("sauvola") {
+                            Binarize.sauvolaBinarizeTiled(it, window, SAUVOLA_FACTOR, 1, 1)
+                        }
                     } else {
                         pix = step("unsharp") { Enhance.unsharpMasking(it, 3, 0.3f) }
                     }
