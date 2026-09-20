@@ -226,6 +226,9 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 )
                 true
             }
+            "checkPdf" -> bg(result) {
+                PdfCheck.inspect(call.argument<String>("input")!!)
+            }
             "relief" -> bg(result) {
                 MultiShot.relief(
                     call.argument<List<String>>("inputs")!!,

@@ -189,6 +189,18 @@ class Engine {
         'password': password,
       });
 
+  /// Looks at a PDF somebody else sent and reports what is odd about it —
+  /// text still readable under a blacked-out box, fonts that only half travel
+  /// with the file, earlier versions still inside it.
+  ///
+  /// Every one of these has an innocent explanation. They are things to go and
+  /// look at, never a verdict on the document.
+  static Future<List<Map<String, dynamic>>> checkPdf(String input) async {
+    final m = await _ch.invokeMapMethod<String, dynamic>('checkPdf', {'input': input});
+    final f = (m?['findings'] as List?) ?? const [];
+    return f.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
   /// Reads the SHAPE of a page from several photographs lit from different
   /// sides — an embossed seal, a dry stamp, the dent a biro leaves, the
   /// stamped plate on a machine. None of those have any colour, only shape,

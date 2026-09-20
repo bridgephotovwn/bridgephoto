@@ -169,6 +169,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importPdfAsPages => '将 PDF 导入为页面';
 
   @override
+  String get checkPdfTitle => 'Check a PDF someone sent';
+
+  @override
+  String get checkPdfNothing => 'Nothing odd found in this file.';
+
+  @override
+  String get checkPdfIntro =>
+      'Things worth a look. Each one has an innocent explanation — none of them means the document is false.';
+
+  @override
+  String checkPdfBox(int page) {
+    return 'Page $page: text is still readable under a blacked-out box';
+  }
+
+  @override
+  String checkPdfFonts(int page) {
+    return 'Page $page: the fonts only half travel with this file';
+  }
+
+  @override
+  String get checkPdfRevisions =>
+      'Saved more than once, one version on top of another';
+
+  @override
+  String get checkPdfMadeBy => 'Made by';
+
+  @override
   String get mergePdfFiles => '合并 PDF 文件';
 
   @override

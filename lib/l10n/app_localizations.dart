@@ -442,6 +442,48 @@ abstract class AppLocalizations {
   /// **'Import PDF as pages'**
   String get importPdfAsPages;
 
+  /// No description provided for @checkPdfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check a PDF someone sent'**
+  String get checkPdfTitle;
+
+  /// No description provided for @checkPdfNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing odd found in this file.'**
+  String get checkPdfNothing;
+
+  /// No description provided for @checkPdfIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Things worth a look. Each one has an innocent explanation — none of them means the document is false.'**
+  String get checkPdfIntro;
+
+  /// No description provided for @checkPdfBox.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page}: text is still readable under a blacked-out box'**
+  String checkPdfBox(int page);
+
+  /// No description provided for @checkPdfFonts.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page}: the fonts only half travel with this file'**
+  String checkPdfFonts(int page);
+
+  /// No description provided for @checkPdfRevisions.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved more than once, one version on top of another'**
+  String get checkPdfRevisions;
+
+  /// No description provided for @checkPdfMadeBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Made by'**
+  String get checkPdfMadeBy;
+
   /// No description provided for @mergePdfFiles.
   ///
   /// In en, this message translates to:

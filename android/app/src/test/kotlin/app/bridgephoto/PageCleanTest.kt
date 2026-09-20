@@ -127,3 +127,51 @@ class PageCleanTest {
         assertEquals(0xFF, (out ushr 24) and 0xFF)
     }
 }
+
+/**
+ * The geometry behind "is this word hidden under a blackout box".
+ *
+ * The rest of the PDF check needs a real file and is tried on the phone; this
+ * is the part where an off-by-one quietly turns a leak into a clean bill of
+ * health, so it is pinned down here.
+ */
+class PdfCheckGeometryTest {
+    private fun word(l: Double, t: Double, r: Double, b: Double) = doubleArrayOf(l, t, r, b)
+
+    @Test
+    fun `a word wholly inside a box is wholly covered`() {
+        val share = PdfCheck.coveredShare(word(20.0, 20.0, 60.0, 32.0),
+            word(10.0, 10.0, 100.0, 50.0))
+        assertEquals(1.0, share, 0.001)
+    }
+
+    @Test
+    fun `a word nowhere near a box is not covered at all`() {
+        val share = PdfCheck.coveredShare(word(200.0, 200.0, 260.0, 212.0),
+            word(10.0, 10.0, 100.0, 50.0))
+        assertEquals(0.0, share, 0.001)
+    }
+
+    @Test
+    fun `a word half under the edge of a box is half covered`() {
+        // The case that decides the threshold: a redaction box drawn a little
+        // short still leaves the word readable, so half-covered has to report
+        // as half and not as hidden.
+        val share = PdfCheck.coveredShare(word(80.0, 20.0, 120.0, 32.0),
+            word(10.0, 10.0, 100.0, 50.0))
+        assertEquals(0.5, share, 0.02)
+    }
+
+    @Test
+    fun `a word touching the box only on its border is not covered`() {
+        val share = PdfCheck.coveredShare(word(100.0, 20.0, 140.0, 32.0),
+            word(10.0, 10.0, 100.0, 50.0))
+        assertEquals(0.0, share, 0.001)
+    }
+
+    @Test
+    fun `a word with no size cannot divide by zero`() {
+        assertEquals(0.0, PdfCheck.coveredShare(word(50.0, 20.0, 50.0, 20.0),
+            word(10.0, 10.0, 100.0, 50.0)), 0.001)
+    }
+}

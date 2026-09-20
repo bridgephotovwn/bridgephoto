@@ -248,6 +248,80 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Looks at a PDF somebody else sent.
+  ///
+  /// Every other tool in this app works on the user's own scans. This one
+  /// looks at a file that arrived from somebody else, which is where the
+  /// damage usually comes from — a contract with a clause changed, a
+  /// statement with a figure retyped, or, most often of all, a document
+  /// blacked out by drawing a rectangle over text that is still there.
+  Future<void> _checkPdf() async {
+    final l = context.l10n;
+    FilePickerResult? r;
+    try {
+      r = await FilePicker.platform.pickFiles(
+          type: FileType.custom, allowedExtensions: const ['pdf']);
+    } catch (e) {
+      if (mounted) context.snack(l.couldNotOpenPicker(_msg(e)));
+      return;
+    }
+    final path = r?.files.firstOrNull?.path;
+    if (path == null || !mounted) return;
+    _setBusy(l.checkPdfTitle);
+    List<Map<String, dynamic>> findings;
+    try {
+      findings = await Engine.checkPdf(path);
+    } catch (e) {
+      _setBusy(null);
+      if (mounted) context.snack(_msg(e));
+      return;
+    }
+    _setBusy(null);
+    if (!mounted) return;
+    final lines = <String>[];
+    for (final f in findings) {
+      final page = (f['page'] as num?)?.toInt() ?? 0;
+      final detail = (f['detail'] as String?) ?? '';
+      switch (f['kind']) {
+        case 'readableUnderBox':
+          lines.add('${l.checkPdfBox(page)}\n    $detail');
+        case 'fontMix':
+          lines.add('${l.checkPdfFonts(page)}\n    $detail');
+        case 'revisions':
+          lines.add('${l.checkPdfRevisions}\n    $detail');
+        case 'madeBy':
+          lines.add('${l.checkPdfMadeBy}: $detail');
+      }
+    }
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.checkPdfTitle),
+        content: SingleChildScrollView(
+          child: lines.isEmpty
+              ? Text(l.checkPdfNothing)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l.checkPdfIntro,
+                        style: Theme.of(ctx).textTheme.bodySmall),
+                    const SizedBox(height: 12),
+                    for (final t in lines)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Text(t),
+                      ),
+                  ],
+                ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.close)),
+        ],
+      ),
+    );
+  }
+
   Future<void> _mergePdfFiles() async {
     final l = context.l10n;
     FilePickerResult? r;
@@ -597,6 +671,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _importPdf();
               case 'mergepdf':
                 _mergePdfFiles();
+              case 'checkpdf':
+                _checkPdf();
               case 'settings':
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const SettingsScreen()))
@@ -607,6 +683,7 @@ class _HomeScreenState extends State<HomeScreen> {
             PopupMenuItem(value: 'card', child: ListTile(leading: const Icon(Icons.contact_page_outlined), title: Text(l.scanBusinessCard))),
             PopupMenuItem(value: 'import', child: ListTile(leading: const Icon(Icons.picture_as_pdf), title: Text(l.importPdfAsPages))),
             PopupMenuItem(value: 'mergepdf', child: ListTile(leading: const Icon(Icons.merge), title: Text(l.mergePdfFiles))),
+            PopupMenuItem(value: 'checkpdf', child: ListTile(leading: const Icon(Icons.policy_outlined), title: Text(l.checkPdfTitle))),
             const PopupMenuDivider(),
             PopupMenuItem(value: 'settings', child: ListTile(leading: const Icon(Icons.settings), title: Text(l.settings))),
           ],

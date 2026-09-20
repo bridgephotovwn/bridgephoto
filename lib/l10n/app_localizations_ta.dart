@@ -172,6 +172,33 @@ class AppLocalizationsTa extends AppLocalizations {
   String get importPdfAsPages => 'PDF ஐப் பக்கங்களாக இறக்குமதி செய்';
 
   @override
+  String get checkPdfTitle => 'Check a PDF someone sent';
+
+  @override
+  String get checkPdfNothing => 'Nothing odd found in this file.';
+
+  @override
+  String get checkPdfIntro =>
+      'Things worth a look. Each one has an innocent explanation — none of them means the document is false.';
+
+  @override
+  String checkPdfBox(int page) {
+    return 'Page $page: text is still readable under a blacked-out box';
+  }
+
+  @override
+  String checkPdfFonts(int page) {
+    return 'Page $page: the fonts only half travel with this file';
+  }
+
+  @override
+  String get checkPdfRevisions =>
+      'Saved more than once, one version on top of another';
+
+  @override
+  String get checkPdfMadeBy => 'Made by';
+
+  @override
   String get mergePdfFiles => 'PDF கோப்புகளை இணை';
 
   @override
