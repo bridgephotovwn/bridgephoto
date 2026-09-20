@@ -113,6 +113,12 @@ android {
 androidComponents {
     onVariants { variant ->
         if (variant.flavorName != "free") return@onVariants
+        // Debug and profile builds are exempt, and only those. Flutter's own
+        // android/app/src/debug/AndroidManifest.xml adds INTERNET so the tool
+        // can reach the running app for hot reload and breakpoints; those
+        // builds are never published. Every RELEASE build - the only kind that
+        // can reach a person - is still checked, so the promise is unchanged.
+        if (variant.buildType != "release") return@onVariants
         val name = variant.name.replaceFirstChar { it.uppercase() }
         val verify = tasks.register<VerifyNoInternet>("verify${name}HasNoInternet") {
             mergedManifest.set(

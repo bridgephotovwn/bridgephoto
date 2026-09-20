@@ -77,6 +77,52 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
         const val SKEW_MIN_DEGREES = 0.25f
         /** Beyond this it is not a crooked page, it is a bad reading. */
         const val SKEW_MAX_DEGREES = 15f
+
+        /**
+         * Background flattening: the closing is done on the page reduced by
+         * this much, so the structuring element below is in REDUCED pixels.
+         */
+        const val BG_REDUCTION = 16
+
+        /**
+         * How wide the structuring element is, as a share of the page's long
+         * side. This one number decides what survives the light correction.
+         *
+         * The estimate works by closing over the ink: anything NARROWER than
+         * the element is closed over, so it is treated as ink and kept, and
+         * anything wider is taken for shade and scrubbed out. Leptonica's
+         * default is 3 at a reduction of 16 — 48 pixels — which is narrower
+         * than plenty of real ink. A black invoice header bar and a company
+         * logo both came back as pale ghosts, and the portrait on an ID card
+         * came back as a white smudge, which for this app is the worst thing
+         * on the list: it offers to mask the number on an ID and would have
+         * been wiping the face off it.
+         *
+         * A fifth of the long side keeps all of them. It was measured on the
+         * phone against a page carrying a header bar, a logo, a barcode and a
+         * faint rubber stamp, and an ID card under a hard-edged shadow:
+         *
+         *   portrait ink      88 on paper ->  83 kept here, 162 at a ninth
+         *   header, logo, barcode, stamp   ->  unchanged either way
+         *   shadow across the paper   106  ->  14 here, 5 at a ninth
+         *
+         * So a wider element costs a little evenness and buys back the whole
+         * photograph. A residue of 14 shades across a page is not visible;
+         * a missing face is.
+         */
+        const val BG_ELEMENT_SHARE = 0.20f
+        const val BG_ELEMENT_MIN = 5
+        const val BG_ELEMENT_MAX = 40
+
+        /**
+         * What the paper is flattened to. Leptonica's 200 leaves a document
+         * looking grey, which is fine where a contrast stretch follows and
+         * wrong where nothing does. The gap below white is deliberate: it
+         * leaves pencil and a faint stamp somewhere to live instead of
+         * clipping them away.
+         */
+        const val BG_PAPER = 240
+        const val BG_PAPER_BEFORE_STRETCH = 200
         /** One sheet = A4 at 300 dpi, which is what a printer expects. */
         const val SHEET_W = 2480
         const val SHEET_H = 3508
@@ -1042,8 +1088,13 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 if (kotlin.math.abs(angle) > SKEW_MIN_DEGREES) {
                     // Rotate the COLOUR bitmap ourselves rather than letting
                     // Leptonica rotate a reduced copy: the page keeps its pixels.
-                    val m = Matrix().apply { postRotate(-angle) }
-                    val r = Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, m, true)
+                    //
+                    // The angle is applied as it comes. Leptonica's own
+                    // pixDeskew rotates BY the angle it found, and both it and
+                    // Android count a positive angle clockwise, so negating it
+                    // here turns a page two degrees crooked into a page four
+                    // degrees crooked — which is exactly what it did.
+                    val r = rotateOnWhite(bmp, angle)
                     if (r !== bmp) {
                         bmp.recycle()
                         bmp = r
@@ -1071,15 +1122,22 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     open.add(next)
                     return next
                 }
+                val element = bgElement(bmp)
                 if (mode == "auto") {
                     // Colour kept: flatten the lighting, then a gentle sharpen.
-                    pix = step("backgroundNorm") { AdaptiveMap.backgroundNormMorph(it) }
+                    // Nothing stretches the contrast afterwards here, so the
+                    // paper has to be brought to white in this one step.
+                    pix = step("backgroundNorm") {
+                        AdaptiveMap.backgroundNormMorph(it, BG_REDUCTION, element, BG_PAPER)
+                    }
                     pix = step("unsharp") { Enhance.unsharpMasking(it, 3, 0.3f) }
                 } else {
                     // Grey and black-and-white both start from one grey plane,
                     // which is also the only depth contrast norm accepts.
                     pix = step("toGrey") { Convert.convertTo8(it) }
-                    pix = step("backgroundNorm") { AdaptiveMap.backgroundNormMorph(it) }
+                    pix = step("backgroundNorm") {
+                        AdaptiveMap.backgroundNormMorph(it, BG_REDUCTION, element, BG_PAPER_BEFORE_STRETCH)
+                    }
                     pix = step("contrastNorm") { AdaptiveMap.pixContrastNorm(it) }
                     if (mode == "bw") {
                         pix = step("sauvola") { Binarize.sauvolaBinarizeTiled(it) }
@@ -1104,6 +1162,49 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
             }
             if (!bmp.isRecycled) bmp.recycle()
         }
+    }
+
+    /**
+     * Turns the page by [degrees] onto white paper.
+     *
+     * Straightening always leaves four new corners. Letting Android fill them
+     * means transparent black, and the light correction that runs next reads
+     * that as the deepest shadow on the page and hauls it up into streaks
+     * along every edge. Paper is white, so the corners are white.
+     */
+    private fun rotateOnWhite(bmp: Bitmap, degrees: Float): Bitmap {
+        val m = Matrix().apply { postRotate(degrees) }
+        val box = android.graphics.RectF(0f, 0f, bmp.width.toFloat(), bmp.height.toFloat())
+        m.mapRect(box)
+        val w = kotlin.math.ceil(box.width().toDouble()).toInt().coerceAtLeast(1)
+        val h = kotlin.math.ceil(box.height().toDouble()).toInt().coerceAtLeast(1)
+        val out = try {
+            Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        } catch (e: OutOfMemoryError) {
+            CrashLog.append(activity, "straighten: no room for ${w}x$h, left as it was: $e")
+            return bmp
+        }
+        val canvas = android.graphics.Canvas(out)
+        canvas.drawColor(Color.WHITE)
+        canvas.translate(-box.left, -box.top)
+        val paint = android.graphics.Paint().apply {
+            isAntiAlias = true
+            isFilterBitmap = true
+        }
+        canvas.drawBitmap(bmp, m, paint)
+        return out
+    }
+
+    /**
+     * The structuring element for the light correction, in the reduced pixels
+     * Leptonica counts in. It has to follow the size of the page: a fixed
+     * number that preserves a portrait on a 12 MP scan would swallow a small
+     * one whole and correct nothing at all.
+     */
+    private fun bgElement(bmp: Bitmap): Int {
+        val long = kotlin.math.max(bmp.width, bmp.height)
+        val px = long * BG_ELEMENT_SHARE / BG_REDUCTION
+        return Math.round(px).coerceIn(BG_ELEMENT_MIN, BG_ELEMENT_MAX)
     }
 
     /** Degrees the text on this page runs off horizontal, 0 when unsure. */
