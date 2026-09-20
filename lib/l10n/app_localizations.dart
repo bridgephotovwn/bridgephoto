@@ -484,6 +484,96 @@ abstract class AppLocalizations {
   /// **'Made by'**
   String get checkPdfMadeBy;
 
+  /// No description provided for @shapeReliefTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read a seal or stamped plate'**
+  String get shapeReliefTitle;
+
+  /// No description provided for @shapeGlareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the glare off'**
+  String get shapeGlareTitle;
+
+  /// No description provided for @shapeStepLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the phone flat above it, then slide it a hand\'s width to the LEFT'**
+  String get shapeStepLeft;
+
+  /// No description provided for @shapeStepRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Now the same distance to the RIGHT'**
+  String get shapeStepRight;
+
+  /// No description provided for @shapeStepAway.
+  ///
+  /// In en, this message translates to:
+  /// **'Now the same distance AWAY from you'**
+  String get shapeStepAway;
+
+  /// No description provided for @shapeStepNear.
+  ///
+  /// In en, this message translates to:
+  /// **'Now the same distance TOWARDS you'**
+  String get shapeStepNear;
+
+  /// No description provided for @shapeShotOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Photograph {n} of {total}'**
+  String shapeShotOf(int n, int total);
+
+  /// No description provided for @shapeFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'Held flat'**
+  String get shapeFlat;
+
+  /// No description provided for @shapeHoldFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the phone flat, not leaning'**
+  String get shapeHoldFlat;
+
+  /// No description provided for @shapeTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the photograph'**
+  String get shapeTake;
+
+  /// No description provided for @shapeWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Working it out…'**
+  String get shapeWorking;
+
+  /// No description provided for @shapeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done. The shape of the page is on screen.'**
+  String get shapeDone;
+
+  /// No description provided for @shapeAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Start again'**
+  String get shapeAgain;
+
+  /// No description provided for @shapeKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get shapeKeep;
+
+  /// No description provided for @shapeCameraFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera could not be opened: {why}'**
+  String shapeCameraFailed(String why);
+
   /// No description provided for @mergePdfFiles.
   ///
   /// In en, this message translates to:

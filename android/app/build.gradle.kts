@@ -142,16 +142,43 @@ abstract class VerifyNoInternet : DefaultTask() {
     fun check() {
         val file = mergedManifest.get().asFile
         val text = file.readText()
-        if (text.contains("android.permission.INTERNET")) {
+        // CAMERA is the one permission this app asks for, and only so the
+        // four-shot capture can hold the torch on. Everything on this list is
+        // something a library tried to bring along with it - the camera plugin
+        // arrives with a MICROPHONE and a storage permission, because it can
+        // also record video, which this app cannot and will not.
+        val banned = listOf(
+            "android.permission.INTERNET",
+            "android.permission.RECORD_AUDIO",
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.ACCESS_COARSE_LOCATION",
+            "android.permission.READ_MEDIA_IMAGES"
+        )
+        // Only permissions actually ASKED FOR count. A tools:node="remove"
+        // line names the permission too, and matching on the bare name would
+        // fire on the very thing that removes it.
+        val asked = Regex("""<uses-permission[^>]*android:name="([^"]+)"[^>]*>""")
+            .findAll(text)
+            .filterNot { it.value.contains("tools:node=\"remove\"") }
+            .map { it.groupValues[1] }
+            .toSet()
+        val found = banned.filter { asked.contains(it) }
+        if (found.isNotEmpty()) {
             throw GradleException(
-                "The public BRIDGE PHOTO asks for INTERNET, which it must never do.\n" +
-                    "Something added it back - most likely a new library. Either keep it\n" +
-                    "out of the free edition, or strip it in\n" +
-                    "android/app/src/free/AndroidManifest.xml the way ML Kit's is stripped.\n" +
+                "BRIDGE PHOTO asks for " + found.joinToString(", ") + ",\n" +
+                    "which it must never do. Something added it back - most likely a\n" +
+                    "new library dragging its own manifest along. Either keep that\n" +
+                    "library out, or strike the permission out in\n" +
+                    "android/app/src/main/AndroidManifest.xml with tools:node=\"remove\",\n" +
+                    "the way ML Kit's INTERNET and the camera plugin's microphone are.\n" +
                     "Manifest: $file"
             )
         }
-        report.get().asFile.writeText("no INTERNET permission in $file\n")
+        report.get().asFile.writeText(
+            "asks for nothing banned. permissions: ${asked.sorted()}\nmanifest: $file\n"
+        )
     }
 }
 

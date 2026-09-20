@@ -197,6 +197,56 @@ class AppLocalizationsKo extends AppLocalizations {
   String get checkPdfMadeBy => 'Made by';
 
   @override
+  String get shapeReliefTitle => 'Read a seal or stamped plate';
+
+  @override
+  String get shapeGlareTitle => 'Take the glare off';
+
+  @override
+  String get shapeStepLeft =>
+      'Hold the phone flat above it, then slide it a hand\'s width to the LEFT';
+
+  @override
+  String get shapeStepRight => 'Now the same distance to the RIGHT';
+
+  @override
+  String get shapeStepAway => 'Now the same distance AWAY from you';
+
+  @override
+  String get shapeStepNear => 'Now the same distance TOWARDS you';
+
+  @override
+  String shapeShotOf(int n, int total) {
+    return 'Photograph $n of $total';
+  }
+
+  @override
+  String get shapeFlat => 'Held flat';
+
+  @override
+  String get shapeHoldFlat => 'Hold the phone flat, not leaning';
+
+  @override
+  String get shapeTake => 'Take the photograph';
+
+  @override
+  String get shapeWorking => 'Working it out…';
+
+  @override
+  String get shapeDone => 'Done. The shape of the page is on screen.';
+
+  @override
+  String get shapeAgain => 'Start again';
+
+  @override
+  String get shapeKeep => 'Keep it';
+
+  @override
+  String shapeCameraFailed(String why) {
+    return 'The camera could not be opened: $why';
+  }
+
+  @override
   String get mergePdfFiles => 'PDF 파일 병합';
 
   @override

@@ -24,6 +24,16 @@ dependencies:
   # Only for the transform matrix used to rotate the PDF stamp. Already
   # in the tree as a dependency of `pdf`; pure Dart, no size cost.
   vector_math: ^2.2.0
+  # The four-shot capture, which needs the torch held on and the frames taken
+  # in one go. ML Kit's scanner owns its own camera screen and gives us no way
+  # to do either. This brings android.permission.CAMERA with it and nothing
+  # else — the no-internet promise is untouched, and the release build still
+  # refuses to finish if INTERNET ever appears.
+  camera: ^0.11.0
+  # Tells us the phone is being held FLAT. Sliding a level phone sideways moves
+  # the picture by a pure translation, which is exactly what the frame aligner
+  # can undo; tilting it does not, and no amount of aligning will fix that.
+  sensors_plus: ^6.1.0
 
 dev_dependencies:
   flutter_test:

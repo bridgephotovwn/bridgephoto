@@ -226,3 +226,113 @@ class MultiShotTest {
         assertTrue("glare survived the soft minimum (worst $worst)", worst < 1f)
     }
 }
+
+/**
+ * Does this survive the geometry a PHONE actually has?
+ *
+ * The solver was designed against lights well out to the side. A phone's torch
+ * sits a centimetre from the lens, so the only way to move the light is to
+ * move the whole phone — and somebody holding it 25 cm above a page and
+ * shifting it 8 cm is lighting the paper from about 72 degrees up, not from
+ * the side. Nearly overhead light casts almost no shadow, which is the whole
+ * signal. If the relief does not survive that, the capture screen has to ask
+ * for something different, and it is far cheaper to find out here.
+ */
+class PhoneGeometryTest {
+    private val N = 160
+
+    private fun truth(): Pair<FloatArray, FloatArray> {
+        val h = FloatArray(N * N)
+        val a = FloatArray(N * N) { 210f }
+        for (y in 0 until N) for (x in 0 until N) {
+            val i = y * N + x
+            val r = kotlin.math.sqrt(((x - 55.0) * (x - 55.0) + (y - 60.0) * (y - 60.0)))
+            h[i] += (2.2 * kotlin.math.exp(-((r - 22) * (r - 22)) / 18.0)).toFloat()
+            if (y in 20..28 && x in 20..130) a[i] = 40f
+        }
+        return h to a
+    }
+
+    private fun shoot(h: FloatArray, alb: FloatArray, l: FloatArray): MultiShot.Frame {
+        val m = kotlin.math.sqrt(l[0] * l[0] + l[1] * l[1] + l[2] * l[2])
+        val lx = l[0] / m; val ly = l[1] / m; val lz = l[2] / m
+        val v = FloatArray(N * N)
+        for (y in 0 until N) for (x in 0 until N) {
+            val i = y * N + x
+            val gx = h[i + if (x < N - 1) 1 else 0] - h[i - if (x > 0) 1 else 0]
+            val gy = h[i + if (y < N - 1) N else 0] - h[i - if (y > 0) N else 0]
+            val nx = -gx / 2f; val ny = -gy / 2f
+            val nm = kotlin.math.sqrt(nx * nx + ny * ny + 1f)
+            val dot = ((nx * lx + ny * ly + lz) / nm).coerceIn(0f, 1f)
+            v[i] = (alb[i] / 255f * dot * 255f * 1.35f).coerceIn(0f, 255f)
+        }
+        return MultiShot.Frame(N, N, v)
+    }
+
+    private fun agreement(got: FloatArray, want: FloatArray): Float {
+        var ma = 0f; var mb = 0f
+        for (i in got.indices) { ma += got[i]; mb += want[i] }
+        ma /= got.size; mb /= want.size
+        var sab = 0f; var saa = 0f; var sbb = 0f
+        for (i in got.indices) {
+            val a = got[i] - ma; val b = want[i] - mb
+            sab += a * b; saa += a * a; sbb += b * b
+        }
+        return if (saa < 1e-9f || sbb < 1e-9f) 0f
+        else sab / kotlin.math.sqrt(saa * sbb)
+    }
+
+    private fun trueShading(h: FloatArray, deg: Double): FloatArray {
+        val lx = kotlin.math.cos(Math.toRadians(deg)).toFloat()
+        val ly = kotlin.math.sin(Math.toRadians(deg)).toFloat()
+        val out = FloatArray(N * N)
+        for (y in 1 until N - 1) for (x in 1 until N - 1) {
+            val i = y * N + x
+            out[i] = -((h[i + 1] - h[i - 1]) * lx + (h[i + N] - h[i - N]) * ly)
+        }
+        return out
+    }
+
+    @Test
+    fun `how far out the phone must be moved for the relief to read`() {
+        val (h, alb) = truth()
+        val want = trueShading(h, 135.0)
+        println("light elevation vs relief recovered:")
+        var usableAt = -1f
+        // sideways travel, as a share of the height above the page
+        for (reach in listOf(1.0f, 0.62f, 0.40f, 0.32f, 0.20f, 0.10f)) {
+            val lz = 1f / reach
+            val frames = listOf(
+                floatArrayOf(-1f, 0f, lz), floatArrayOf(1f, 0f, lz),
+                floatArrayOf(0f, -1f, lz), floatArrayOf(0f, 1f, lz)
+            ).mapIndexed { i, l ->
+                // a real sensor, because with the light nearly overhead the
+                // difference BETWEEN the frames is what shrinks, and noise is
+                // then the thing that decides whether anything is left
+                val f = shoot(h, alb, l)
+                val rng = java.util.Random(7L + i)
+                MultiShot.Frame(f.w, f.h, FloatArray(f.v.size) {
+                    (f.v[it] + rng.nextGaussian().toFloat() * 2.0f)
+                        .coerceIn(0f, 255f).toInt().toFloat()
+                })
+            }
+            val score = agreement(
+                MultiShot.relight(MultiShot.normals(frames), 135f), want)
+            val elevation = Math.toDegrees(kotlin.math.atan2(lz.toDouble(), 1.0))
+            println("  move %.0f%% of the height  (light %.0f deg up)  -> %.3f"
+                .format(reach * 100, elevation, score))
+            if (score > 0.6f) usableAt = reach
+        }
+        // This number is what the capture screen asks the user for. From 25 cm
+        // above a page, a third of the height is a slide of about 8 cm - a
+        // hand's width - and that is a reasonable thing to ask somebody to do
+        // four times. Had it come out needing the light almost flat to the
+        // page, the whole feature would have needed a different capture.
+        assertTrue(
+            "the relief no longer reads at a third of the height; the capture " +
+                "screen asks for that and would now be asking for too little",
+            usableAt <= 0.34f
+        )
+        println("  usable down to a reach of ${(usableAt * 100).toInt()}% of the height")
+    }
+}

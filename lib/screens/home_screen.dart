@@ -13,6 +13,7 @@ import '../search_index.dart';
 import '../store.dart';
 import 'contact_screen.dart';
 import 'document_screen.dart';
+import 'shape_capture_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -194,6 +195,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void _recoverScan(List<String> paths) {
     if (!mounted) return;
     _saveNewDocument(paths);
+  }
+
+  /// Four photographs with the torch in a different place each time, turned
+  /// into either the SHAPE of the page or a copy with the glare taken off.
+  Future<void> _shapeCapture(ShapeMode mode) async {
+    final path = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => ShapeCaptureScreen(mode: mode)),
+    );
+    if (path == null || !mounted) return;
+    await _saveNewDocument([path]);
   }
 
   Future<void> _saveNewDocument(List<String> paths) async {
@@ -673,6 +684,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 _mergePdfFiles();
               case 'checkpdf':
                 _checkPdf();
+              case 'relief':
+                _shapeCapture(ShapeMode.relief);
+              case 'deglare':
+                _shapeCapture(ShapeMode.glare);
               case 'settings':
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const SettingsScreen()))
@@ -684,6 +699,11 @@ class _HomeScreenState extends State<HomeScreen> {
             PopupMenuItem(value: 'import', child: ListTile(leading: const Icon(Icons.picture_as_pdf), title: Text(l.importPdfAsPages))),
             PopupMenuItem(value: 'mergepdf', child: ListTile(leading: const Icon(Icons.merge), title: Text(l.mergePdfFiles))),
             PopupMenuItem(value: 'checkpdf', child: ListTile(leading: const Icon(Icons.policy_outlined), title: Text(l.checkPdfTitle))),
+            if (Engine.isAndroid) const PopupMenuDivider(),
+            if (Engine.isAndroid)
+              PopupMenuItem(value: 'relief', child: ListTile(leading: const Icon(Icons.deblur), title: Text(l.shapeReliefTitle))),
+            if (Engine.isAndroid)
+              PopupMenuItem(value: 'deglare', child: ListTile(leading: const Icon(Icons.wb_iridescent), title: Text(l.shapeGlareTitle))),
             const PopupMenuDivider(),
             PopupMenuItem(value: 'settings', child: ListTile(leading: const Icon(Icons.settings), title: Text(l.settings))),
           ],

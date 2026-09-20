@@ -5,6 +5,30 @@
          decided per edition, in src/free and src/business: the public app
          removes INTERNET, the company one asks for it. -->
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <!--
+        For the four-shot capture that reads the shape of a page - an embossed
+        seal, a stamped plate, the dent a biro leaves. It needs the torch held
+        on across four frames, which the ML Kit scanner screen does not allow,
+        so those shots are taken by this app itself.
+
+        This is the ONLY permission BRIDGE PHOTO asks for. Not storage, and
+        above all not INTERNET - the release build reads its own merged
+        manifest and refuses to finish if INTERNET ever appears in it.
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!--
+        The camera plugin brings a MICROPHONE and a STORAGE permission with it,
+        because it can also record video. This app cannot, and a scanner that
+        asks for the microphone has given away the only thing that makes it
+        worth trusting. Both are struck out of the merged manifest here.
+
+        The Gradle check that guards INTERNET guards these two as well, so no
+        future library can put them back quietly.
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
     <application
         android:label="BRIDGE PHOTO"
         android:allowBackup="false"
