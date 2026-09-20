@@ -10,6 +10,7 @@ import '../ocr.dart';
 import '../office_export.dart';
 import '../prefs.dart';
 import '../store.dart';
+import '../table_grid.dart';
 
 /// Recognised text of the whole document. Editable, so mistakes can be fixed
 /// before copying or sharing.
@@ -81,17 +82,39 @@ class _TextScreenState extends State<TextScreen> {
     if (p != null && mounted) context.snack(l.textSaved);
   }
 
-  /// The text as a spreadsheet. A line is a row; runs of two or more spaces
-  /// are where the columns were, which is how a receipt or a table prints and
-  /// is close enough to be useful without pretending to understand the page.
+  /// The text as a spreadsheet.
+  ///
+  /// Where a page really is a table, the columns are found by looking DOWN it
+  /// — a column is a place where row after row begins a word at the same
+  /// distance across, with clear space in front of it. That beats splitting
+  /// each line on its own, which needs two spaces to notice a column and
+  /// quietly welds a whole row into one cell when recognition gives only one.
+  ///
+  /// Where it is not a table, the old line-by-line split still applies, since
+  /// prose forced into columns is worse than the plain text it came from.
   Future<void> _saveXlsx() async {
     final l = context.l10n;
-    final rows = [
-      for (final line in _c.text.split('\n'))
-        line.trim().isEmpty
-            ? <String>['']
-            : line.trimRight().split(RegExp(r'\s{2,}|\t')).map((c) => c.trim()).toList(),
-    ];
+    final rows = <List<String>>[];
+    for (final p in widget.doc.pages) {
+      List<List<String>>? grid;
+      try {
+        grid = TableGrid.from(await Ocr.page(widget.doc, p));
+      } catch (_) {
+        grid = null; // unreadable page: fall through to the plain text
+      }
+      if (grid != null) {
+        rows.addAll(grid);
+        rows.add(const <String>['']);
+      }
+    }
+    if (rows.isEmpty) {
+      rows.addAll([
+        for (final line in _c.text.split('\n'))
+          line.trim().isEmpty
+              ? <String>['']
+              : line.trimRight().split(RegExp(r'\s{2,}|\t')).map((c) => c.trim()).toList(),
+      ]);
+    }
     final p = await Exporter.saveBytes('${DocStore.safeName(widget.doc.name)}.xlsx',
         OfficeExport.xlsx(rows),
         ext: 'xlsx', title: l.saveDialogTitle);
