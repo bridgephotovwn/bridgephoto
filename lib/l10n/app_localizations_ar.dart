@@ -625,6 +625,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get enhanceBw => 'أبيض وأسود — للنص فقط';
 
   @override
+  String get enhanceWhiteboard => 'Whiteboard — bring the marker back';
+
+  @override
+  String get enhanceBleed => 'Remove show-through from the back';
+
+  @override
   String get enhanceOriginal => 'المسح الأصلي';
 
   @override

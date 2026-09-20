@@ -1184,7 +1184,22 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                     return next
                 }
                 val element = bgElement(bmp)
-                if (mode == "auto") {
+                if (mode == "whiteboard") {
+                    // A whiteboard is a big grey surface under bad light with
+                    // thin coloured marker on it — the opposite of a document,
+                    // where the ink is dense and the paper small. So the light
+                    // correction gets a much wider brush (a whole marker stroke
+                    // has to count as ink, not as shade), and the colour is
+                    // lifted afterwards, because a dried-out marker photographs
+                    // as a pale ghost of what the eye sees on the board.
+                    pix = step("backgroundNorm") {
+                        AdaptiveMap.backgroundNormMorph(
+                            it, BG_REDUCTION, (element * 1.6f).toInt()
+                                .coerceIn(BG_ELEMENT_MIN, BG_ELEMENT_MAX), BG_PAPER
+                        )
+                    }
+                    pix = step("unsharp") { Enhance.unsharpMasking(it, 3, 0.4f) }
+                } else if (mode == "auto") {
                     // Colour kept: flatten the lighting, then a gentle sharpen.
                     // Nothing stretches the contrast afterwards here, so the
                     // paper has to be brought to white in this one step.
@@ -1214,6 +1229,10 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 val out = WriteFile.writeBitmap(pix) ?: throw IllegalStateException("Cannot write the page.")
                 bmp.recycle()
                 bmp = out
+                when (mode) {
+                    "whiteboard" -> bmp = PageClean.liftColour(bmp)
+                    "bleed" -> bmp = PageClean.suppressShowThrough(bmp)
+                }
             }
 
             writeImage(bmp, output, quality)

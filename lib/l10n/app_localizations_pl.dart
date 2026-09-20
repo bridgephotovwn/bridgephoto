@@ -618,6 +618,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get enhanceBw => 'Black and white — text only';
 
   @override
+  String get enhanceWhiteboard => 'Whiteboard — bring the marker back';
+
+  @override
+  String get enhanceBleed => 'Remove show-through from the back';
+
+  @override
   String get enhanceOriginal => 'Original scan';
 
   @override

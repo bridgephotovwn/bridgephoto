@@ -210,6 +210,8 @@ class _PageScreenState extends State<PageScreen> {
       ('auto', l.enhanceAuto, Icons.auto_fix_high),
       ('grey', l.enhanceGrey, Icons.gradient),
       ('bw', l.enhanceBw, Icons.filter_b_and_w),
+      ('whiteboard', l.enhanceWhiteboard, Icons.co_present_outlined),
+      ('bleed', l.enhanceBleed, Icons.flip_to_back),
       ('none', l.enhanceOriginal, Icons.undo),
     ];
     final picked = await showModalBottomSheet<String>(

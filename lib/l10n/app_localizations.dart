@@ -1072,6 +1072,18 @@ abstract class AppLocalizations {
   /// **'Black and white — text only'**
   String get enhanceBw;
 
+  /// No description provided for @enhanceWhiteboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Whiteboard — bring the marker back'**
+  String get enhanceWhiteboard;
+
+  /// No description provided for @enhanceBleed.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove show-through from the back'**
+  String get enhanceBleed;
+
   /// No description provided for @enhanceOriginal.
   ///
   /// In en, this message translates to:

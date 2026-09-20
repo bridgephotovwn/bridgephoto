@@ -197,6 +197,8 @@
   "enhanceAuto": "Auto — even out the light",
   "enhanceGrey": "Greyscale",
   "enhanceBw": "Black and white — text only",
+  "enhanceWhiteboard": "Whiteboard — bring the marker back",
+  "enhanceBleed": "Remove show-through from the back",
   "enhanceOriginal": "Original scan",
   "straightenedBy": "Straightened by {degrees}°",
   "@straightenedBy": {
