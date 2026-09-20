@@ -101,9 +101,39 @@ class PdfBuilder {
 
   // ---- text layer
 
+  /// The invisible text layer.
+  ///
+  /// Everything here is wrapped in a saved context, and that is not tidiness.
+  /// "Invisible" is a text state the PDF carries forward until something
+  /// changes it, and the library only writes the state out when it is NOT the
+  /// ordinary one — so a later drawString asking politely for visible text
+  /// writes nothing at all and inherits the invisibility. The stamp is drawn
+  /// after this, and on the phone it came out invisible on every page that
+  /// had any recognised text, which is very nearly every page. Restoring the
+  /// context puts the state back and keeps that fault inside this method.
+  /// The same text layer, over a page of the given size. Public only so a
+  /// test can drive exactly this code instead of a copy of it — a copy would
+  /// have gone on passing while the real thing hid the stamp.
+  static void drawTextLayerOnPage(PdfGraphics canvas, pw.Context ctx,
+      OcrResult ocr, double pageW, double pageH, pw.Font latin,
+      {pw.Font? noto, pw.Font? arabic}) {
+    _drawTextLayer(canvas, ctx, ocr,
+        _Layout(pageW, pageH, 0, 0, pageW, pageH), latin, noto, arabic);
+  }
+
   static void _drawTextLayer(PdfGraphics canvas, pw.Context ctx, OcrResult ocr,
       _Layout lay, pw.Font latin, pw.Font? noto, pw.Font? arabic) {
     if (ocr.w <= 0 || ocr.h <= 0) return;
+    canvas.saveContext();
+    try {
+      _drawTextRuns(canvas, ctx, ocr, lay, latin, noto, arabic);
+    } finally {
+      canvas.restoreContext();
+    }
+  }
+
+  static void _drawTextRuns(PdfGraphics canvas, pw.Context ctx, OcrResult ocr,
+      _Layout lay, pw.Font latin, pw.Font? noto, pw.Font? arabic) {
     final s = lay.w / ocr.w; // PDF points per image pixel
     final latinFont = latin.getFont(ctx);
     final notoFont = noto?.getFont(ctx);
