@@ -181,4 +181,8 @@ dependencies {
     // The .aar is kept in the repository rather than fetched from JitPack so a
     // release build never depends on someone else's build server staying up.
     implementation(files("libs/tesseract4android-4.9.0.aar"))
+    // The multi-shot arithmetic is checked on the desktop JVM, because it is
+    // the kind of code where a transposed index gives a plausible-looking
+    // wrong answer that no screenshot would catch.
+    testImplementation("junit:junit:4.13.2")
 }

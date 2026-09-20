@@ -226,6 +226,21 @@ class Engine(private val activity: Activity) : MethodChannel.MethodCallHandler {
                 )
                 true
             }
+            "relief" -> bg(result) {
+                MultiShot.relief(
+                    call.argument<List<String>>("inputs")!!,
+                    call.argument<String>("output")!!,
+                    (call.argument<Double>("lightAngle") ?: 135.0).toFloat(),
+                    call.argument<Int>("quality") ?: 92
+                )
+            }
+            "deglare" -> bg(result) {
+                MultiShot.deglare(
+                    call.argument<List<String>>("inputs")!!,
+                    call.argument<String>("output")!!,
+                    call.argument<Int>("quality") ?: 92
+                )
+            }
             "splitSpread" -> bg(result) {
                 splitSpread(
                     call.argument<String>("input")!!,

@@ -189,6 +189,40 @@ class Engine {
         'password': password,
       });
 
+  /// Reads the SHAPE of a page from several photographs lit from different
+  /// sides — an embossed seal, a dry stamp, the dent a biro leaves, the
+  /// stamped plate on a machine. None of those have any colour, only shape,
+  /// so a single flat photograph cannot show them at all.
+  ///
+  /// [lightAngle] is where the raking light comes from, in degrees. Turning it
+  /// moves the shadows, which is what a person does instinctively with a real
+  /// page under a lamp.
+  static Future<Map<String, dynamic>> relief(
+      List<String> inputs, String output,
+      {double lightAngle = 135, int quality = 92}) async {
+    final m = await _ch.invokeMapMethod<String, dynamic>('relief', {
+      'inputs': inputs,
+      'output': output,
+      'lightAngle': lightAngle,
+      'quality': quality,
+    });
+    return Map<String, dynamic>.from(m ?? const {});
+  }
+
+  /// Takes the glare off a laminated card, a certificate in a plastic sleeve
+  /// or anything behind glass, using several photographs in which the bright
+  /// patch lands somewhere different each time. Returns how much of the page
+  /// was actually rescued, as a share of it.
+  static Future<double> deglare(List<String> inputs, String output,
+      {int quality = 92}) async {
+    final m = await _ch.invokeMapMethod<String, dynamic>('deglare', {
+      'inputs': inputs,
+      'output': output,
+      'quality': quality,
+    });
+    return ((m?['glareShare'] as num?) ?? 0).toDouble();
+  }
+
   /// Splits a photograph of an open book into its two pages, cutting at the
   /// fold. Returns where it cut as a fraction across the page (0.5 when it
   /// could not find a fold and used the middle).
